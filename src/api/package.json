@@ -64,6 +64,7 @@
     "base64-js": "^1.5.1",
     "buffer": "^6.0.0",
     "buffer-from": "^1.1.2",
-    "eslint": "^7.32.0"
+    "eslint": "^7.32.0",
+    "java-parser": "^2.0.4"
   }
 }
