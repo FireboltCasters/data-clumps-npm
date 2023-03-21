@@ -1,12 +1,32 @@
-name: NPM Publish
+name: Publish
 on:
-  workflow_run:
-    workflows: ["Check"]
-    branches: [master]
-    types:
-      - completed
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: write
 jobs:
-  build:
+  npm:
+    if: ${{!startsWith(github.event.head_commit.message, '[RELEASE]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: cd ./src/api/ && npm ci
+      - run: cd ./src/api/ && git config --global user.name 'Firebolt Caster'
+      - run: cd ./src/api/ && git config --global user.email 'nilsbaumgartner@live.de'
+      - run: cd ./src/api/ && NEW_VERSION=$(npm version patch) && git add . && git tag $NEW_VERSION && git commit -m "[RELEASE] $NEW_VERSION"
+      - run: cd ./src/api/ && git push
+      - run: cd ./src/api/ && npm run _uploadWithoutPatch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  gh-pages:
     if: ${{ github.event.workflow_run.conclusion == 'success' && !startsWith(github.event.head_commit.message, '[RELEASE]') }}
     runs-on: ubuntu-latest
     steps:
@@ -16,10 +36,12 @@ jobs:
           node-version: '12.x'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
+      - run: cd ./src/api/ && npm ci && cd ../../
       - run: git config --global user.name 'Firebolt Caster'
       - run: git config --global user.email 'nilsbaumgartner@live.de'
-      - run: npm version patch -m "[RELEASE] %s"
-      - run: git push
-      - run: npm run _uploadWithoutPatch
+      #https://www.npmjs.com/package/gh-pages
+      - run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          CI=false npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any

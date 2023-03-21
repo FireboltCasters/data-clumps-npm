@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Einführung in die Software-Entwicklung (Droppelmann, Baumgartner)",
+    "location": "Vorlesung",
+    "building": "",
+    "room": "",
+    "start": "16:00",
+    "end": "18:00",
+    "weekday": 0,
+    "color": "#682c8b"
+  },
+  {
+    "name": "Masterseminar Software Engineering (Baumgartner, Droppelmann et al.)",
+    "location": "Raum 50/E09",
+    "building": "50",
+    "room": "E09",
+    "start": "14:00",
+    "end": "18:00",
+    "weekday": 1,
+    "color": "#682c8b"
+  },
+  {
+    "name": "Einführung in die Software-Entwicklung (Droppelmann, Baumgartner)",
+    "location": "Vorlesung",
+    "building": "",
+    "room": "",
+    "start": "12:00",
+    "end": "14:00",
+    "weekday": 1,
+    "color": "#682c8b"
+  },
+  {
+    "name": "Seminar Schwerpunkt Software Engineering in der Mensch-Computer-Interaktion (Ziegenhagen, Droppelmann et al.)",
+    "location": "Raum 50/E09",
+    "building": "50",
+    "room": "E09",
+    "start": "14:00",
+    "end": "18:00",
+    "weekday": 1,
+    "color": "#682c8b"
+  },
+  {
+    "name": "",
+    "location": "AG SE Meeting",
+    "building": "",
+    "room": "",
+    "start": "12:00",
+    "end": "14:00",
+    "weekday": 2,
+    "color": "#d60000"
+  },
+  {
+    "name": "Einführung in die Software-Entwicklung (Droppelmann, Baumgartner)",
+    "location": "Übung",
+    "building": "",
+    "room": "",
+    "start": "08:00",
+    "end": "10:00",
+    "weekday": 3,
+    "color": "#682c8b"
+  },
+  {
+    "name": "Einführung in die Software-Entwicklung (Droppelmann, Baumgartner)",
+    "location": "Übung",
+    "building": "",
+    "room": "",
+    "start": "10:00",
+    "end": "12:00",
+    "weekday": 3,
+    "color": "#682c8b"
+  }
+]

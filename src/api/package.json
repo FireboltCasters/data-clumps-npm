@@ -1,0 +1,69 @@
+{
+  "name": "data-clumps",
+  "version": "0.0.1",
+  "description": "A library to detect data clumps in your code and to refactor them.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "coverage": "jest --coverage",
+    "test": "npm run build && npm run testOnly",
+    "testOnly": "npm run coverage",
+    "start": "npm run build && node ./build/ignoreCoverage/development.js",
+    "_prepareBuild": "rm -rf ./build",
+    "build": "npm run _prepareBuild && rimraf ./build && tsc && cp package.json ./build && cp ./../../README.md ./build && cp ./../../LICENSE.md ./build",
+    "dev": "nodemon",
+    "_prepareUpload": "npm run build && rimraf ./coverage && rimraf ./build/tests",
+    "_uploadBuild": "cd ./build && npm pack && npm publish && cd ..",
+    "_uploadWithoutPatch": "npm run _prepareUpload && npm run _uploadBuild && npm run clean",
+    "upload": "npm version patch && npm run _uploadWithoutPatch",
+    "clean": "rimraf ./build && gts clean",
+    "lint": "gts lint",
+    "fix": "gts fix",
+    "setup": "npm install && node setup.js && rimraf setup.js setup.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FireboltCasters/data-clumps"
+  },
+  "keywords": [
+    "data clumps",
+    "code smell",
+    "refactoring",
+    "parser",
+    "java"
+  ],
+  "author": "Nils Baumgartner",
+  "contributors": [
+    {
+      "name": "Nils Baumgartner",
+      "email": "nilsbaumgartner1994@gmail.com",
+      "url": "https://github.com/NilsBaumgartner1994"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FireboltCasters/npm-template/issues"
+  },
+  "homepage": "https://github.com/FireboltCasters/npm-template#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/node": "^16.0.0",
+    "gts": "^3.1.0",
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.9",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@babel/preset-typescript": "^7.14.5",
+    "@stdlib/buffer-from-string": "^0.0.8",
+    "axios": "^0.21.4",
+    "Base64": "^1.1.0",
+    "base64-js": "^1.5.1",
+    "buffer": "^6.0.0",
+    "buffer-from": "^1.1.2",
+    "eslint": "^7.32.0"
+  }
+}
