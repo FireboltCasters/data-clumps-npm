@@ -1,5 +1,4 @@
-// @ts-nocheck - may need to be at the start of file
-import React, {FunctionComponent, useEffect} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import {Button} from "primereact/button";
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
@@ -27,7 +26,9 @@ export const Demo : FunctionComponent = (props) => {
                                     <Panel header={"Test"} style={{display: "flex", flexDirection: "column", flex: 3}}>
                                         <div style={{display: "flex", flex: 1, flexDirection: "column"}}>
                                             {"Domain"}
-                                            <Button disabled={false} label="Save & Use" icon="pi pi-save" className="p-button-success" style={{margin: 5}} onClick={() => {login()}} />
+                                            <Button disabled={false} label="Save & Use" icon="pi pi-save" className="p-button-success" style={{margin: 5}} onClick={() => {
+                                                
+                                            }} />
                                         </div>
                                     </Panel>
                             </div>
