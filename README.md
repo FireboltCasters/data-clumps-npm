@@ -3,33 +3,33 @@
 </h2>
 
 <p align="center">
-  <a href="https://badge.fury.io/js/packageName.svg"><img src="https://badge.fury.io/js/packageName.svg" alt="npm package" /></a>
-  <a href="https://img.shields.io/github/license/organization/packageName"><img src="https://img.shields.io/github/license/organization/packageName" alt="MIT" /></a>
-  <a href="https://img.shields.io/github/last-commit/organization/packageName?logo=git"><img src="https://img.shields.io/github/last-commit/organization/packageName?logo=git" alt="last commit" /></a>
-  <a href="https://www.npmjs.com/package/packageName"><img src="https://img.shields.io/npm/dm/packageName.svg" alt="downloads week" /></a>
-  <a href="https://www.npmjs.com/package/packageName"><img src="https://img.shields.io/npm/dt/packageName.svg" alt="downloads total" /></a>
-  <a href="https://github.com/organization/packageName"><img src="https://shields.io/github/languages/code-size/organization/packageName" alt="size" /></a>
-  <a href="https://david-dm.org/organization/packageName"><img src="https://david-dm.org/organization/packageName/status.svg" alt="dependencies" /></a>
-  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Forganization%2FpackageName?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Forganization%2FpackageName.svg?type=shield"/></a>
+  <a href="https://badge.fury.io/js/data-clumps.svg"><img src="https://badge.fury.io/js/data-clumps.svg" alt="npm package" /></a>
+  <a href="https://img.shields.io/github/license/FireboltCasters/data-clumps"><img src="https://img.shields.io/github/license/FireboltCasters/data-clumps" alt="MIT" /></a>
+  <a href="https://img.shields.io/github/last-commit/FireboltCasters/data-clumps?logo=git"><img src="https://img.shields.io/github/last-commit/FireboltCasters/data-clumps?logo=git" alt="last commit" /></a>
+  <a href="https://www.npmjs.com/package/data-clumps"><img src="https://img.shields.io/npm/dm/data-clumps.svg" alt="downloads week" /></a>
+  <a href="https://www.npmjs.com/package/data-clumps"><img src="https://img.shields.io/npm/dt/data-clumps.svg" alt="downloads total" /></a>
+  <a href="https://github.com/FireboltCasters/data-clumps"><img src="https://shields.io/github/languages/code-size/FireboltCasters/data-clumps" alt="size" /></a>
+  <a href="https://david-dm.org/FireboltCasters/data-clumps"><img src="https://david-dm.org/FireboltCasters/data-clumps/status.svg" alt="dependencies" /></a>
+  <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FFireboltCasters%2Fdata-clumps?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FFireboltCasters%2Fdata-clumps.svg?type=shield"/></a>
   <a href="https://github.com/google/gts" alt="Google TypeScript Style"><img src="https://img.shields.io/badge/code%20style-google-blueviolet.svg"/></a>
   <a href="https://shields.io/" alt="Google TypeScript Style"><img src="https://img.shields.io/badge/uses-TypeScript-blue.svg"/></a>
   <a href="https://github.com/marketplace/actions/lint-action"><img src="https://img.shields.io/badge/uses-Lint%20Action-blue.svg"/></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/organization/packageName/actions/workflows/npmPublish.yml"><img src="https://github.com/organization/packageName/actions/workflows/npmPublish.yml/badge.svg" alt="Npm publish" /></a>
-  <a href="https://github.com/organization/packageName/actions/workflows/linter.yml"><img src="https://github.com/organization/packageName/actions/workflows/linter.yml/badge.svg" alt="Build status" /></a>
-    <a href="https://jessemillar.com/r/man-hours"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fmh.jessemillar.com%2Fhours%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2FFireboltCasters%2FpackageName"/></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=alert_status" alt="Quality Gate" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=bugs" alt="Bugs" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=coverage" alt="Coverage" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=code_smells" alt="Code Smells" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=duplicated_lines_density" alt="Duplicated Lines (%)" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=sqale_rating" alt="Maintainability Rating" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=reliability_rating" alt="Reliability Rating" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=security_rating" alt="Security Rating" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=sqale_index" alt="Technical Debt" /></a>
-  <a href="https://sonarcloud.io/dashboard?id=sonarProjectKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=sonarProjectKey&metric=vulnerabilities" alt="Vulnerabilities" /></a>
+  <a href="https://github.com/FireboltCasters/data-clumps/actions/workflows/npmPublish.yml"><img src="https://github.com/FireboltCasters/data-clumps/actions/workflows/npmPublish.yml/badge.svg" alt="Npm publish" /></a>
+  <a href="https://github.com/FireboltCasters/data-clumps/actions/workflows/linter.yml"><img src="https://github.com/FireboltCasters/data-clumps/actions/workflows/linter.yml/badge.svg" alt="Build status" /></a>
+    <a href="https://jessemillar.com/r/man-hours"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fmh.jessemillar.com%2Fhours%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2FFireboltCasters%2Fdata-clumps"/></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=alert_status" alt="Quality Gate" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=bugs" alt="Bugs" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=coverage" alt="Coverage" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=code_smells" alt="Code Smells" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=duplicated_lines_density" alt="Duplicated Lines (%)" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=sqale_rating" alt="Maintainability Rating" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=reliability_rating" alt="Reliability Rating" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=security_rating" alt="Security Rating" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=sqale_index" alt="Technical Debt" /></a>
+  <a href="https://sonarcloud.io/dashboard?id=ExampleKey"><img src="https://sonarcloud.io/api/project_badges/measure?project=ExampleKey&metric=vulnerabilities" alt="Vulnerabilities" /></a>
 </p>
 
 <p align="center">
@@ -69,7 +69,7 @@ Therefore we need to get credentials for our project. Create a Sonar-Account if 
 - Configure "With GitHub Actions" and disable SonarCloud Automatic Analysis
 - Follow Step 1: Add the secret to your repository
 - "Skip" step 2
-- Copy and paste the values of "sonar.projectKey" and "sonar.organization" into the setup.json
+- Copy and paste the values of "sonar.projectKey" and "sonar.FireboltCasters" into the setup.json
 
 
 ## 4. Setup Script
@@ -79,7 +79,7 @@ For the correct upload to npm and sonar and keep everything working correctly, t
 ```javascript
 {
   "package": {
-    "name": "<packageName>",
+    "name": "<data-clumps>",
     "description": "<packageDescription>",
     "keywords": [
       "npm-template"
@@ -102,7 +102,7 @@ For the correct upload to npm and sonar and keep everything working correctly, t
   },
   "sonar": {
     "projectKey": "ExampleKey",
-    "organization": "ExampleOrganization"
+    "FireboltCasters": "ExampleOrganization"
   }
 }
 ```
@@ -132,4 +132,4 @@ This is because we haven't told Sonarcloud how it should measure the Quality Gat
 
 The FireboltCasters
 
-<a href="https://github.com/organization/packageName"><img src="https://contrib.rocks/image?repo=organization/packageName" alt="Contributors" /></a>
+<a href="https://github.com/FireboltCasters/data-clumps"><img src="https://contrib.rocks/image?repo=FireboltCasters/data-clumps" alt="Contributors" /></a>

@@ -1,7 +1,7 @@
 {
-  "name": "@fireboltcasters/<packageName>",
+  "name": "data-clumps",
   "version": "0.0.1",
-  "description": "<packageDescription>",
+  "description": "A parser to detect data clumps and suggest refactoring",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -23,29 +23,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FireboltCasters/npm-template.git"
+    "url": "git+https://github.com/FireboltCasters/data-clumps.git"
   },
   "keywords": [
-    "npm-template"
+    "data clumps",
+    "code smell",
+    "refactoring"
   ],
-  "author": "Steffen Droppelmann",
+  "author": "Nils Baumgartner",
   "contributors": [
     {
       "name": "Nils Baumgartner",
       "email": "nilsbaumgartner1994@gmail.com",
-      "url": "https://github.com/FireboltCasters"
-    },
-    {
-      "name": "Steffen Droppelmann",
-      "email": "steffen.droppelmann@gmail.com",
-      "url": "https://github.com/FireboltCasters"
+      "url": "https://github.com/NilsBaumgartner1994"
     }
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/FireboltCasters/npm-template/issues"
+    "url": "https://github.com/FireboltCasters/data-clumps/issues"
   },
-  "homepage": "https://github.com/FireboltCasters/npm-template#readme",
+  "homepage": "https://github.com/FireboltCasters/data-clumps#readme",
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/node": "^16.0.0",
