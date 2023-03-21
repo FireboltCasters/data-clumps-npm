@@ -27,7 +27,7 @@ export const Demo : FunctionComponent = (props) => {
                                         <div style={{display: "flex", flex: 1, flexDirection: "column"}}>
                                             {"Domain"}
                                             <Button disabled={false} label="Save & Use" icon="pi pi-save" className="p-button-success" style={{margin: 5}} onClick={() => {
-                                                
+
                                             }} />
                                         </div>
                                     </Panel>
