@@ -19,7 +19,8 @@
     "clean": "rimraf ./build && gts clean",
     "lint": "gts lint",
     "fix": "gts fix",
-    "setup": "npm install && node setup.js && rimraf setup.js setup.json"
+    "setup": "npm install && node setup.js && rimraf setup.js setup.json",
+    "postinstall": "npx patch-package"
   },
   "repository": {
     "type": "git",
@@ -51,6 +52,7 @@
     "gts": "^3.1.0",
     "jest": "^27.0.6",
     "nodemon": "^2.0.9",
+    "patch-package": "^6.5.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",

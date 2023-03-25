@@ -19,7 +19,6 @@
     "buffer-from": "^1.1.2",
     "chart.js": "^3.7.1",
     "dagre": "^0.8.5",
-    "java-parser": "^2.0.4",
     "monaco-editor": "^0.36.1",
     "primeicons": "^5.0.0",
     "primereact": "^8.7.3",

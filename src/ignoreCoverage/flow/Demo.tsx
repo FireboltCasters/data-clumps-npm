@@ -2,7 +2,7 @@ import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
 import {SpecialFields} from "../../api/src/ignoreCoverage/exampleDataClumps/java";
-import {Parser} from "../../api/build/";
+import {Parser as DCParser} from "../../api/src/";
 import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -13,6 +13,7 @@ export const Demo : FunctionComponent = (props) => {
 
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
     const [code, setCode] = useState<string>(SpecialFields);
+//    const [code, setCode] = useState<string>("");
     const [result, setResult] = useState<string>("");
 
 
@@ -49,13 +50,15 @@ export const Demo : FunctionComponent = (props) => {
         let newTimerId = setTimeout(() => {
             // do something
             console.log("timeout");
+            handleParser()
         }, 1000);
         setTimerId(newTimerId);
     }
 
     function handleParser(){
         console.log("handleParser");
-        let parser = new Parser();
+
+        let parser = new DCParser();
         parser.addFileContentToParse("test.java", code);
         let result = parser.parse();
         console.log(result);
@@ -76,7 +79,7 @@ export const Demo : FunctionComponent = (props) => {
                         </div>
                     <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
                         <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                            <h3>Source code</h3>
+                            <h3>Java Source code</h3>
                             <Editor
                                 height="90vh"
                                 width={"100%"}
@@ -86,12 +89,13 @@ export const Demo : FunctionComponent = (props) => {
                             />
                         </div>
                         <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                            <h3>Results</h3>
+                            <h3>Extracted Variables with Types</h3>
                             <Editor
+                                key={result}
                                 height="90vh"
                                 width={"100%"}
                                 defaultLanguage="javascript"
-                                defaultValue="// some comment"
+                                defaultValue={result}
                             />
                         </div>
                     </div>
