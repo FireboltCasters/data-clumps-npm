@@ -1,8 +1,8 @@
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
-import {SpecialFields} from "../../api/src/ignoreCoverage/exampleDataClumps/java";
-import {Parser as DCParser} from "../../api/src/";
+//import {SpecialFields} from "../../api/src/ignoreCoverage/exampleDataClumps/java";
+//import {Parser as DCParser} from "../../api/src/";
 import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -12,8 +12,8 @@ loader.config({ monaco });
 export const Demo : FunctionComponent = (props) => {
 
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
-    const [code, setCode] = useState<string>(SpecialFields);
-//    const [code, setCode] = useState<string>("");
+//    const [code, setCode] = useState<string>(SpecialFields);
+    const [code, setCode] = useState<string>("");
     const [result, setResult] = useState<string>("");
 
 
@@ -57,12 +57,13 @@ export const Demo : FunctionComponent = (props) => {
 
     function handleParser(){
         console.log("handleParser");
-
+/**
         let parser = new DCParser();
         parser.addFileContentToParse("test.java", code);
         let result = parser.parse();
         console.log(result);
         setResult(JSON.stringify(result, null, 2));
+ */
     }
 
     return (
