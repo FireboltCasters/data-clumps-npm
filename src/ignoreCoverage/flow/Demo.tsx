@@ -1,56 +1,100 @@
-import React, {FunctionComponent, useEffect, useState} from 'react';
-import {Button} from "primereact/button";
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
-import {TabPanel, TabView} from "primereact/tabview";
+import {SpecialFields} from "../../api/src/ignoreCoverage/exampleDataClumps/java";
+import {Parser} from "../../api/build/";
+import Editor  from "@monaco-editor/react";
+import { loader } from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
+
+loader.config({ monaco });
 
 export const Demo : FunctionComponent = (props) => {
 
-    const [activeIndex, setActiveIndex] = useState(0)
+    const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
+    const [code, setCode] = useState<string>(SpecialFields);
+    const [result, setResult] = useState<string>("");
+
 
     useEffect(() => {
         document.title = "data-clumps api Demo"
     }, [])
 
+
+    /**
+     <Divider />
+     <div style={{display: "flex", width: "100%", flexDirection: "row"}}>
+     <Panel header={"Test"} style={{display: "flex", flexDirection: "column", flex: 3}}>
+     <div style={{display: "flex", flex: 1, flexDirection: "column"}}>
+     {"Domain"}
+     <Button disabled={false} label="Save & Use" icon="pi pi-save" className="p-button-success" style={{margin: 5}} onClick={() => {
+
+                                            }} />
+     </div>
+     </Panel>
+     </div>
+     */
+
+    function handleCodeChange(newCode: string | undefined) {
+        if (newCode) {
+            setCode(newCode);
+        } else {
+            setCode("");
+        }
+        // check if timeout is already set and clear it
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+        // set a new timeout
+        let newTimerId = setTimeout(() => {
+            // do something
+            console.log("timeout");
+        }, 1000);
+        setTimerId(newTimerId);
+    }
+
+    function handleParser(){
+        console.log("handleParser");
+        let parser = new Parser();
+        parser.addFileContentToParse("test.java", code);
+        let result = parser.parse();
+        console.log(result);
+        setResult(JSON.stringify(result, null, 2));
+    }
+
     return (
                 <div style={{width: "100%", height: "100vh"}}>
-                        <div style={{display: "flex", flexDirection: "column", height: "100%", margin: "3%"}}>
+                        <div style={{display: "flex", flexDirection: "column", margin: "3%"}}>
                             <h3>data-clumps api Demo</h3>
-                            <Panel header={"Description"} toggleable>
+                            <Panel header={"Description"} toggleable collapsed={true}>
                                 <div style={{whiteSpace: "pre-line", display: "flex", width: "100%", flexDirection: "column"}}>
                                     {"More information about data-clumps."}
                                 </div>
                             </Panel>
+
                             <Divider />
-                            <div style={{display: "flex", width: "100%", flexDirection: "row"}}>
-                                    <Panel header={"Test"} style={{display: "flex", flexDirection: "column", flex: 3}}>
-                                        <div style={{display: "flex", flex: 1, flexDirection: "column"}}>
-                                            {"Domain"}
-                                            <Button disabled={false} label="Save & Use" icon="pi pi-save" className="p-button-success" style={{margin: 5}} onClick={() => {
-
-                                            }} />
-                                        </div>
-                                    </Panel>
-                            </div>
-                            <Divider />
-                            <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-                                <TabPanel header="User">
-                                    <div style={{flex: 1 ,display: "flex" ,width: "100%", height: "100%"}}>
-
-                                    </div>
-                                </TabPanel>
-                                <TabPanel header="Schedule">
-                                    <div style={{flex: 1 ,display: "flex" ,width: "100%", height: "100%"}}>
-
-                                    </div>
-                                </TabPanel>
-                                <TabPanel header="Schedule Raw">
-                                    <div style={{flex: 1 ,display: "flex" ,width: "100%", height: "100%"}}>
-
-                                    </div>
-                                </TabPanel>
-                            </TabView>
                         </div>
+                    <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
+                        <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
+                            <h3>Source code</h3>
+                            <Editor
+                                height="90vh"
+                                width={"100%"}
+                                defaultLanguage="java"
+                                defaultValue={code}
+                                onChange={handleCodeChange}
+                            />
+                        </div>
+                        <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
+                            <h3>Results</h3>
+                            <Editor
+                                height="90vh"
+                                width={"100%"}
+                                defaultLanguage="javascript"
+                                defaultValue="// some comment"
+                            />
+                        </div>
+                    </div>
                 </div>
         );
 }
