@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "https://FireboltCasters.github.io/data-clumps",
+  "homepage": "./data-clumps",
   "homepageProduction": "https://FireboltCasters.github.io/data-clumps",
   "homepageLocal": "./",
   "version": "0.1.0",
@@ -40,9 +40,9 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "prestart": "cd src/api/ && npm install",
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode development",
-    "testProduction": "npm run build && npm run serve",
+    "start": "npm run build && npm run serve",
+    "build": "react-scripts build --no-minify",
+    "dev": "react-scripts start",
     "serve": "npx serve -s ./build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
