@@ -1,11 +1,14 @@
 import {
   BaseJavaCstVisitorWithDefaults,
-  ClassTypeCtx,
   parse,
+} from "./java-parser/src";
+
+import {
+  ClassTypeCtx,
   TypeArgumentCstNode,
   UnannClassTypeCtx,
   UnannPrimitiveTypeCtx
-} from "java-parser";
+} from "./java-parser/api";
 
 class MyFile{
     public content: string;
