@@ -16,7 +16,6 @@ public class Fields2 {
     int fieldsX = 10;
     int fieldsY;
 
-
     public void normalMethod(){
         fieldsX  =  100 ;
         fieldsY = 50;

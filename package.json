@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "https://FireboltCasters.github.io/data-clumps",
+  "homepage": "./",
   "homepageProduction": "https://FireboltCasters.github.io/data-clumps",
   "homepageLocal": "./",
   "version": "0.1.0",

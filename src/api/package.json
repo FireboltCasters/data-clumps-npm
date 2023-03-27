@@ -2,13 +2,19 @@
   "name": "data-clumps",
   "version": "0.0.53",
   "description": "A library to detect data clumps in your code and to refactor them.",
-  "main": "index.js",
+  "exports": "./index.js",
+  "engines": {
+    "node": ">=14.16"
+  },
+  "files": [
+    "build/**/*"
+  ],
   "types": "index.d.ts",
   "scripts": {
     "coverage": "jest --coverage",
     "test": "npm run build && npm run testOnly",
     "testOnly": "npm run coverage",
-    "start": "npm run build && node ./build/ignoreCoverage/development.js",
+    "start": "npm run build && node ./build/development.js",
     "_prepareBuild": "rm -rf ./build",
     "build": "npm run _prepareBuild && rimraf ./build && tsc && cp package.json ./build && cp ./../../README.md ./build && cp ./../../LICENSE.md ./build",
     "dev": "nodemon",
@@ -61,6 +67,7 @@
   "dependencies": {
     "@babel/preset-typescript": "^7.14.5",
     "@stdlib/buffer-from-string": "^0.0.8",
+    "antlr4": "^4.12.0",
     "axios": "^0.21.4",
     "Base64": "^1.1.0",
     "base64-js": "^1.5.1",

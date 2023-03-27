@@ -61,7 +61,7 @@ export const Demo : FunctionComponent = (props) => {
         // newly added
         let parser = new DCParser();
         parser.addFileContentToParse("test.java", code);
-        let result = parser.parse();
+        let result = parser.getFieldsAndMethods();
         console.log(result);
         setResult(JSON.stringify(result, null, 2));
 

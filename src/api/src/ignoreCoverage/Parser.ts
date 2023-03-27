@@ -1,14 +1,14 @@
 import {
   BaseJavaCstVisitorWithDefaults,
   parse,
-} from "./java-parser/src";
+} from "java-parser";
 
 import {
   ClassTypeCtx,
   TypeArgumentCstNode,
   UnannClassTypeCtx,
   UnannPrimitiveTypeCtx
-} from "./java-parser/api";
+} from "java-parser";
 
 class MyFile{
     public content: string;
@@ -37,7 +37,7 @@ export default class Parser {
     this.filesToParseDict[file.path] = file;
   }
 
-  public parse() {
+  public getFieldsAndMethods() {
     console.log('Parser created');
     let firstFile = this.filesToParseDict[Object.keys(this.filesToParseDict)[0]];
     let javaText = firstFile.content;
@@ -141,6 +141,7 @@ class MyClassMemberDeclarationCollector extends BaseJavaCstVisitorWithDefaults {
     let varaibleObj = myVariableDeclarationCollector.customResult;
     if(!!varaibleObj){
       varaibleObj.fieldType = fieldType;
+      varaibleObj.key = fieldType + " " + varaibleObj.variableName;
       this.customResult.push(varaibleObj);
     }
 //    if (ctx.lambdaParameters[0].children.Identifier) {
