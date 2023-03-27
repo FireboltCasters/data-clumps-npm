@@ -1,12 +1,16 @@
-import { SimpleFields } from "./ignoreCoverage/exampleDataClumps/java";
-import Parser from "./ignoreCoverage/Parser";
-
+import {JavaExamples} from "./index";
+import antlr4 from 'antlr4';
 
 async function main() {
   console.log('Start test');
+  const input = "your text to parse here"
+  const chars = new antlr4.InputStream(input);
+
+  console.log(JavaExamples.SimpleFields)
+  /**
   let parser = new Parser();
   console.log('Parser created');
-  parser.addFileContentToParse('test.java', SimpleFields);
+  parser.addFileContentToParse('test.java', JavaExamples.SimpleFields);
   console.log('File added');
   let result = parser.getFieldsAndMethods();
   console.log('File parsed');
@@ -40,6 +44,7 @@ async function main() {
   }
    ]
    */
+  /**
   let fieldVariables = {}
   for(let classMember of result){
       let className = classMember.className;
@@ -58,7 +63,7 @@ async function main() {
   }
 
   console.log(JSON.stringify(fieldVariables, null, 2));
-
+*/
   // Ignore categoryMatches
 
 }
