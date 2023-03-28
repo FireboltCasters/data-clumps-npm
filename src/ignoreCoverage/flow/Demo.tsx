@@ -2,7 +2,7 @@ import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
 import {SpecialFields} from "../../api/src/ignoreCoverage/exampleDataClumps/java"; // this import alone was ok
-import {Parser as DCParser} from "../../api/src/"; // newly added
+import {Parser} from "../../api/src/"; // newly added
 import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -59,7 +59,7 @@ export const Demo : FunctionComponent = (props) => {
         console.log("handleParser");
 
         // newly added
-        let parser = new DCParser();
+        let parser = new Parser();
         parser.addFileContentToParse("test.java", code);
         let result = parser.getFieldsAndMethods();
         console.log(result);
