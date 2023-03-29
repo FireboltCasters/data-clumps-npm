@@ -3,6 +3,74 @@ import {JavaLexer, JavaParser} from "./index";
 import antlr4, {ParseTree} from 'antlr4';
 
 import {ParseTreeVisitor} from "antlr4";
+/**
+class PrintVisitor extends ParseTreeVisitor<void> {
+    private indentation: number;
+    constructor() {
+        super();
+        this.indentation = 0;
+    }
+
+    visit(tree) {
+        if (tree == null) {
+            return;
+        }
+
+        if (tree.constructor.name.endsWith("Context")) {
+            const ruleName = tree.constructor.name.replace("Context", "");
+            const visitMethod = `visit${ruleName}`;
+            if (this[visitMethod]) {
+                this[visitMethod](tree);
+            } else {
+                this.defaultVisit(tree);
+            }
+        } else {
+            this.defaultVisit(tree);
+        }
+    }
+
+    defaultVisit(tree) {
+        //console.log("defaultVisit"+" ".repeat(this.indentation) + tree.getText());
+        for (const child of tree.children || []) {
+            this.visit(child);
+        }
+    }
+
+    visitCompilationUnit(tree) {
+        for (const child of tree.children || []) {
+            this.visit(child);
+        }
+    }
+
+    visitPackageDeclaration(tree) {
+        console.log("visitPackageDeclaration"+" ".repeat(this.indentation) + tree.getText());
+    }
+
+    visitImportDeclaration(tree) {
+        console.log("visitImportDeclaration"+" ".repeat(this.indentation) + tree.getText());
+    }
+
+    visitClassDeclaration(tree) {
+        console.log("visitClassDeclaration"+" ".repeat(this.indentation) + tree.getText());
+        this.indentation += 2;
+        for (const child of tree.children || []) {
+            this.visit(child);
+        }
+        this.indentation -= 2;
+    }
+
+    visitMethodDeclaration(tree) {
+        console.log("visitMethodDeclaration"+" ".repeat(this.indentation) + tree.getText());
+        this.indentation += 2;
+        for (const child of tree.children || []) {
+            this.visit(child);
+        }
+        this.indentation -= 2;
+    }
+
+    // Add more visit methods for other types of nodes as needed
+}
+*/
 
 async function main() {
   console.log('Start test 2');
@@ -14,126 +82,8 @@ async function main() {
     const parser = new JavaParser(tokens);
     parser.buildParseTrees = true;
     const cst = parser.compilationUnit();
-    console.log(Object.keys(cst));
-    /**
-     [
-     'parentCtx',
-     'invokingState',
-     'children',
-     'start',
-     'stop',
-     'exception',
-     'importDeclaration',
-     'typeDeclaration',
-     'parser',
-     'ruleIndex'
-     ]
-     */
 
-    console.log(cst);
 
-    //    console.log("------------------");
-    //    console.log(cst.parentCtx); // null
-
-    console.log("------------------");
-    // @ts-ignore
-    console.log(cst.children[0]);
-    // @ts-ignore
-    console.log(cst.children[0].getText());
-
-    console.log(cst.toStringTree(JavaParser.ruleNames, parser));
-
-    class CodePrintingVisitor extends ParseTreeVisitor<string> {
-        visit(tree: ParseTree): string {
-            if (Array.isArray(tree)) {
-                for(let t of tree){
-                    this.visit(t);
-                }
-                return "";
-            } else {
-                // @ts-ignore
-                const hasChildren = tree.children && tree.children.length > 0;
-
-                if(hasChildren){
-                    this.visitChildren(tree);
-                } else if(!!tree.getText){
-                    console.log(tree.getText())
-                } else {
-                    //console.log("No getText method");
-                }
-                // @ts-ignore
-                if(hasChildren){
-
-                }
-                return "";
-            }
-        }
-
-        // Override other visit methods for each of your grammar rules as needed
-    }
-
-    // Generate modified code
-    const myVisitor = new CodePrintingVisitor();
-    const output = myVisitor.visit(cst);
-
-  /**
-  let parser = new Parser();
-  console.log('Parser created');
-  parser.addFileContentToParse('test.java', JavaExamples.SimpleFields);
-  console.log('File added');
-  let result = parser.getFieldsAndMethods();
-  console.log('File parsed');
-  console.log(JSON.stringify(result, null, 2));
-  /**
-   [
-   {
-    "className": "Fields1",
-    "listOfMemberVariables": [
-      {
-        "variableName": "normalString",
-        "fieldType": "String",
-        "key": "String normalString"
-      },
-      {
-        "variableName": "arrayListWithString",
-        "fieldType": "ArrayList<String>",
-        "key": "ArrayList<String> arrayListWithString"
-      },
-      {
-        "variableName": "arrayListWithIntegerObject",
-        "fieldType": "ArrayList<Integer>",
-        "key": "ArrayList<Integer> arrayListWithIntegerObject"
-      },
-      {
-        "variableName": "mapWithArrayListOfStringAndInteger",
-        "fieldType": "Map<ArrayList<String>, Integer>",
-        "key": "Map<ArrayList<String>, Integer> mapWithArrayListOfStringAndInteger"
-      }
-    ]
-  }
-   ]
-   */
-  /**
-  let fieldVariables = {}
-  for(let classMember of result){
-      let className = classMember.className;
-    for(let memberVariable of classMember.listOfMemberVariables){
-      let key = memberVariable.key;
-        // @ts-ignore
-        if(fieldVariables[key] === undefined){
-            // @ts-ignore
-            fieldVariables[key] = {
-
-            };
-        }
-        // @ts-ignore
-        fieldVariables[key][className] = true;
-    }
-  }
-
-  console.log(JSON.stringify(fieldVariables, null, 2));
-*/
-  // Ignore categoryMatches
 
 }
 
