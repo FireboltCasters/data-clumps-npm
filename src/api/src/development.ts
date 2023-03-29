@@ -1,12 +1,81 @@
 import {JavaExamples} from "./index";
-import antlr4 from 'antlr4';
+import {JavaLexer, JavaParser} from "./index";
+import antlr4, {ParseTree} from 'antlr4';
+
+import {ParseTreeVisitor} from "antlr4";
 
 async function main() {
-  console.log('Start test');
-  const input = "your text to parse here"
+  console.log('Start test 2');
+//  const input = JavaExamples.SimpleFields
+    const input = "public class MyClass { public static void main(String[] args) { System.out.println(\"Hello, world!\"); } }";
   const chars = new antlr4.InputStream(input);
+    const lexer = new JavaLexer(chars);
+    const tokens = new antlr4.CommonTokenStream(lexer);
+    const parser = new JavaParser(tokens);
+    parser.buildParseTrees = true;
+    const cst = parser.compilationUnit();
+    console.log(Object.keys(cst));
+    /**
+     [
+     'parentCtx',
+     'invokingState',
+     'children',
+     'start',
+     'stop',
+     'exception',
+     'importDeclaration',
+     'typeDeclaration',
+     'parser',
+     'ruleIndex'
+     ]
+     */
 
-  console.log(JavaExamples.SimpleFields)
+    console.log(cst);
+
+    //    console.log("------------------");
+    //    console.log(cst.parentCtx); // null
+
+    console.log("------------------");
+    // @ts-ignore
+    console.log(cst.children[0]);
+    // @ts-ignore
+    console.log(cst.children[0].getText());
+
+    console.log(cst.toStringTree(JavaParser.ruleNames, parser));
+
+    class CodePrintingVisitor extends ParseTreeVisitor<string> {
+        visit(tree: ParseTree): string {
+            if (Array.isArray(tree)) {
+                for(let t of tree){
+                    this.visit(t);
+                }
+                return "";
+            } else {
+                // @ts-ignore
+                const hasChildren = tree.children && tree.children.length > 0;
+
+                if(hasChildren){
+                    this.visitChildren(tree);
+                } else if(!!tree.getText){
+                    console.log(tree.getText())
+                } else {
+                    //console.log("No getText method");
+                }
+                // @ts-ignore
+                if(hasChildren){
+
+                }
+                return "";
+            }
+        }
+
+        // Override other visit methods for each of your grammar rules as needed
+    }
+
+    // Generate modified code
+    const myVisitor = new CodePrintingVisitor();
+    const output = myVisitor.visit(cst);
+
   /**
   let parser = new Parser();
   console.log('Parser created');
