@@ -26,7 +26,7 @@
     "clean": "rimraf ./build && gts clean",
     "lint": "gts lint",
     "fix": "gts fix",
-    "setup": "npm install && node setup.js && rimraf setup.js setup.json",
+    "setup": "npm install && node setup.js && rimraf setup.js setup.json"
   },
   "repository": {
     "type": "git",
