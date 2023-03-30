@@ -35,4 +35,8 @@ export class Parser {
     return result;
   }
 
+  public getTest(){
+    return "test";
+  }
+
 }
