@@ -2,7 +2,6 @@
 // Generated from JavaParser.g4 by ANTLR 4.12.0
 // jshint ignore: start
 //import antlr4 from 'antlr4-js-exports';
-//import antlr4 from '../../copiedModules/antlr4-js-exports';
 import {antlr4} from "../../util/MyAntlr4"
 
 // This class defines a complete listener for a parse tree produced by JavaParser.

@@ -1,6 +1,7 @@
-import antlr4 from 'antlr4-js-exports';
 import JavaLexer from "./java/util/JavaLexer";
 import JavaParser from "./java/util/JavaParser";
+import {antlr4} from "./util/MyAntlr4";
+
 
 export class ParserAntlr4{
     static parse(code: string){
