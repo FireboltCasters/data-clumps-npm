@@ -1,6 +1,6 @@
 {
   "name": "data-clumps",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "This small package is not from the creators of Stud.IP. Instead it only offers limited functions for the Stud.IP API.",
   "main": "index.js",
   "types": "index.d.ts",
