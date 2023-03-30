@@ -45,14 +45,14 @@
   },
   "homepage": "https://github.com/FireboltCasters/npm-template#readme",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^27.0.3",
     "@types/node": "^16.0.0",
     "gts": "^3.1.0",
     "jest": "^27.0.6",
     "nodemon": "^2.0.9",
     "rimraf": "^3.0.2",
     "ts-jest": "^27.0.3",
-    "ts-node": "^10.0.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.3.5"
   },
   "dependencies": {
