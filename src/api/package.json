@@ -7,9 +7,6 @@
   "engines": {
     "node": ">=14.16"
   },
-  "files": [
-    "build/**/*"
-  ],
   "types": "index.d.ts",
   "scripts": {
     "coverage": "jest --coverage",
