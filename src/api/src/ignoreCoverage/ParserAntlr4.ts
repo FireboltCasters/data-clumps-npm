@@ -1,5 +1,6 @@
-import {JavaLexer, JavaParser} from "./../index";
-import antlr4 from 'antlr4';
+import antlr4 from 'antlr4-js-exports';
+import JavaLexer from "./java/util/JavaLexer";
+import JavaParser from "./java/util/JavaParser";
 
 export class ParserAntlr4{
     static parse(code: string){
@@ -11,6 +12,7 @@ export class ParserAntlr4{
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
         console.log(cst);
+        // @ts-ignore
         return cst.toStringTree(JavaParser.ruleNames, parser);
     }
 
