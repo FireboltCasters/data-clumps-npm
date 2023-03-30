@@ -17,7 +17,7 @@
     "build": "npm run _prepareBuild && rimraf ./build && tsc && cp package.json ./build && cp ./../../README.md ./build && cp ./../../LICENSE.md ./build",
     "dev": "nodemon",
     "_prepareUpload": "npm run build && rimraf ./coverage && rimraf ./build/tests",
-    "_uploadBuild": "cd ./build && npm pack && npm publish && cd ..",
+    "_uploadBuild": "cd ./build && ls && npm publish && cd ..",
     "_uploadWithoutPatch": "npm run _prepareUpload && npm run _uploadBuild && npm run clean",
     "upload": "npm version patch && npm run _uploadWithoutPatch",
     "clean": "rimraf ./build && gts clean",
