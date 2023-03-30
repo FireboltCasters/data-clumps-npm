@@ -3,7 +3,7 @@
 // jshint ignore: start
 //import antlr4 from 'antlr4-js-exports';
 //import antlr4 from '../../copiedModules/antlr4-js-exports';
-import {antlr4} from './../../../index';
+import {antlr4} from "../../util/MyAntlr4"
 
 // This class defines a complete listener for a parse tree produced by JavaParser.
 export default class JavaParserListener extends antlr4.tree.ParseTreeListener {
