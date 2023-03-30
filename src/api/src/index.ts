@@ -1,4 +1,4 @@
 /* istanbul ignore file */
-import Connector from './Connector';
+import {Parser} from "./ignoreCoverage/Parser";
 
-export {Connector};
+export {Parser};

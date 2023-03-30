@@ -1,7 +1,7 @@
 import {MyFile} from "./MyFile";
 import {ParserAntlr4} from "./ParserAntlr4";
 
-export default class Parser {
+export class Parser {
 
   public filesToParseDict: {[key: string]: MyFile} = {};
   public result: any;
