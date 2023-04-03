@@ -1,5 +1,5 @@
 import {MyFile} from "./MyFile";
-import {ParserAntlr4} from "./ParserAntlr4";
+import {JavaParserAntlr4} from "./java/JavaParserAntlr4";
 
 export class Parser {
 
@@ -27,7 +27,8 @@ export class Parser {
     let result = "";
     console.log('File parsing');
     try{
-      result = ParserAntlr4.parse(javaText);
+      let resultObj = JavaParserAntlr4.parse(javaText);
+      result = JSON.stringify(resultObj, null, 2);
     } catch (e) {
         console.log(e);
     }

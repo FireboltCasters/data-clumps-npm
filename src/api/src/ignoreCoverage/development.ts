@@ -1,13 +1,9 @@
 //import * as antlr4 from "antlr4-js-exports"
-import {ParserAntlr4} from "./ParserAntlr4";
-
-const antlr4 = require('antlr4-js-exports');
+import {JavaParserAntlr4} from "./java/JavaParserAntlr4";
 
 async function main() {
   console.log('Start test 2');
-  let parsed = ParserAntlr4.parse('test');
-    console.log('End test 2');
-    console.log(parsed);
+  let parsed = JavaParserAntlr4.parse('test');
 }
 
 main();
