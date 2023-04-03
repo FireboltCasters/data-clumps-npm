@@ -27,8 +27,8 @@ export class Parser {
     let result = "";
     console.log('File parsing');
     try{
-      let resultObj = JavaParserAntlr4.parse(javaText);
-      result = JSON.stringify(resultObj, null, 2);
+      let result = JavaParserAntlr4.parse(javaText);
+      return result;
     } catch (e) {
         console.log(e);
     }

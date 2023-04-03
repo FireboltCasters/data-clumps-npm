@@ -2,8 +2,16 @@
 import {JavaParserAntlr4} from "./java/JavaParserAntlr4";
 
 async function main() {
-  console.log('Start test 2');
-  let parsed = JavaParserAntlr4.parse('test');
+
+  let input = `
+public class Fields1 {
+    private String normalString;
+    private ArrayList<String> arrayListWithString;
+    private ArrayList<Integer> arrayListWithIntegerObject;
+    private Map<ArrayList<String>, Integer> mapWithArrayListOfStringAndInteger;
+}
+`
+  let parsed = JavaParserAntlr4.parse(input);
 }
 
 main();

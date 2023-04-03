@@ -4,8 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+if (process.env.NODE_ENV !== "production") {
+    import("hide-cra-error-overlay").then(({ initHideOverlay }) =>
+        initHideOverlay()
+    );
+}
+
 // @ts-ignore
 globalThis.process = globalThis.process;
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

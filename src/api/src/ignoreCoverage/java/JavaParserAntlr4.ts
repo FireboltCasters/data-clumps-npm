@@ -397,7 +397,6 @@ export class JavaParserAntlr4 {
         const parser = new JavaParser(tokens);
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
-//        console.log(cst);
 
         console.log("Start extraction");
 
@@ -418,7 +417,7 @@ export class JavaParserAntlr4 {
         }
         console.log(JSON.stringify(output, null, 2));
 
-        return JSON.stringify(output, null, 2);
+        return output;
     }
 
 
