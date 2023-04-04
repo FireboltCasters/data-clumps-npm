@@ -1,43 +1,52 @@
-import {MyFile} from "./MyFile";
-import {JavaParserAntlr4} from "./java/JavaParserAntlr4";
+import {JavaParserAntlr4} from "./java/parser/JavaParserAntlr4";
+import {SoftwareProject} from "./SoftwareProject";
+import {MyFile} from "./util/MyFile";
+import {ClassOrInterfaceTypeContext, Dictionary} from "./ParsedTypes";
+
+export class ParserOptions {
+    public includePosition: boolean;
+    public constructor(includePosition: boolean) {
+        this.includePosition = includePosition;
+    }
+}
 
 export class Parser {
 
-  public filesToParseDict: {[key: string]: MyFile} = {};
-  public result: any;
-
-  constructor() {
-    this.filesToParseDict = {};
-  }
-
-  public addFileContentToParse(path: string, fileContent: string) {
-    let newFileToAdd = new MyFile(path, fileContent);
-    return this.addFileToParse(newFileToAdd);
-  }
-
-  public addFileToParse(file: MyFile) {
-    this.filesToParseDict[file.path] = file;
-  }
-
-  public getFieldsAndMethods() {
-    console.log('Parser created');
-    let firstFile = this.filesToParseDict[Object.keys(this.filesToParseDict)[0]];
-    let javaText = firstFile.content;
-
-    let result = "";
-    console.log('File parsing');
-    try{
-      let result = JavaParserAntlr4.parse(javaText);
-      return result;
-    } catch (e) {
-        console.log(e);
+  public static parseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions) {
+    let parserOptions = options || new ParserOptions(false);
+    let filePaths = softwareProject.getFilePaths();
+    for (let filePath of filePaths) {
+      let file = softwareProject.getFile(filePath);
+      let parsedFile = Parser.parseFile(file, parserOptions);
+      file.ast = parsedFile;
     }
-
-    return result;
   }
 
-  public getTest(){
-    return "test";
+  private static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {
+    let fileContent = file.content;
+    let filePath = file.path;
+    let fileExtension = Parser.getFileExtension(filePath);
+    switch (fileExtension) {
+        case 'java':
+          try{
+            let result = JavaParserAntlr4.parse(fileContent, options.includePosition);
+            return result;
+          } catch (e) {
+            console.log(e);
+          }
+          break;
+        default:
+            console.log('File extension not supported: ' + fileExtension);
+            break;
+    }
+    return null;
+  }
+
+  private static getFileExtension(filePath: string) {
+    if(!filePath) return null;
+    if(filePath.indexOf('.') === -1) return null;
+    let fileExtension = filePath.split('.').pop();
+    return fileExtension;
   }
 
 }

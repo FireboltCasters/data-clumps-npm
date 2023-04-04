@@ -1,6 +1,13 @@
 /* istanbul ignore file */
-import {Parser} from "./ignoreCoverage/Parser";
 import {antlr4} from "./ignoreCoverage/util/MyAntlr4";
+import {MyFile} from "./ignoreCoverage/util/MyFile";
+import {SoftwareProject} from "./ignoreCoverage/SoftwareProject";
+import * as ParsedTypes from "./ignoreCoverage/ParsedTypes";
 
-export {Parser};
+import {TestCasesJava} from "./ignoreCoverage/java/"
+
 export {antlr4};
+export {MyFile};
+export {SoftwareProject};
+export {ParsedTypes};
+export {TestCasesJava};
