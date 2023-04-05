@@ -18,7 +18,9 @@ export class Parser {
     for (let filePath of filePaths) {
       let file = softwareProject.getFile(filePath);
       let parsedFile = Parser.parseFile(file, parserOptions);
-      file.ast = parsedFile;
+      if(parsedFile){
+        file.ast = parsedFile;
+      }
     }
   }
 
@@ -27,6 +29,7 @@ export class Parser {
     let filePath = file.path;
     let fileExtension = Parser.getFileExtension(filePath);
     switch (fileExtension) {
+        // TODO own parser for each language as plugin
         case 'java':
           try{
             let result = JavaParserAntlr4.parse(fileContent, options.includePosition);

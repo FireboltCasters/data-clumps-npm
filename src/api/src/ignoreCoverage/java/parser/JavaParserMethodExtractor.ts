@@ -1,14 +1,14 @@
 import {JavaParserHelper} from "./JavaParserHelper";
 import {MethodParameterTypeContext, MethodTypeContext} from "./../../ParsedTypes";
 
+//TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
+
 export class JavaParserMethodExtractor {
     public output: MethodTypeContext;
-    public key: string;
     public includePosition: boolean;
-    constructor(includePosition: boolean) {
+    constructor(ctx, modifierCtx, includePosition: boolean) {
         this.includePosition = includePosition;
-        this.key = "";
-        this.output = new MethodTypeContext();
+        this.output = this.enterMethodDeclaration(ctx, modifierCtx);
     }
 
     custom_getFormalParameterType(ctx){
@@ -34,13 +34,11 @@ export class JavaParserMethodExtractor {
                           "children": [
                             "List"
          */
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext();
         let typeType = ctx.children[0];
         let type = this.custom_getFormalParameterType(typeType);
-        parameter.type = type;
         let variableDeclaratorId = ctx.children[1];
         let name = variableDeclaratorId.getText();
-        parameter.name = name;
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type);
 
         if(this.includePosition){
             parameter.position = JavaParserHelper.custom_getPosition(ctx);
@@ -79,28 +77,30 @@ export class JavaParserMethodExtractor {
 
     enterMethodDeclaration(ctx, modifierCtx) {
         // get visibility from parent
-        this.output.modifiers = JavaParserHelper.getModifiers(modifierCtx);
+        let modifiers = JavaParserHelper.getModifiers(modifierCtx);
         //method["position"] = custom_getPosition(ctx.parentCtx.parentCtx);
 
         // get method name
         let methodName = ctx.children[1].getText();
-        this.output.name = methodName;
+
+        let formalParameters = ctx.children[2];
+        let parameters = this.custom_getFormalParameters(formalParameters);
+        let methodSignature = methodName + "("+parameters.map(p=>p.type).join(",")+")";
+        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, modifiers);
 
         // get return type
         let returnType = ctx.children[0].getText();
-        this.output.returnType = returnType;
+        method.returnType = returnType;
         // get visibility
-        let formalParameters = ctx.children[2];
-        let parameters = this.custom_getFormalParameters(formalParameters);
-        this.output.parameters = parameters;
+
+        method.parameters = parameters;
 
         if(this.includePosition){
-            this.output.position = JavaParserHelper.custom_getPosition(ctx);
+            method.position = JavaParserHelper.custom_getPosition(ctx);
         }
 
         // @ts-ignore
-        let methodSignature = methodName + "("+parameters.map(p=>p.type).join(",")+")";
-        this.key = methodSignature;
-        return this.output;
+
+        return method;
     }
 }

@@ -2,18 +2,14 @@ import {MyFile} from '../../../../util/MyFile';
 
 const FileA = new MyFile('Fields1.java', `
 public class Fields1 {
-    int fieldsX = 10;
-    int fieldsY;
-    String fieldsString;
+    public void normalMethod(int foo, boolean bar, String baz){}
 }`);
 
 const FileB = new MyFile('Fields2.java',`
 public class Fields2 {
-    String fieldsString = "name";
-    int fieldsX = 10;
-    int fieldsY;
+    public void normalOtherMethod(int foo, boolean bar, String baz){}
 }
 `);
 
 
-export const SimpleFields = [FileA, FileB]
+export const SimpleMethodsWithDataClumps = [FileA, FileB]

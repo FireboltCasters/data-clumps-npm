@@ -2,19 +2,29 @@ export interface Dictionary<T> {
     [Key: string]: T;
 }
 
-export class ClassOrInterfaceTypeContext{
-    public type: string | undefined;
+export class ParameterTypeContext {
     public name: string;
-    public modifiers: string[] | undefined;
+    public key: string;
+    public type: string;
     public position: any;
-    public fields: any;
-    public methods: any;
+    public constructor(key, name, type){
+        this.key = key;
+        this.name = name;
+        this.type = type;
+    }
+}
+
+export class ClassOrInterfaceTypeContext extends ParameterTypeContext{
+    public modifiers: string[] | undefined;
+    public fields: Dictionary<MemberFieldTypeContext>;
+    public methods: Dictionary<MethodTypeContext>;
 
     //dict of classes with name as key
     public classes: Dictionary<ClassOrInterfaceTypeContext>;
     public interfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
-    public constructor(name){
+    public constructor(key, name, type){
+        super(key, name, type);
         this.name = name;
         this.modifiers = [];
         this.fields = {};
@@ -24,33 +34,28 @@ export class ClassOrInterfaceTypeContext{
     }
 }
 
-export class FieldTypeContext{
-    public names: string[];
-    public position: any;
-    public type: string | undefined;
+export class MemberFieldTypeContext extends ParameterTypeContext{
+    public parameters: ParameterTypeContext[];
     public modifiers: string[];
 
-    public constructor(){
-        this.names = [];
+    public constructor(key, name, type){
+        super(key, name, type);
+        this.parameters = [];
         this.modifiers = [];
     }
 }
 
-export class MethodParameterTypeContext{
-    public type: string | undefined;
-    public name: string | undefined;
-    public position: any;
+export class MethodParameterTypeContext extends ParameterTypeContext{
+
 }
 
-export class MethodTypeContext{
-    public type: string | undefined;
-    public name: string | undefined;
+export class MethodTypeContext extends ParameterTypeContext{
     public modifiers: string[];
     public returnType: string | undefined;
     public parameters: MethodParameterTypeContext[];
-    public position: any;
 
-    public constructor(){
+    public constructor(key, name, type){
+        super(key, name, type);
         this.modifiers = [];
         this.parameters = [];
     }

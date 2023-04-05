@@ -12,7 +12,7 @@ import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 class BaseExtractor{
     public output: ClassOrInterfaceTypeContext;
     public includePosition: boolean;
-    constructor(ctx, includePosition= false, innerClassOrInterface = false) {
+    constructor(ctx, type, includePosition= false, innerClassOrInterface = false) {
         this.includePosition = includePosition;
 
 //        let type = ctx.children[0]; // "class" or "interface"
@@ -22,7 +22,7 @@ class BaseExtractor{
         // @ts-ignore
         let className = identifier.getText();
 
-        this.output = new ClassOrInterfaceTypeContext(className);
+        this.output = new ClassOrInterfaceTypeContext(className, className, type);
 
         let modifiers = [];
         if(!innerClassOrInterface){
@@ -58,8 +58,7 @@ class BaseExtractor{
 
 class ClassExtractor extends BaseExtractor{
     constructor(ctx, includePosition= false, innerClass = false) {
-        super(ctx, includePosition, innerClass);
-        this.output.type = "class";
+        super(ctx, "class", includePosition, innerClass);
 
         let classBody = JavaParserHelper.getChildByType(ctx, "classBody");
         this.extractFromClassBody(classBody);
@@ -81,10 +80,9 @@ class ClassExtractor extends BaseExtractor{
     extractFieldsFromMember(memberDeclarationCtx){
         let fieldDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "fieldDeclaration");
         if(fieldDeclaration!==null){
-            let fieldListener = new JavaParserFieldExtractor(this.includePosition);
-            fieldListener.enterFieldDeclaration(fieldDeclaration);
+            let fieldListener = new JavaParserFieldExtractor(fieldDeclaration, this.includePosition);
             let field = fieldListener.field;
-            let key = fieldListener.key;
+            let key = field.name;
             this.output.fields[key] = field;
         }
     }
@@ -92,11 +90,10 @@ class ClassExtractor extends BaseExtractor{
     extractMethodsFromMember(memberDeclarationCtx){
         let methodDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "methodDeclaration");
         if(methodDeclaration!==null){
-            let methodListener = new JavaParserMethodExtractor(this.includePosition);
             // @ts-ignore
-            methodListener.enterMethodDeclaration(methodDeclaration, methodDeclaration.parentCtx.parentCtx);
+            let methodListener = new JavaParserMethodExtractor(methodDeclaration, methodDeclaration.parentCtx.parentCtx, this.includePosition);
             let method = methodListener.output;
-            let key = methodListener.key;
+            let key = method.key;
             this.output.methods[key] = method;
         }
     }
@@ -106,9 +103,7 @@ class ClassExtractor extends BaseExtractor{
 
 class InterfaceExtractor extends BaseExtractor{
     constructor(ctx, includePosition= false, innerInterface = false) {
-        super(ctx, includePosition, innerInterface);
-
-        this.output.type = "interface";
+        super(ctx, "interface", includePosition, innerInterface);
 
         let interfaceBody = JavaParserHelper.getChildByType(ctx, "interfaceBody");
         this.extractFromInterfaceBody(interfaceBody);
@@ -151,11 +146,10 @@ class InterfaceExtractor extends BaseExtractor{
              */
             let interfaceCommonBodyDeclaration = JavaParserHelper.getChildByType(interfaceMethodDeclaration, "interfaceCommonBodyDeclaration");
             if(interfaceCommonBodyDeclaration!==null){
-                let methodListener = new JavaParserMethodExtractor(this.includePosition);
                 // @ts-ignore
-                methodListener.enterMethodDeclaration(interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx);
+                let methodListener = new JavaParserMethodExtractor(interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx, this.includePosition);
                 let method = methodListener.output;
-                let key = methodListener.key;
+                let key = method.key
                 this.output.methods[key] = method;
             }
         }
@@ -171,6 +165,8 @@ export class JavaParserAntlr4 {
         const parser = new JavaParser(tokens);
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
+
+        //JavaAntlr4CstPrinter.print(cst, "Whole cst")
 
         let output: Dictionary<ClassOrInterfaceTypeContext> = {};
         // @ts-ignore

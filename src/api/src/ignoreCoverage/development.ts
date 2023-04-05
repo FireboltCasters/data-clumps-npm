@@ -7,7 +7,7 @@ async function main() {
     console.log("Creating software project");
     let softwareProject = new SoftwareProject();
     console.log("Adding files to software project");
-    softwareProject.addFiles(TestCasesJava.Negatives.SimpleFields);
+    softwareProject.addFiles(TestCasesJava.Positives.AnonymousClass);
     console.log("Parsing files to AST")
     softwareProject.generateAstForFiles();
     console.log("Getting parsed AST");
@@ -17,6 +17,8 @@ async function main() {
         console.log("File: " + filePath);
         console.log("AST: " + JSON.stringify(file.ast, null, 2));
     }
+    console.log("Detecting data clumps");
+    softwareProject.detectDataClumps();
 }
 
 main();

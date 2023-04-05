@@ -1,6 +1,7 @@
-import { Parser } from "./Parser";
+import {Parser, ParserOptions} from "./Parser";
 import {MyFile} from "./util/MyFile";
 import {ClassOrInterfaceTypeContext, Dictionary} from "./ParsedTypes";
+import {Detector} from "./Detector";
 
 export class SoftwareProject {
 
@@ -34,11 +35,19 @@ export class SoftwareProject {
   }
 
   public generateAstForFiles() {
-    Parser.parseSoftwareProject(this);
+    Parser.parseSoftwareProject(this, new ParserOptions(false));
   }
 
   public getFilesDict() {
     return this.filesToParseDict;
+  }
+
+  public detectDataClumps() {
+    let detectorOptions = {
+
+    };
+    let detector = new Detector(detectorOptions);
+    detector.detect(this);
   }
 
 }
