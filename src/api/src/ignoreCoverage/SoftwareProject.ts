@@ -1,6 +1,5 @@
 import {Parser, ParserOptions} from "./Parser";
-import {MyFile} from "./util/MyFile";
-import {ClassOrInterfaceTypeContext, Dictionary} from "./ParsedTypes";
+import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedTypes";
 import {Detector} from "./Detector";
 
 export class SoftwareProject {

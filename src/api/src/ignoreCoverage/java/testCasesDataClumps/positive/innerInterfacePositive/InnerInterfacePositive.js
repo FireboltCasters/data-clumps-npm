@@ -1,4 +1,4 @@
-import {MyFile} from '../../../../util/MyFile';
+import {MyFile} from '../../../../ParsedTypes';
 
 const FileA = new MyFile('AnInterface.java', `
 public interface AnInterface {

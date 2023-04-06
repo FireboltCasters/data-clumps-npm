@@ -1,4 +1,4 @@
-import {MyFile} from '../../../../util/MyFile';
+import {MyFile} from '../../../../ParsedTypes';
 
 const FileA = new MyFile('SameClass.java', `
 public class SameClass {

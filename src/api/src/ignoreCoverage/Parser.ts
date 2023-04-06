@@ -1,7 +1,6 @@
 import {JavaParserAntlr4} from "./java/parser/JavaParserAntlr4";
 import {SoftwareProject} from "./SoftwareProject";
-import {MyFile} from "./util/MyFile";
-import {ClassOrInterfaceTypeContext, Dictionary} from "./ParsedTypes";
+import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedTypes";
 
 export class ParserOptions {
     public includePosition: boolean;

@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
-import {SoftwareProject, TestCasesJava} from "../../api/src/"; // newly added
+import {SoftwareProject, TestCasesJava} from "../../api/src/";
 import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -88,7 +88,7 @@ export const Demo : FunctionComponent = (props) => {
     }, [])
 
     useEffect(() => {
-        handleParser();
+        handleParser(code);
     }, [])
 
     /**
@@ -119,18 +119,18 @@ export const Demo : FunctionComponent = (props) => {
         let newTimerId = setTimeout(() => {
             // do something
             console.log("timeout");
-            handleParser()
+            handleParser(newCode)
         }, 1000);
         setTimerId(newTimerId);
     }
 
-    function handleParser(){
+    function handleParser(newCode){
         console.log("handleParser");
 
         let fakeFilePath = "test.java";
         // newly added
         let softwareProject = new SoftwareProject();
-        softwareProject.addFileContent(fakeFilePath, code);
+        softwareProject.addFileContent(fakeFilePath, newCode);
         softwareProject.generateAstForFiles();
         let file = softwareProject.getFile(fakeFilePath);
         let result = file.ast;
