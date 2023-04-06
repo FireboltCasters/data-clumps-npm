@@ -4,7 +4,7 @@ import {antlr4} from "./../../util/MyAntlr4";
 import {JavaParserHelper} from "./JavaParserHelper";
 import {JavaParserFieldExtractor} from "./JavaParserFieldExtractor";
 import {JavaParserMethodExtractor} from "./JavaParserMethodExtractor";
-import {ClassOrInterfaceTypeContext, Dictionary} from "./../../ParsedTypes";
+import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./../../ParsedTypes";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 //TODO add support for generics
@@ -12,7 +12,7 @@ import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 class BaseExtractor{
     public output: ClassOrInterfaceTypeContext;
     public includePosition: boolean;
-    constructor(ctx, type, includePosition= false, innerClassOrInterface = false) {
+    constructor(path: string, ctx, type, includePosition= false, innerClassOrInterface = false) {
         this.includePosition = includePosition;
 
 //        let type = ctx.children[0]; // "class" or "interface"
@@ -21,8 +21,9 @@ class BaseExtractor{
         let identifier = JavaParserHelper.getChildByType(ctx, "identifier");
         // @ts-ignore
         let className = identifier.getText();
+        let key = path+"/"+className;
 
-        this.output = new ClassOrInterfaceTypeContext(className, className, type);
+        this.output = new ClassOrInterfaceTypeContext(key, className, type);
 
         let modifiers = [];
         if(!innerClassOrInterface){
@@ -43,22 +44,22 @@ class BaseExtractor{
         if(interfaceDeclaration!==null){
             let interfaceExtractor = new InterfaceExtractor(interfaceDeclaration, this.includePosition, true);
             let innerInterfaceOutput = interfaceExtractor.output;
-            let key = innerInterfaceOutput.name;
+            let key = innerInterfaceOutput.key;
             this.output.interfaces[key] = innerInterfaceOutput;
         }
         let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
         if(classDeclaration!==null){
             let classListener = new ClassExtractor(classDeclaration, this.includePosition, true);
             let innerClassOutput = classListener.output;
-            let key = innerClassOutput.name;
+            let key = innerClassOutput.key;
             this.output.classes[key] = innerClassOutput;
         }
     }
 }
 
 class ClassExtractor extends BaseExtractor{
-    constructor(ctx, includePosition= false, innerClass = false) {
-        super(ctx, "class", includePosition, innerClass);
+    constructor(path: string, ctx, includePosition= false, innerClass = false) {
+        super(path, ctx, "class", includePosition, innerClass);
 
         let classBody = JavaParserHelper.getChildByType(ctx, "classBody");
         this.extractFromClassBody(classBody);
@@ -82,7 +83,7 @@ class ClassExtractor extends BaseExtractor{
         if(fieldDeclaration!==null){
             let fieldListener = new JavaParserFieldExtractor(fieldDeclaration, this.includePosition);
             let field = fieldListener.field;
-            let key = field.name;
+            let key = field.key;
             this.output.fields[key] = field;
         }
     }
@@ -102,8 +103,8 @@ class ClassExtractor extends BaseExtractor{
 
 
 class InterfaceExtractor extends BaseExtractor{
-    constructor(ctx, includePosition= false, innerInterface = false) {
-        super(ctx, "interface", includePosition, innerInterface);
+    constructor(path: string,ctx, includePosition= false, innerInterface = false) {
+        super(path, ctx, "interface", includePosition, innerInterface);
 
         let interfaceBody = JavaParserHelper.getChildByType(ctx, "interfaceBody");
         this.extractFromInterfaceBody(interfaceBody);
@@ -158,7 +159,9 @@ class InterfaceExtractor extends BaseExtractor{
 
 
 export class JavaParserAntlr4 {
-    static parse(code: string, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
+    static parse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
+        let code = file.content;
+        let path = file.path;
         const chars = new antlr4.InputStream(code)
         const lexer = new JavaLexer(chars);
         const tokens = new antlr4.CommonTokenStream(lexer);
@@ -180,16 +183,16 @@ export class JavaParserAntlr4 {
                 let type = JavaParserHelper.getCtxType(child);
                 if(type==="classDeclaration"){
                     let classDeclaration = child;
-                    let classExtractor = new ClassExtractor(classDeclaration, includePosition);
+                    let classExtractor = new ClassExtractor(path, classDeclaration, includePosition);
                     let extractorOutput = classExtractor.output;
-                    let key = extractorOutput.name+extractorOutput.type
+                    let key = extractorOutput.key
                     output[key] = extractorOutput;
                 }
                 if(type==="interfaceDeclaration"){
                     let interfaceDeclaration = child;
-                    let interfaceExtractor = new InterfaceExtractor(interfaceDeclaration, includePosition);
+                    let interfaceExtractor = new InterfaceExtractor(path, interfaceDeclaration, includePosition);
                     let extractorOutput = interfaceExtractor.output;
-                    let key = extractorOutput.name+extractorOutput.type
+                    let key = extractorOutput.key
                     output[key] = extractorOutput;
                 }
             }

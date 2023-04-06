@@ -8,6 +8,7 @@ async function main() {
     let softwareProject = new SoftwareProject();
     console.log("Adding files to software project");
     softwareProject.addFiles(TestCasesJava.Positives.SimpleMethodsWithDataClumps);
+//    softwareProject.addFiles(TestCasesJava.Negatives.SimpleMethodsWithoutDataClumps);
     console.log("Parsing files to AST")
     softwareProject.generateAstForFiles();
     console.log("Getting parsed AST");

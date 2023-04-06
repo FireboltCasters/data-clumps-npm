@@ -24,14 +24,13 @@ export class Parser {
   }
 
   private static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {
-    let fileContent = file.content;
     let filePath = file.path;
     let fileExtension = Parser.getFileExtension(filePath);
     switch (fileExtension) {
         // TODO own parser for each language as plugin
         case 'java':
           try{
-            let result = JavaParserAntlr4.parse(fileContent, options.includePosition);
+            let result = JavaParserAntlr4.parse(file, options.includePosition);
             return result;
           } catch (e) {
             console.log(e);
