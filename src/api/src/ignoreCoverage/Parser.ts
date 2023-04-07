@@ -1,4 +1,4 @@
-import {JavaParserAntlr4} from "./java/parser/JavaParserAntlr4";
+import {JavaLanguageSupport} from "./java";
 import {SoftwareProject} from "./SoftwareProject";
 import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedTypes";
 
@@ -30,7 +30,8 @@ export class Parser {
         // TODO own parser for each language as plugin
         case 'java':
           try{
-            let result = JavaParserAntlr4.parse(file, options.includePosition);
+            let javaParserAntlr4 = JavaLanguageSupport.parser;
+            let result = javaParserAntlr4.parse(file, options.includePosition);
             return result;
           } catch (e) {
             console.log(e);

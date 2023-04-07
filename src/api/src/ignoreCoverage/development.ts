@@ -1,4 +1,4 @@
-import {TestCasesDataClumpsJava, TestCasesParserJava} from "./java";
+import {JavaLanguageSupport} from "./java";
 import {SoftwareProject} from "./SoftwareProject";
 
 async function main() {
@@ -8,8 +8,8 @@ async function main() {
     let softwareProject = new SoftwareProject();
     console.log("Adding files to software project");
 //    softwareProject.addFiles(TestCasesDataClumpsJava.Positives.SimpleMethodsWithDataClumps);
-//    softwareProject.addFiles(TestCasesJava.Negatives.SimpleMethodsWithoutDataClumps);
-    softwareProject.addFiles(TestCasesParserJava.SimpleClassExtendsOtherClass);
+//    softwareProject.addFiles(TestCasesJava.Negatives.SimpleMethodsWithoutDataClumps)
+    softwareProject.addFiles(JavaLanguageSupport.testCasesParser.SimpleClassExtendsOtherClass);
     console.log("Parsing files to AST")
     softwareProject.generateAstForFiles();
     console.log("Getting parsed AST");

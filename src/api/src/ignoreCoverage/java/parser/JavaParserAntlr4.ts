@@ -5,6 +5,7 @@ import {JavaParserHelper} from "./JavaParserHelper";
 import {JavaParserFieldExtractor} from "./JavaParserFieldExtractor";
 import {JavaParserMethodExtractor} from "./JavaParserMethodExtractor";
 import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./../../ParsedTypes";
+import {LanguageParserInterface} from "../../LanguageParserInterface";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 //TODO add support for generics
@@ -157,9 +158,10 @@ class InterfaceExtractor extends BaseExtractor{
     }
 }
 
+// class which implements LanguageParserInterface
 
-export class JavaParserAntlr4 {
-    static parse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
+export class JavaParserAntlr4 implements LanguageParserInterface {
+    parse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
         let code = file.content;
         let path = file.path;
         const chars = new antlr4.InputStream(code)
