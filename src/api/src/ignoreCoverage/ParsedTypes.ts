@@ -30,9 +30,12 @@ export class ClassOrInterfaceTypeContext extends ParameterTypeContext{
     public fields: Dictionary<MemberFieldTypeContext>;
     public methods: Dictionary<MethodTypeContext>;
 
+    public implements: Dictionary<ClassOrInterfaceTypeContext>;
+    public extends: Dictionary<ClassOrInterfaceTypeContext>; // Languages that support multiple inheritance include: C++, Common Lisp
+
     //dict of classes with name as key
-    public classes: Dictionary<ClassOrInterfaceTypeContext>;
-    public interfaces: Dictionary<ClassOrInterfaceTypeContext>;
+    public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;
+    public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
     public constructor(key, name, type){
         super(key, name, type);
@@ -40,8 +43,10 @@ export class ClassOrInterfaceTypeContext extends ParameterTypeContext{
         this.modifiers = [];
         this.fields = {};
         this.methods = {};
-        this.classes = {};
-        this.interfaces = {};
+        this.innerDefinedClasses = {};
+        this.innerDefinedInterfaces = {};
+        this.implements = {};
+        this.extends = {};
     }
 }
 

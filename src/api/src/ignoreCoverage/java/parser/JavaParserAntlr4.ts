@@ -45,14 +45,14 @@ class BaseExtractor{
             let interfaceExtractor = new InterfaceExtractor(interfaceDeclaration, this.includePosition, true);
             let innerInterfaceOutput = interfaceExtractor.output;
             let key = innerInterfaceOutput.key;
-            this.output.interfaces[key] = innerInterfaceOutput;
+            this.output.innerDefinedInterfaces[key] = innerInterfaceOutput;
         }
         let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
         if(classDeclaration!==null){
             let classListener = new ClassExtractor(classDeclaration, this.includePosition, true);
             let innerClassOutput = classListener.output;
             let key = innerClassOutput.key;
-            this.output.classes[key] = innerClassOutput;
+            this.output.innerDefinedClasses[key] = innerClassOutput;
         }
     }
 }

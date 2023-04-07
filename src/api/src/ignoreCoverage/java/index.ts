@@ -1,5 +1,7 @@
 import {JavaParserAntlr4} from "./parser/JavaParserAntlr4";
-import * as TestCasesJava from "./testCasesDataClumps";
+import * as TestCasesDataClumpsJava from "./testCasesDataClumps";
+import * as TestCasesParserJava from "./testCasesParser";
 
 export {JavaParserAntlr4};
-export {TestCasesJava};
+export {TestCasesDataClumpsJava};
+export {TestCasesParserJava};
