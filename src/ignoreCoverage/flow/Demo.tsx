@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
-import {SoftwareProject, TestCasesDataClumpsJava} from "../../api/src/";
+import {SoftwareProject, JavaLanguageSupport} from "../../api/src/";
 import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -67,7 +67,7 @@ export const Demo : FunctionComponent = (props) => {
 
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
     // @ts-ignore
-    const [code, setCode] = useState<string>(TestCasesDataClumpsJava.Positives.SimpleFields[0].content);
+    const [code, setCode] = useState<string>(JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields[0].content);
 //    const [code, setCode] = useState<string>("");
     const [result, setResult] = useState<string>("");
 

@@ -8,6 +8,7 @@ import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterfac
 export {antlr4};
 export {SoftwareProject};
 export {ParsedTypes};
+export {JavaLanguageSupport};
 
 export class Languages {
     static java = JavaLanguageSupport;
