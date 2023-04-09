@@ -26,10 +26,10 @@ export class DetectorDataClumpsMethods {
     }
 
     public detect(project: SoftwareProject){
-        console.log("Detecting software project for data clumps");
+        console.log("Detecting software project for data clumps in methods");
         let commonMethodParameters = this.getCommonMethodParametersForSoftwareProject(project);
-        console.log("Common method parameters: ");
-        console.log(JSON.stringify(commonMethodParameters, null, 2));
+        //console.log("Common method parameters: ");
+        //console.log(JSON.stringify(commonMethodParameters, null, 2));
     }
 
     private getCommonMethodParametersForSoftwareProject(project: SoftwareProject){
@@ -72,7 +72,7 @@ export class DetectorDataClumpsMethods {
         let methodParametersKeys = Object.keys(methodParameters);
         let amountOfMethodParameters = methodParametersKeys.length;
         if(amountOfMethodParameters < this.options.sharedMethodParametersMinimum){
-            console.log("Method " + method.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
+            //console.log("Method " + method.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
             return;
         }
         // we assume that all methods are not constructors
@@ -88,7 +88,7 @@ export class DetectorDataClumpsMethods {
      * @private
      */
     private checkParameterDataClumps(method: MethodTypeContext, methodToClassOrInterfaceDict: Dictionary<ClassOrInterfaceTypeContext>, classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
-        console.log("Checking parameter data clumps for method " + method.key);
+        //console.log("Checking parameter data clumps for method " + method.key);
         let currentClassOrInterface = methodToClassOrInterfaceDict[method.key];
 
         /**
@@ -147,19 +147,17 @@ export class DetectorDataClumpsMethods {
         }
         let amountCommonParameters = this.countCommonParametersBetweenMethods(method, otherMethod);
         if(amountCommonParameters < this.options.sharedMethodParametersMinimum) { // is not a data clump
-            console.log("- No Data Clumps betweeen Method " + method.key + " and " + otherMethod.key)
+            //console.log("- No Data Clumps betweeen Method " + method.key + " and " + otherMethod.key)
             return;
         } else {
             console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
             let commonParameterKeys = DetectorUtils.getCommonParameterKeys(method.parameters, otherMethod.parameters);
-            for(let commonParameterKey of commonParameterKeys){
-                let commonParameter = method.parameters[commonParameterKey];
-                console.log("---- Common parameter: " + commonParameter.name);
-            }
+            console.log(commonParameterKeys)
         }
     }
 
     private countCommonParametersBetweenMethods(method: MethodTypeContext, otherMethod: MethodTypeContext){
+        //console.log("Counting common parameters between method " + method.key + " and method " + otherMethod.key)
         let parameters = method.parameters;
         let otherParameters = otherMethod.parameters;
         let amountCommonParameters = DetectorUtils.countCommonParameters(parameters, otherParameters);
@@ -197,8 +195,8 @@ export class DetectorDataClumpsMethods {
                 methodsDict[methodKey] = methods[methodKey];
             }
         }
-        console.log("--- Methods dict keys: ---");
-        DetectorUtils.printDictKeys(methodsDict);
+        //console.log("--- Methods dict keys: ---");
+        //DetectorUtils.printDictKeys(methodsDict);
         return methodsDict;
 
     }

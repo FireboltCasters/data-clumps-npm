@@ -14,6 +14,28 @@ export class ParameterTypeContext {
     }
 }
 
+export class ParameterTypeContextUtils{
+    public static parameterToString(parameterTypeContext: ParameterTypeContext){
+        return `{${parameterTypeContext.type} ${parameterTypeContext.name}}`;
+    }
+
+    public static parametersToString(parameters: ParameterTypeContext[]){
+        //TODO: sort parameters by name
+        let orderedParameters = parameters.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
+        let parametersString = "[";
+        for(let i = 0; i < orderedParameters.length; i++){
+            parametersString += ParameterTypeContextUtils.parameterToString(orderedParameters[i]);
+            if(i < orderedParameters.length - 1){
+                parametersString += ", ";
+            }
+        }
+        parametersString += "]";
+        return parametersString;
+    }
+}
+
 export class MyFile{
     public content: string;
     public path: string;
@@ -61,14 +83,10 @@ export class MemberFieldTypeContext extends ParameterTypeContext{
     }
 }
 
-export class MethodParameterTypeContext extends ParameterTypeContext{
-
-}
-
 export class MethodTypeContext extends ParameterTypeContext{
     public modifiers: string[];
     public returnType: string | undefined;
-    public parameters: MethodParameterTypeContext[];
+    public parameters: ParameterTypeContext[];
 
     public constructor(key, name, type){
         super(key, name, type);

@@ -1,16 +1,34 @@
 import {JavaParserAntlr4} from "./parser/JavaParserAntlr4";
-import * as TestCasesDataClumpsJava from "./testCasesDataClumps";
+import {JavaDataClumpsTestCases} from "./testCasesDataClumps";
 import * as TestCasesParserJava from "./testCasesParser";
-import {LanguageSupportInterface} from "./../LanguageSupportInterface";
+import {LanguageSupportInterface} from "../LanguageSupportInterface";
+import {TestCaseBaseClassForDataClumps} from "../TestCaseBaseClassForDataClumps";
 
-export {TestCasesDataClumpsJava};
+export {JavaDataClumpsTestCases};
 export {TestCasesParserJava};
 
-// Define the language support for Java which implements the LanguageSupport interface.
-export const JavaLanguageSupport: LanguageSupportInterface = {
-    identifier: "java",
-    fileExtensions: [".java"],
-    parser: new JavaParserAntlr4(),
-    testCasesDataClumps: TestCasesDataClumpsJava,
-    testCasesParser: TestCasesParserJava
+export class JavaLanguageSupport implements LanguageSupportInterface {
+    static testCasesDataClumps = JavaDataClumpsTestCases;
+
+    public getIdentifier(): string {
+        return "Java";
+    }
+
+    public getFileExtensions(): string[] {
+        return ["java"];
+    }
+
+    public getParser(): JavaParserAntlr4 {
+        return new JavaParserAntlr4();
+    }
+
+    public getTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
+        let testCases: TestCaseBaseClassForDataClumps[] = [];
+        testCases.push(JavaDataClumpsTestCases.Negative.simpleMethodsWithoutDataClumps);
+        return testCases;
+    }
+
+    public getTestCasesParser(): any {
+        return TestCasesParserJava;
+    }
 }

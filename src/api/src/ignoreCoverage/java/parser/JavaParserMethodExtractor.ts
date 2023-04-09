@@ -1,5 +1,5 @@
 import {JavaParserHelper} from "./JavaParserHelper";
-import {MethodParameterTypeContext, MethodTypeContext} from "./../../ParsedTypes";
+import {ParameterTypeContext, MethodTypeContext} from "./../../ParsedTypes";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 
@@ -38,7 +38,7 @@ export class JavaParserMethodExtractor {
         let type = this.custom_getFormalParameterType(typeType);
         let variableDeclaratorId = ctx.children[1];
         let name = variableDeclaratorId.getText();
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type);
+        let parameter: ParameterTypeContext = new ParameterTypeContext(name, name, type);
 
         if(this.includePosition){
             parameter.position = JavaParserHelper.custom_getPosition(ctx);
@@ -57,7 +57,7 @@ export class JavaParserMethodExtractor {
           "type": "formalParameterList",
           "node": "FormalParameterListContext",
          */
-        let parameters: MethodParameterTypeContext[] = [];
+        let parameters: ParameterTypeContext[] = [];
         if(ctx.children.length>=3){ // has parameters: [ "(", formalParameterList, ")" ]
             let formalParameterList = ctx.children[1];
             for(let i = 0; i < formalParameterList.children.length; i++){

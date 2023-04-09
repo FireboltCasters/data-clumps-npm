@@ -30,8 +30,8 @@ export class Parser {
         // TODO own parser for each language as plugin
         case 'java':
           try{
-            let javaParserAntlr4 = JavaLanguageSupport.parser;
-            let result = javaParserAntlr4.parse(file, options.includePosition);
+              let parser = new JavaLanguageSupport().getParser();
+            let result = parser.parse(file, options.includePosition);
             return result;
           } catch (e) {
             console.log(e);

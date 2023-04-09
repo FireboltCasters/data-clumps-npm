@@ -171,7 +171,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
 
-        JavaAntlr4CstPrinter.print(cst, "Whole cst")
+        //JavaAntlr4CstPrinter.print(cst, "Whole cst")
 
         let output: Dictionary<ClassOrInterfaceTypeContext> = {};
         // @ts-ignore

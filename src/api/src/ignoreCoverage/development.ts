@@ -9,18 +9,12 @@ async function main() {
     console.log("Adding files to software project");
 //    softwareProject.addFiles(TestCasesDataClumpsJava.Positives.SimpleMethodsWithDataClumps);
 //    softwareProject.addFiles(TestCasesJava.Negatives.SimpleMethodsWithoutDataClumps)
-    softwareProject.addFiles(JavaLanguageSupport.testCasesParser.SimpleClassExtendsOtherClass);
+    softwareProject.addFiles(JavaLanguageSupport.testCasesDataClumps.Positive.SimpleMethodsWithDataClumps);
+//    softwareProject.addFiles(JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields);
     console.log("Parsing files to AST")
     softwareProject.generateAstForFiles();
-    console.log("Getting parsed AST");
-    let filePaths = softwareProject.getFilePaths();
-    for (let filePath of filePaths) {
-        let file = softwareProject.getFile(filePath);
-        console.log("File: " + filePath);
-        console.log("AST: " + JSON.stringify(file.ast, null, 2));
-    }
-    //console.log("Detecting data clumps");
-    //softwareProject.detectDataClumps();
+    console.log("Detecting data clumps");
+    softwareProject.detectDataClumps();
 }
 
 main();

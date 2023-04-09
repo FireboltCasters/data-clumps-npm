@@ -1,5 +1,5 @@
 import {JavaParserHelper} from "./JavaParserHelper";
-import {MemberFieldTypeContext} from "./../../ParsedTypes";
+import {MemberFieldTypeContext, ParameterTypeContext} from "./../../ParsedTypes";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
@@ -49,7 +49,7 @@ export class JavaParserFieldExtractor {
         }
 
         let variableDeclarators = ctx.children[1]; // for example: int a, b, c;
-        let parameters: MemberFieldTypeContext[] = [];
+        let parameters: ParameterTypeContext[] = [];
 
         for(let i = 0; i < variableDeclarators.children.length; i++){ // loop through a, b, c
             let variableDeclarator = variableDeclarators.children[i];
@@ -57,7 +57,7 @@ export class JavaParserFieldExtractor {
                 // skip the comma
             } else {
                 let variableName = variableDeclarator.children[0].getText(); // get the name of the variable
-                let parameter = new MemberFieldTypeContext(variableName, variableName, type);
+                let parameter = new ParameterTypeContext(variableName, variableName, type);
                 parameters.push(parameter);
             }
         }

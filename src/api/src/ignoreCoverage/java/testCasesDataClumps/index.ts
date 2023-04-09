@@ -1,5 +1,7 @@
 import * as Positives from "./positive"
-import * as Negatives from "./negative"
+import {Negative} from "./negative"
 
-export {Positives};
-export {Negatives}
+export class JavaDataClumpsTestCases {
+    public static Positive = Positives;
+    public static Negative = Negative;
+}

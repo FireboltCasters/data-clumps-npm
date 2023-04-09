@@ -1,5 +1,12 @@
 import {SoftwareProject} from "./SoftwareProject";
-import {ClassOrInterfaceTypeContext, Dictionary, MethodTypeContext, MyFile, ParameterTypeContext} from "./ParsedTypes";
+import {
+    ClassOrInterfaceTypeContext,
+    Dictionary,
+    MemberFieldTypeContext,
+    MethodTypeContext,
+    MyFile,
+    ParameterTypeContext
+} from "./ParsedTypes";
 
 export class DetectorUtils {
 
@@ -18,14 +25,10 @@ export class DetectorUtils {
 
     public static getCommonParameterKeys(parameters: ParameterTypeContext[], otherParameters: ParameterTypeContext[]){
         let commonParameterKeys: string[] = [];
-        let parametersKeys = Object.keys(parameters);
-        let otherParametersKeys = Object.keys(otherParameters);
-        for (let parameterKey of parametersKeys) {
-            let parameter = parameters[parameterKey];
-            for (let otherParameterKey of otherParametersKeys) {
-                let otherParameter = otherParameters[otherParameterKey];
+        for(let parameter of parameters){
+            for(let otherParameter of otherParameters){
                 if(DetectorUtils.isCommonParameter(parameter, otherParameter)){
-                    commonParameterKeys.push(parameterKey);
+                    commonParameterKeys.push(parameter.key);
                 }
             }
         }
@@ -53,9 +56,23 @@ export class DetectorUtils {
                 classesOrInterfaces[classOrInterface.key] = classOrInterface;
             }
         }
-        console.log("--- Classes or interfaces dict keys: ---");
-        DetectorUtils.printDictKeys(classesOrInterfaces);
+        //console.log("--- Classes or interfaces dict keys: ---");
+        //DetectorUtils.printDictKeys(classesOrInterfaces);
         return classesOrInterfaces;
+    }
+
+    public static getClassesDict(project: SoftwareProject){
+        let classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext> = DetectorUtils.getClassesOrInterfacesDict(project);
+        let classesDict: Dictionary<ClassOrInterfaceTypeContext> = {};
+        let classOrInterfaceKeys = Object.keys(classesOrInterfacesDict);
+        for (let classOrInterfaceKey of classOrInterfaceKeys) {
+            let classOrInterface = classesOrInterfacesDict[classOrInterfaceKey];
+            let type = classOrInterface.type; // ClassOrInterfaceTypeContext type is either "class" or "interface"
+            if(type === "class"){ // DataclumpsInspection.java line 407
+                classesDict[classOrInterfaceKey] = classOrInterface;
+            }
+        }
+        return classesDict;
     }
 
     public static getClassesOrInterfacesFromFile(file: MyFile){
@@ -68,5 +85,4 @@ export class DetectorUtils {
         }
         return classesOrInterfaces;
     }
-
 }

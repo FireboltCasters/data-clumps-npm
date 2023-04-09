@@ -1,11 +1,10 @@
 import {LanguageParserInterface} from "./LanguageParserInterface";
+import {TestCaseBaseClassForDataClumps} from "./TestCaseBaseClassForDataClumps";
 
 export interface LanguageSupportInterface {
-    identifier: string;
-    fileExtensions: string[];
-    parser: LanguageParserInterface;
-    testCasesDataClumps: any;
-    testCasesParser: any;
+    getIdentifier(): string;
+    getFileExtensions(): string[];
+    getParser(): LanguageParserInterface;
+    getTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
+    getTestCasesParser(): any;
 }
-
-

@@ -1,4 +1,5 @@
 import {MyFile} from '../../../../ParsedTypes';
+import {TestCaseBaseClassForDataClumps} from "../../../../TestCaseBaseClassForDataClumps";
 
 const FileA = new MyFile('Fields1.java', `
 public class Fields1 {
@@ -11,5 +12,8 @@ public class Fields2 {
 }
 `);
 
-
-export const SimpleMethodsWithoutDataClumps = [FileA, FileB]
+export const SimpleMethodsWithoutDataClumps = new TestCaseBaseClassForDataClumps(
+    'SimpleMethodsWithoutDataClumps',
+    [FileA, FileB],
+[]
+);
