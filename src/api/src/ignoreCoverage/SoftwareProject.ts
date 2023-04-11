@@ -1,5 +1,5 @@
 import {Parser, ParserOptions} from "./Parser";
-import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedTypes";
+import {ClassOrInterfaceTypeContext, DataClumpsTypeContext, Dictionary, MyFile} from "./ParsedTypes";
 import {Detector} from "./Detector";
 
 export class SoftwareProject {
@@ -41,12 +41,13 @@ export class SoftwareProject {
     return this.filesToParseDict;
   }
 
-  public detectDataClumps() {
+  public detectDataClumps(): DataClumpsTypeContext {
     let detectorOptions = {
 
     };
     let detector = new Detector(detectorOptions);
-    detector.detect(this);
+    let dataClumps = detector.detect(this);
+    return dataClumps;
   }
 
 }

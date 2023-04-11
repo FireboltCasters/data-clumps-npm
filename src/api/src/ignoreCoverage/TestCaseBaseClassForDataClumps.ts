@@ -8,4 +8,8 @@ export class TestCaseBaseClassForDataClumps extends TestCaseBaseClass{
         super(name, files, ParameterTypeContextUtils.parametersToString(dataClumps));
         this.dataClumps = dataClumps;
     }
+
+    public getExpectedDataClumps(){
+        return this.dataClumps;
+    }
 }

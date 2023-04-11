@@ -1,6 +1,7 @@
 import {SoftwareProject} from "./SoftwareProject";
 import {DetectorDataClumpsMethods, DetectorOptionsDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields, DetectorOptionsDataClumpsFields} from "./DetectorDataClumpsFields";
+import {DataClumpsTypeContext} from "./ParsedTypes";
 
 export class DetectorOptions {
     public optionsDataClumpsMethod: DetectorOptionsDataClumpsMethods
@@ -21,7 +22,8 @@ export class Detector {
 
     }
 
-    public detect(project: SoftwareProject){
+    public detect(project: SoftwareProject): DataClumpsTypeContext{
+        let dataClumpsTypeContext = new DataClumpsTypeContext();
         console.log("Detecting software project for data clumps");
         let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options.optionsDataClumpsMethod);
         let commonMethodParameters = detectorDataClumpsMethods.detect(project);
@@ -31,6 +33,7 @@ export class Detector {
         let commonFields = detectorDataClumpsFields.detect(project);
         //console.log("Common fields: ");
         //console.log(JSON.stringify(commonFields, null, 2));
+        return dataClumpsTypeContext;
     }
 
 }

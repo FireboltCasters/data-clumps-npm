@@ -27,7 +27,9 @@ export default {
 
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
-    '/build/',
+//    '/build/',
+      "/build/tests/",
+      "/src/",
     '/coverage/',
     '/src/tests/',
     '/node_modules/',
@@ -140,11 +142,13 @@ export default {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  testMatch: ['**/tests/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
+  testMatch: ['**/tests/**/*.[j]s?(x)', '**/?(*.)+(spec|test).[j]s?(x)'],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
-    '/build/',
+//    '/build/',
+    '/build/ignoreCoverage/',
+      "/src/tests/",
     '/coverage/',
     '/node_modules/',
     '/src/ignoreCoverage/',
@@ -167,9 +171,9 @@ export default {
 
   // A map from regular expressions to paths to transformers
   // transform: undefined,
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-  },
+//  transform: {
+//    '^.+\\.(ts|tsx)$': 'ts-jest',
+//  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

@@ -1,7 +1,7 @@
 import {SoftwareProject} from "./SoftwareProject";
 import {
     ClassOrInterfaceTypeContext,
-    Dictionary,
+    Dictionary, MemberFieldParameterTypeContext,
     MemberFieldTypeContext,
     MethodTypeContext,
     ParameterTypeContext
@@ -45,37 +45,37 @@ export class DetectorDataClumpsFields {
     private getCommonFieldParametersForSoftwareProject(project: SoftwareProject){
         let commonFieldParameters: any[] = [];
         let classesDict = DetectorUtils.getClassesDict(project);
-        this.analyzeAllClasses(classesDict);
+        this.generateMemberFieldParametersRelatedToForAllClasses(classesDict);
 
         return commonFieldParameters;
     }
 
-    private analyzeAllClasses(classesDict: Dictionary<ClassOrInterfaceTypeContext>){
+    private generateMemberFieldParametersRelatedToForAllClasses(classesDict: Dictionary<ClassOrInterfaceTypeContext>){
         let classKeys = Object.keys(classesDict);
         for (let classKey of classKeys) {
+            console.log("Generating member field parameters related to for class: " + classKey)
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
-            this.analyzeClass(currentClass, classesDict);
+            this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict);
         }
     }
 
     /**
      * DataclumpsInspection.java line 405
      */
-    private analyzeClass(currentClass: ClassOrInterfaceTypeContext, classesDict: Dictionary<ClassOrInterfaceTypeContext>){
-        let fields = currentClass.fields;
-        let fieldKeys = Object.keys(fields);
-        let amountOfFields = fieldKeys.length;
-        if(amountOfFields < this.options.sharedFieldParametersMinimum){
+    private generateMemberFieldParametersRelatedToForClass(currentClass: ClassOrInterfaceTypeContext, classesDict: Dictionary<ClassOrInterfaceTypeContext>){
+        let memberFieldParameters = this.getMemberParametersFromClass(currentClass);
+        let amountOfMemberFields = memberFieldParameters.length;
+        if(amountOfMemberFields < this.options.sharedFieldParametersMinimum){
             return;
         }
         let otherClassKeys = Object.keys(classesDict);
         for (let otherClassKey of otherClassKeys) {
             let otherClass = classesDict[otherClassKey];
-            this.analyzeClassWithOtherClass(currentClass, otherClass);
+            this.generateMemberFieldParametersRelatedToForClassToOtherClass(currentClass, otherClass);
         }
     }
 
-    private analyzeClassWithOtherClass(currentClass: ClassOrInterfaceTypeContext, otherClass: ClassOrInterfaceTypeContext) {
+    private generateMemberFieldParametersRelatedToForClassToOtherClass(currentClass: ClassOrInterfaceTypeContext, otherClass: ClassOrInterfaceTypeContext) {
         // DataclumpsInspection.java line 410
         let currentClassKey = currentClass.key
         let otherClassKey = otherClass.key;
@@ -83,7 +83,7 @@ export class DetectorDataClumpsFields {
             return; // skip the same class // DataclumpsInspection.java line 411
         }
 
-        let hasCommonHierarchy = this.hasCommonHierarchy(currentClass, otherClass);
+        let hasCommonHierarchy = currentClass.hasCommonHierarchyWith(otherClass);
         if(hasCommonHierarchy){ // if the classes have a common hierarchy
             let checkIfHaveCommonHierarchy = this.options.sharedFieldParametersCheckIfHaveCommonHierarchy;
             if(!checkIfHaveCommonHierarchy){ // and we don't want to check them if they have a common hierarchy
@@ -92,9 +92,10 @@ export class DetectorDataClumpsFields {
             }
         }
 
-        let currentClassParameters = this.getParametersFromClass(currentClass);
-        let otherClassParameters = this.getParametersFromClass(otherClass);
+        let currentClassParameters = this.getMemberParametersFromClass(currentClass);
+        let otherClassParameters = this.getMemberParametersFromClass(otherClass);
         let commonFieldParameterKeys = DetectorUtils.getCommonParameterKeys(currentClassParameters, otherClassParameters);
+        //TODO get linked parameters: currentClassParameter --> otherClassParameter
 
         let amountOfCommonFieldParameters = commonFieldParameterKeys.length;
         if(amountOfCommonFieldParameters < this.options.sharedFieldParametersMinimum){
@@ -102,25 +103,19 @@ export class DetectorDataClumpsFields {
         }
 
         console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
-        console.log(commonFieldParameterKeys)
+        for(let commonFieldParameterKey of commonFieldParameterKeys){
+            console.log("  - " + commonFieldParameterKey)
+        }
     }
 
-    private getParametersFromClass(currentClass: ClassOrInterfaceTypeContext): ParameterTypeContext[]{
-        //console.log("Getting parameters from class: " + currentClass.key)
-        let classParameters: ParameterTypeContext[] = [];
-        let fields = currentClass.fields;
-        let fieldKeys = Object.keys(fields);
-        for (let fieldKey of fieldKeys) {
-            //console.log("Getting parameters from field: " + fieldKey)
-            let field = fields[fieldKey];
-            let parameters = field.parameters;
-            classParameters.push(...parameters);
+    private getMemberParametersFromClass(currentClass: ClassOrInterfaceTypeContext): MemberFieldParameterTypeContext[]{
+        let classParameters: MemberFieldParameterTypeContext[] = [];
+        let fieldParameters = currentClass.fields;
+        let fieldParameterKeys = Object.keys(fieldParameters);
+        for (let fieldKey of fieldParameterKeys) {
+            let fieldParameter = fieldParameters[fieldKey];
+            classParameters.push(fieldParameter);
         }
         return classParameters;
-    }
-
-    private hasCommonHierarchy(currentClass: ClassOrInterfaceTypeContext, otherClass: ClassOrInterfaceTypeContext){
-        //TODO: implement
-        return false;
     }
 }

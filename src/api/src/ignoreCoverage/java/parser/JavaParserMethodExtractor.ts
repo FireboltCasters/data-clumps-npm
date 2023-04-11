@@ -1,13 +1,20 @@
 import {JavaParserHelper} from "./JavaParserHelper";
-import {ParameterTypeContext, MethodTypeContext} from "./../../ParsedTypes";
+import {
+    ParameterTypeContext,
+    MethodTypeContext,
+    ClassOrInterfaceTypeContext,
+    MethodParameterTypeContext
+} from "./../../ParsedTypes";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 
 export class JavaParserMethodExtractor {
     public output: MethodTypeContext;
+    public classOrInterface: ClassOrInterfaceTypeContext;
     public includePosition: boolean;
-    constructor(ctx, modifierCtx, includePosition: boolean) {
+    constructor(classOrInterface: ClassOrInterfaceTypeContext, ctx, modifierCtx, includePosition: boolean) {
         this.includePosition = includePosition;
+        this.classOrInterface = classOrInterface;
         this.output = this.enterMethodDeclaration(ctx, modifierCtx);
     }
 
@@ -15,7 +22,7 @@ export class JavaParserMethodExtractor {
         return ctx.getText();
     }
 
-    custom_getFormalParameter(ctx){
+    custom_getFormalParameter(ctx, method: MethodTypeContext){
         /**
          "type": "formalParameter",
          "node": "FormalParameterContext",
@@ -38,7 +45,7 @@ export class JavaParserMethodExtractor {
         let type = this.custom_getFormalParameterType(typeType);
         let variableDeclaratorId = ctx.children[1];
         let name = variableDeclaratorId.getText();
-        let parameter: ParameterTypeContext = new ParameterTypeContext(name, name, type);
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, method);
 
         if(this.includePosition){
             parameter.position = JavaParserHelper.custom_getPosition(ctx);
@@ -47,7 +54,7 @@ export class JavaParserMethodExtractor {
         return parameter;
     }
 
-    custom_getFormalParameters(ctx){
+    custom_getFormalParameters(ctx, method: MethodTypeContext){
         /**
          "type": "formalParameters",
          "node": "FormalParametersContext",
@@ -57,7 +64,7 @@ export class JavaParserMethodExtractor {
           "type": "formalParameterList",
           "node": "FormalParameterListContext",
          */
-        let parameters: ParameterTypeContext[] = [];
+        let parameters: MethodParameterTypeContext[] = [];
         if(ctx.children.length>=3){ // has parameters: [ "(", formalParameterList, ")" ]
             let formalParameterList = ctx.children[1];
             for(let i = 0; i < formalParameterList.children.length; i++){
@@ -65,7 +72,7 @@ export class JavaParserMethodExtractor {
                 if(formalParameter.getText()===","){
                     // skip
                 } else {
-                    let parameter = this.custom_getFormalParameter(formalParameter);
+                    let parameter = this.custom_getFormalParameter(formalParameter, method);
                     // @ts-ignore
                     parameters.push(parameter);
                 }
@@ -84,10 +91,18 @@ export class JavaParserMethodExtractor {
         let methodName = ctx.children[1].getText();
 
         let formalParameters = ctx.children[2];
-        let parameters = this.custom_getFormalParameters(formalParameters);
-        let methodSignature = methodName + "("+parameters.map(p=>p.type).join(",")+")";
-        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, modifiers);
 
+        // create an empty method, so that we can use it to get parameters
+        let methodPlaceholder: MethodTypeContext = new MethodTypeContext("", methodName, modifiers, this.classOrInterface);
+        // lets get the parameters but with incorrect methodplaceholder
+        let parametersPlaceholder = this.custom_getFormalParameters(formalParameters, methodPlaceholder);
+
+        // lets get the correct method signature from the names of the parameters
+        let methodSignature = methodName + "("+parametersPlaceholder.map(p=>p.name).join(",")+")";
+        // create the correct method
+        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, modifiers, this.classOrInterface);
+        // create the correct parameters
+        let parameters = this.custom_getFormalParameters(formalParameters, method);
         // get return type
         let returnType = ctx.children[0].getText();
         method.returnType = returnType;

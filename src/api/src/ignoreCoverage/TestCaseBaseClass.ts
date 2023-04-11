@@ -10,4 +10,8 @@ export class TestCaseBaseClass {
         this.files = files || [];
         this.expectedResult = expectedResult;
     }
+
+    public getFiles(): MyFile[] {
+        return this.files;
+    }
 }

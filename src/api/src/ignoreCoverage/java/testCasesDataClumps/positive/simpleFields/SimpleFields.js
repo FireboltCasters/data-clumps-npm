@@ -2,16 +2,16 @@ import {MyFile} from '../../../../ParsedTypes';
 
 const FileA = new MyFile('Fields1.java', `
 public class Fields1 {
-    int fieldsX = 10;
-    int fieldsY;
-    String fieldsString;
+    int x = 10;
+    int y;
+    String s;
 }`);
 
 const FileB = new MyFile('Fields2.java',`
 public class Fields2 {
-    String fieldsString = "name";
-    int fieldsX = 10;
-    int fieldsY;
+    int x = 10;
+    int y;
+    String s;
 }
 `);
 
