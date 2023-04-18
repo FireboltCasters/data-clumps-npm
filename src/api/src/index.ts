@@ -1,13 +1,13 @@
 /* istanbul ignore file */
 import {antlr4} from "./ignoreCoverage/util/MyAntlr4";
 import {SoftwareProject} from "./ignoreCoverage/SoftwareProject";
-import * as ParsedTypes from "./ignoreCoverage/ParsedTypes";
+import * as ParsedAstTypes from "./ignoreCoverage/ParsedAstTypes";
 import {JavaLanguageSupport} from "./ignoreCoverage/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
 
 export {antlr4};
 export {SoftwareProject};
-export {ParsedTypes};
+export {ParsedAstTypes};
 export {JavaLanguageSupport};
 
 export class Languages {

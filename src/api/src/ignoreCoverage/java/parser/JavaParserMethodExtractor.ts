@@ -4,7 +4,7 @@ import {
     MethodTypeContext,
     ClassOrInterfaceTypeContext,
     MethodParameterTypeContext
-} from "./../../ParsedTypes";
+} from "./../../ParsedAstTypes";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 
@@ -45,7 +45,7 @@ export class JavaParserMethodExtractor {
         let type = this.custom_getFormalParameterType(typeType);
         let variableDeclaratorId = ctx.children[1];
         let name = variableDeclaratorId.getText();
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, method);
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, [], method);
 
         if(this.includePosition){
             parameter.position = JavaParserHelper.custom_getPosition(ctx);

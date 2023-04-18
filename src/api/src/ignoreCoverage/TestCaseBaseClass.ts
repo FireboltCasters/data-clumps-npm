@@ -1,4 +1,4 @@
-import {MyFile} from "./ParsedTypes";
+import {MyFile} from "./ParsedAstTypes";
 
 
 export class TestCaseBaseClass {

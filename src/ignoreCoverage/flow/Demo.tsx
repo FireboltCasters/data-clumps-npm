@@ -105,6 +105,8 @@ export const Demo : FunctionComponent = (props) => {
      </div>
      */
 
+    //TODO viszualize Graph?: react-graph-vis
+
     function handleCodeChange(newCode: string | undefined) {
         if (newCode) {
             setCode(newCode);

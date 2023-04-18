@@ -1,6 +1,6 @@
 import {JavaLanguageSupport} from "./java";
 import {SoftwareProject} from "./SoftwareProject";
-import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedTypes";
+import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedAstTypes";
 
 export class ParserOptions {
     public includePosition: boolean;

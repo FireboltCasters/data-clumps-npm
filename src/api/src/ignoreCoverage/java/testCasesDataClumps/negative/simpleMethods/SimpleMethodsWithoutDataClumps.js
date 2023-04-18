@@ -1,4 +1,4 @@
-import {MyFile} from '../../../../ParsedTypes';
+import {MyFile} from '../../../../ParsedAstTypes';
 import {TestCaseBaseClassForDataClumps} from "../../../../TestCaseBaseClassForDataClumps";
 
 const FileA = new MyFile('Fields1.java', `

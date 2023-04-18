@@ -1,4 +1,4 @@
-import {MyFile} from '../../../../ParsedTypes';
+import {MyFile} from '../../../../ParsedAstTypes';
 
 const FileB = new MyFile('MultipleClassesInOneFile.java',`
 public class Fields2 {

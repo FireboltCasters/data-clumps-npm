@@ -4,7 +4,7 @@ import {
     MemberFieldParameterTypeContext,
     MemberFieldTypeContext,
     ParameterTypeContext
-} from "./../../ParsedTypes";
+} from "./../../ParsedAstTypes";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
@@ -64,7 +64,7 @@ export class JavaParserFieldExtractor {
                 // skip the comma
             } else {
                 let variableName = variableDeclarator.children[0].getText(); // get the name of the variable
-                let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, this.classOrInterface);
+                let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
                 parameters.push(parameter);
             }
         }

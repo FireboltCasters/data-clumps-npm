@@ -6,7 +6,8 @@ import {
     MethodTypeContext,
     MyFile,
     ParameterTypeContext
-} from "./ParsedTypes";
+} from "./ParsedAstTypes";
+import {SoftwareProjectDicts} from "./Detector";
 
 export class DetectorUtils {
 
@@ -18,25 +19,30 @@ export class DetectorUtils {
     }
 
     public static countCommonParameters(parameters: ParameterTypeContext[], otherParameters: ParameterTypeContext[]){
-        let commonParameterKeys = DetectorUtils.getCommonParameterKeys(parameters, otherParameters);
+        let commonParameterKeys = DetectorUtils.getCommonParameterPairKeys(parameters, otherParameters);
         let amountCommonParameters = commonParameterKeys.length;
         return amountCommonParameters;
     }
 
-    public static getCommonParameterKeys(parameters: ParameterTypeContext[], otherParameters: ParameterTypeContext[]){
-        let commonParameterKeys: string[] = [];
+    public static getCommonParameterPairKeys(parameters: ParameterTypeContext[], otherParameters: ParameterTypeContext[]){
+        type ParameterPair = {
+            parameterKey: string;
+            otherParameterKey: string;
+        }
+
+        let commonParameterPairKeys: ParameterPair[] = [];
         for(let parameter of parameters){
             for(let otherParameter of otherParameters){
-                if(DetectorUtils.isCommonParameter(parameter, otherParameter)){
-                    commonParameterKeys.push(parameter.key);
+                if(parameter.isSimilarTo(otherParameter)){
+                    let commonParameterPairKey = {
+                        parameterKey: parameter.key,
+                        otherParameterKey: otherParameter.key
+                    }
+                    commonParameterPairKeys.push(commonParameterPairKey);
                 }
             }
         }
-        return commonParameterKeys;
-    }
-
-    public static isCommonParameter(parameter1: ParameterTypeContext, parameter2: ParameterTypeContext){
-        return parameter1.name === parameter2.name && parameter1.type === parameter2.type;
+        return commonParameterPairKeys;
     }
 
     public static printDictKeys(dict: Dictionary<any>){
@@ -61,8 +67,8 @@ export class DetectorUtils {
         return classesOrInterfaces;
     }
 
-    public static getClassesDict(project: SoftwareProject){
-        let classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext> = DetectorUtils.getClassesOrInterfacesDict(project);
+    public static getClassesDict(softwareProjectDicts: SoftwareProjectDicts){
+        let classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext> = softwareProjectDicts.dictClassOrInterface;
         let classesDict: Dictionary<ClassOrInterfaceTypeContext> = {};
         let classOrInterfaceKeys = Object.keys(classesOrInterfacesDict);
         for (let classOrInterfaceKey of classOrInterfaceKeys) {

@@ -1,5 +1,5 @@
 import {TestCaseBaseClass} from "./TestCaseBaseClass";
-import {ParameterTypeContext, ParameterTypeContextUtils} from "./ParsedTypes";
+import {ParameterTypeContext, ParameterTypeContextUtils} from "./ParsedAstTypes";
 
 export class TestCaseBaseClassForDataClumps extends TestCaseBaseClass{
     public dataClumps: ParameterTypeContext[];

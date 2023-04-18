@@ -1,4 +1,4 @@
-import {MyFile} from '../../../../ParsedTypes';
+import {MyFile} from '../../../../ParsedAstTypes';
 
 const FileA = new MyFile('Fields1.java', `
 public class Fields1 {

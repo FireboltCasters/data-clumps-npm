@@ -1,6 +1,7 @@
 import {SoftwareProject} from "./SoftwareProject";
-import {ClassOrInterfaceTypeContext, Dictionary, MethodTypeContext} from "./ParsedTypes";
+import {ClassOrInterfaceTypeContext, DataClumpTypeContext, Dictionary, MethodTypeContext} from "./ParsedAstTypes";
 import {DetectorUtils} from "./DetectorUtils";
+import {SoftwareProjectDicts} from "./Detector";
 
 export class DetectorOptionsDataClumpsMethods {
     public sharedMethodParametersMinimum: number = 3;
@@ -25,28 +26,13 @@ export class DetectorDataClumpsMethods {
         this.options = new DetectorOptionsDataClumpsMethods(options);
     }
 
-    public detect(project: SoftwareProject){
+    public detect(softwareProjectDicts: SoftwareProjectDicts){
         console.log("Detecting software project for data clumps in methods");
-        let commonMethodParameters = this.getCommonMethodParametersForSoftwareProject(project);
-        //console.log("Common method parameters: ");
-        //console.log(JSON.stringify(commonMethodParameters, null, 2));
-    }
-
-    private getCommonMethodParametersForSoftwareProject(project: SoftwareProject){
-        let commonMethodParameters: any[] = [];
-        let classesOrInterfacesDict = DetectorUtils.getClassesOrInterfacesDict(project);
-        let methodsDict = this.getMethodsDict(classesOrInterfacesDict);
-        let methodToClassOrInterfaceDict = this.getMethodToClassOrInterfaceDict(classesOrInterfacesDict);
-        this.analyzeMethods(methodsDict, methodToClassOrInterfaceDict, classesOrInterfacesDict);
-
-        return commonMethodParameters;
-    }
-
-    private analyzeMethods(methodsDict: Dictionary<MethodTypeContext>, methodToClassOrInterfaceDict: Dictionary<ClassOrInterfaceTypeContext>, classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
+        let methodsDict = softwareProjectDicts.dictMethod;
         let methodKeys = Object.keys(methodsDict);
         for (let methodKey of methodKeys) {
             let method = methodsDict[methodKey];
-            this.analyzeMethod(method, methodToClassOrInterfaceDict, classesOrInterfacesDict);
+            this.analyzeMethod(method, softwareProjectDicts);
         }
     }
 
@@ -56,10 +42,10 @@ export class DetectorDataClumpsMethods {
      * @param methodToClassOrInterfaceDict
      * @private
      */
-    private analyzeMethod(method: MethodTypeContext, methodToClassOrInterfaceDict: Dictionary<ClassOrInterfaceTypeContext>, classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
+    private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
 
         let methodParameters = method.parameters;
-        let classOrInterface = methodToClassOrInterfaceDict[method.key];
+        let classOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
 
         /**
          * TODO: DataclumpsInspection.java line 376
@@ -77,7 +63,7 @@ export class DetectorDataClumpsMethods {
         }
         // we assume that all methods are not constructors
 
-        this.checkParameterDataClumps(method, methodToClassOrInterfaceDict, classesOrInterfacesDict);
+        this.checkParameterDataClumps(method, softwareProjectDicts);
     }
 
 
@@ -87,9 +73,9 @@ export class DetectorDataClumpsMethods {
      * @param methodToClassOrInterfaceDict
      * @private
      */
-    private checkParameterDataClumps(method: MethodTypeContext, methodToClassOrInterfaceDict: Dictionary<ClassOrInterfaceTypeContext>, classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
+    private checkParameterDataClumps(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
         //console.log("Checking parameter data clumps for method " + method.key);
-        let currentClassOrInterface = methodToClassOrInterfaceDict[method.key];
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
 
         /**
          * TODO: DataclumpsInspection.java line 493
@@ -99,6 +85,7 @@ export class DetectorDataClumpsMethods {
             }
          */
 
+        let classesOrInterfacesDict = softwareProjectDicts.dictClassOrInterface;
         let classesOrInterfacesKeys = Object.keys(classesOrInterfacesDict);
         for (let classOrInterfaceKey of classesOrInterfacesKeys) {
             let classOrInterface = classesOrInterfacesDict[classOrInterfaceKey];
@@ -151,7 +138,7 @@ export class DetectorDataClumpsMethods {
             return;
         } else {
             console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
-            let commonParameterKeys = DetectorUtils.getCommonParameterKeys(method.parameters, otherMethod.parameters);
+            let commonParameterKeys = DetectorUtils.getCommonParameterPairKeys(method.parameters, otherMethod.parameters);
             console.log(commonParameterKeys)
         }
     }
@@ -162,43 +149,6 @@ export class DetectorDataClumpsMethods {
         let otherParameters = otherMethod.parameters;
         let amountCommonParameters = DetectorUtils.countCommonParameters(parameters, otherParameters);
         return amountCommonParameters;
-    }
-
-
-    /**
-     * Helper Methods
-     */
-
-
-    private getMethodToClassOrInterfaceDict(classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
-        let methodToClassOrInterfaceDict: Dictionary<ClassOrInterfaceTypeContext> = {};
-        let keys = Object.keys(classesOrInterfacesDict);
-        for (let key of keys) {
-            let classOrInterface = classesOrInterfacesDict[key];
-            let methods = classOrInterface.methods;
-            let methodsKeys = Object.keys(methods);
-            for (let methodKey of methodsKeys) {
-                methodToClassOrInterfaceDict[methodKey] = classOrInterface;
-            }
-        }
-        return methodToClassOrInterfaceDict;
-    }
-
-    private getMethodsDict(classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>){
-        let methodsDict: Dictionary<MethodTypeContext> = {};
-        let keys = Object.keys(classesOrInterfacesDict);
-        for (let key of keys) {
-            let classOrInterface = classesOrInterfacesDict[key];
-            let methods = classOrInterface.methods;
-            let methodsKeys = Object.keys(methods);
-            for (let methodKey of methodsKeys) {
-                methodsDict[methodKey] = methods[methodKey];
-            }
-        }
-        //console.log("--- Methods dict keys: ---");
-        //DetectorUtils.printDictKeys(methodsDict);
-        return methodsDict;
-
     }
 
 }
