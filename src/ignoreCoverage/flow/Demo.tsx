@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, ReactNode, useEffect, useRef, useState} from 'react';
 import {Panel} from "primereact/panel";
 import {Divider} from "primereact/divider";
 import {SoftwareProject, JavaLanguageSupport} from "../../api/src/";
@@ -6,82 +6,48 @@ import Editor  from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
-import { Tree } from 'primereact/tree';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
+import { Menubar } from 'primereact/menubar';
+import { Skeleton } from 'primereact/skeleton';
 
-const nodesSource = [
-    {
-        "key": "0",
-        "label": "Documents",
-        "data": "Documents Folder",
-        "icon": "pi pi-fw pi-inbox",
-        "children": [{
-            "key": "0-0",
-            "label": "Work",
-            "data": "Work Folder",
-            "icon": "pi pi-fw pi-cog",
-            "children": [{ "key": "0-0-0", "label": "Expenses.doc", "icon": "pi pi-fw pi-file", "data": "Expenses Document" }, { "key": "0-0-1", "label": "Resume.doc", "icon": "pi pi-fw pi-file", "data": "Resume Document" }]
-        },
-            {
-                "key": "0-1",
-                "label": "Home",
-                "data": "Home Folder",
-                "icon": "pi pi-fw pi-home",
-                "children": [{ "key": "0-1-0", "label": "Invoices.txt", "icon": "pi pi-fw pi-file", "data": "Invoices for this month" }]
-            }]
-    },
-    {
-        "key": "1",
-        "label": "Events",
-        "data": "Events Folder",
-        "icon": "pi pi-fw pi-calendar",
-        "children": [
-            { "key": "1-0", "label": "Meeting", "icon": "pi pi-fw pi-calendar-plus", "data": "Meeting" },
-            { "key": "1-1", "label": "Product Launch", "icon": "pi pi-fw pi-calendar-plus", "data": "Product Launch" },
-            { "key": "1-2", "label": "Report Review", "icon": "pi pi-fw pi-calendar-plus", "data": "Report Review" }]
-    },
-    {
-        "key": "2",
-        "label": "Movies",
-        "data": "Movies Folder",
-        "icon": "pi pi-fw pi-star-fill",
-        "children": [{
-            "key": "2-0",
-            "icon": "pi pi-fw pi-star-fill",
-            "label": "Al Pacino",
-            "data": "Pacino Movies",
-            "children": [{ "key": "2-0-0", "label": "Scarface", "icon": "pi pi-fw pi-video", "data": "Scarface Movie" }, { "key": "2-0-1", "label": "Serpico", "icon": "pi pi-fw pi-video", "data": "Serpico Movie" }]
-        },
-            {
-                "key": "2-1",
-                "label": "Robert De Niro",
-                "icon": "pi pi-fw pi-star-fill",
-                "data": "De Niro Movies",
-                "children": [{ "key": "2-1-0", "label": "Goodfellas", "icon": "pi pi-fw pi-video", "data": "Goodfellas Movie" }, { "key": "2-1-1", "label": "Untouchables", "icon": "pi pi-fw pi-video", "data": "Untouchables Movie" }]
-            }]
-    }
-]
 
 loader.config({ monaco });
 
 export const Demo : FunctionComponent = (props) => {
 
+    const files = JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields;
+
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
     // @ts-ignore
-    const [code, setCode] = useState<string>(JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields[0].content);
-//    const [code, setCode] = useState<string>("");
     const [result, setResult] = useState<string>("");
 
-    const [nodes, setNodes] = useState(nodesSource);
-    const [selectedNodeKey, setSelectedNodeKey] = useState(null);
-    // implement expandedKeys like a file viewer https://www.primefaces.org/primereact-v8/tree/
+    const [reloadForResize, setReloadForResize] = useState<boolean>(false);
 
-    const onNodeSelect = (node) => {
-//        toast.current.show({ severity: 'success', summary: 'Node Selected', detail: node.label, life: 3000 });
-    }
+    const initialOpenedFiles = files.map((file) => file.path);
 
-    const onNodeUnselect = (node) => {
-//        toast.current.show({ severity: 'success', summary: 'Node Unselected', detail: node.label, life: 3000 });
+    const [openedFiles, setOpenedFiles] = useState<string[]>(initialOpenedFiles);
+    const [activeFile, setActiveFile] = useState<string>(openedFiles[0]);
+    const [code, setCode] = useState<string>(files[0].content);
+
+    const splitterHandleRef = useRef();
+
+    function handleMouseDown(event) {
+        event.preventDefault(); // Prevent text selection
+
+        if(!reloadForResize){
+            let target = event?.target;
+            console.log(target.classList);
+            for(let i = 0; i < target.classList.length; i++) {
+                let className = target.classList[i];
+                console.log("- "+className);
+                if (className === "p-splitter-gutter" || className === "p-splitter-gutter-handle") {
+                    console.log("oh yes im inside")
+                    setReloadForResize(true);
+                    break;
+                }
+            }
+        }
     }
 
     useEffect(() => {
@@ -127,6 +93,269 @@ export const Demo : FunctionComponent = (props) => {
         setTimerId(newTimerId);
     }
 
+
+    function renderResizingContent(){
+        return(
+            <div style={{flex: 1, width: "100%", height: "100vh", backgroundColor: "transparent"}}>
+                <Skeleton width={"100%"} height={"100%"}>
+                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
+                        <div style={{display: "inline-block", backgroundColor: "white", alignItems: "center", justifyContent: "center"}}>
+                            {"Wait to end resizing"}
+                        </div>
+                    </div>
+                </Skeleton>
+            </div>
+        )
+    }
+
+
+    function renderMenuBar(){
+        const items = [
+            {
+                label:'File',
+                icon:'pi pi-fw pi-file',
+                items:[
+                    {
+                        label:'Open (TODO)',
+                        icon:'pi pi-fw pi-folder',
+                        command: () => {
+                            console.log("open")
+                        }
+                    },
+                    {
+                        label:'New',
+                        icon:'pi pi-fw pi-plus',
+                        items:[
+                            {
+                                label:'Project... (TODO)',
+                                icon:'pi pi-fw'
+                            },
+                            {
+                                separator:true
+                            },
+                            {
+                                label:'File (TODO)',
+                                icon:'pi pi-fw pi-file'
+                            },
+                            {
+                                label:'Folder (TODO)',
+                                icon:'pi pi-fw pi-folder'
+                            }
+                        ]
+                    },
+                    {
+                        label:'Export (TODO)',
+                        icon:'pi pi-fw pi-external-link'
+                    }
+                ]
+            },
+            {
+                label:'Edit',
+                icon:'pi pi-fw pi-pencil',
+                items:[
+                    {
+                        label:'Undo (TODO)',
+                        icon:'pi pi-fw pi-arrow-left'
+                    },
+                    {
+                        label:'Redo (TODO)',
+                        icon:'pi pi-fw pi-arrow-right'
+                    },
+                ]
+            },
+            {
+                label:'View',
+                icon:'pi pi-fw pi-user',
+                items:[
+                    {
+                        label:'Parsed AST (TODO)',
+                        icon:'pi pi-fw pi-user-plus',
+                    },
+                    {
+                        label:'Detected Data-Clumps (TODO)',
+                        icon:'pi pi-fw pi-user-minus',
+                    },
+                ]
+            },
+            {
+                label:'Refactor',
+                icon:'pi pi-fw pi-calendar',
+                items:[
+                    {
+                        label:'Auto (TODO)',
+                        icon:'pi pi-fw pi-pencil',
+                    },
+                    {
+                        label:'Field Data-Clumps (TODO)',
+                        icon:'pi pi-fw pi-pencil',
+                    },
+                    {
+                        label:'Parameter Data-Clumps (TODO)',
+                        icon:'pi pi-fw pi-pencil',
+                    },
+                ]
+            },
+            {
+                label:'Tools',
+                icon:'pi pi-fw pi-power-off',
+                items:[
+                    {
+                        label:'Console (TODO)',
+                        icon:'pi pi-fw pi-pencil',
+                    },
+                    {
+                        label:'Speed evaluation (TODO)',
+                        icon:'pi pi-fw pi-pencil',
+                    },
+                ]
+            }
+        ];
+
+        let startItem = (
+            <div>
+                {"Data-Clumps"}
+            </div>
+        )
+
+        return(
+            <div style={{display: "flex", flexDirection: "row", flex: 1}}>
+                <Menubar
+                    style={{height: "40px"}}
+                    start={startItem}
+                    model={items}/>
+            </div>
+        )
+    }
+
+    function renderFileExplorer(){
+        if(reloadForResize){
+            return renderResizingContent();
+        }
+
+        // https://www.npmjs.com/package/@sinm/react-file-tree
+
+
+        // https://www.npmjs.com/package/exploration
+        // https://codesandbox.io/s/basic-example-p1udcm?file=/src/mock-fs.ts
+
+        return(
+            <div style={{display: "flex", flexDirection: "column", flex: 1}}>
+
+            </div>
+        )
+    }
+
+    function renderOpenFileTab(openFileKey: string){
+        const paddingHorizontally = 5;
+        const paddingVertically = 3;
+
+        return(
+            <div style={{display: "inline-block", flexDirection: "column", backgroundColor: "gray", paddingTop: paddingVertically+"px", paddingBottom: paddingVertically+"px", paddingLeft: paddingHorizontally+"px", paddingRight: paddingHorizontally+"px"}}>
+                <div style={{display: "inline-block"}}>
+                    <i className="pi pi-file"></i>
+                </div>
+                <div style={{display: "inline-block"}}>
+                    {openFileKey}
+                </div>
+                <div style={{display: "inline-block"}}>
+                    <i className="pi pi-times"></i>
+                </div>
+            </div>
+        )
+    }
+
+    function renderOpenedFiles(){
+        if(reloadForResize){
+            return renderResizingContent();
+        }
+
+        let renderOpenedFiles: ReactNode[] = [];
+        for(let i = 0; i < openedFiles.length; i++){
+            let openFileKey = openedFiles[i];
+            renderOpenedFiles.push(
+                renderOpenFileTab(openFileKey)
+            )
+        }
+
+
+        return(
+            <div style={{display: "flex", justifyContent: "flex-start", flexDirection: "row", flex: 1, backgroundColor: "transparent"}}>
+                {renderOpenedFiles}
+            </div>
+        )
+    }
+
+    function renderCodeEditor(){
+        if(reloadForResize){
+            return renderResizingContent();
+        }
+
+        return(
+            <Editor
+                height="90vh"
+                width={"auto"}
+                defaultLanguage="java"
+                defaultValue={code}
+                onChange={handleCodeChange}
+            />
+        )
+    }
+
+    function renderResult(){
+        if(reloadForResize){
+            return renderResizingContent();
+        }
+
+        return(
+            <Editor
+                key={result}
+                height="90vh"
+                width={"100%"}
+                defaultLanguage="javascript"
+                defaultValue={result}
+                options={{ readOnly: true }}
+            />
+        )
+    }
+
+    function renderWebIDE(){
+        return(
+            <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
+                {/* Render Action bar */}
+                <div style={{width: "100%", display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
+                    {renderMenuBar()}
+                    {/*  */}
+                    <Splitter style={{height: "100%"}} layout="horizontal" gutterSize={3}
+                        onResizeEnd={() => {
+                            console.log("onResizeEnd");
+                            setReloadForResize(false);
+                        }}
+                        ref={splitterHandleRef} className="p-splitter-handle" onMouseDown={handleMouseDown}
+                    >
+                        <SplitterPanel size={20}>
+                            <div style={{backgroundColor: "transparent"}}>
+                                <div>{"File-Explorer"}</div>
+                                {renderFileExplorer()}
+                            </div>
+                        </SplitterPanel>
+                        <SplitterPanel >
+                            <div style={{backgroundColor: "transparent"}}>
+                                {renderOpenedFiles()}
+                                {renderCodeEditor()}
+                            </div>
+                        </SplitterPanel>
+                        <SplitterPanel size={30}>
+                            <div style={{backgroundColor: "transparent"}}>
+                                <div>{"Result"}</div>
+                                {renderResult()}
+                            </div>
+                        </SplitterPanel>
+                    </Splitter>
+                </div>
+            </div>
+        )
+    }
+
     async function handleParser(newCode){
         console.log("handleParser");
 
@@ -143,50 +372,8 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     return (
-                <div style={{width: "100%", height: "100vh"}}>
-                        <div style={{display: "flex", flexDirection: "column", margin: "3%"}}>
-                            <h3>data-clumps api Demo</h3>
-                            <Panel header={"Description"} toggleable collapsed={true}>
-                                <div style={{whiteSpace: "pre-line", display: "flex", width: "100%", flexDirection: "column"}}>
-                                    {"More information about data-clumps."}
-                                </div>
-                            </Panel>
-
-                            <Divider />
-                        </div>
-                    <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
-                        <div style={{width: "100%", flex: 2, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                            <h3>Java Source code</h3>
-                            <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
-                                <Tree
-                                    style={{width: "40%", flex: 1, backgroundColor: "transparent"}}
-                                    value={nodes} selectionMode="single" selectionKeys={selectedNodeKey} onSelectionChange={
-                                        // @ts-ignore
-                                        e => setSelectedNodeKey(e.value)
-                                    } onSelect={onNodeSelect} onUnselect={onNodeUnselect}/>
-                                <Editor
-                                    height="90vh"
-                                    width={"60%"}
-                                    defaultLanguage="java"
-                                    defaultValue={code}
-                                    onChange={handleCodeChange}
-                                />
-                            </div>
-                        </div>
-                        <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                            <div style={{width: "100%", flex: 1, display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                                <h3>Extracted Variables with Types</h3>
-                                <Editor
-                                    key={result}
-                                    height="90vh"
-                                    width={"100%"}
-                                    defaultLanguage="javascript"
-                                    defaultValue={result}
-                                    options={{ readOnly: true }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
+                {renderWebIDE()}
+            </div>
         );
 }
