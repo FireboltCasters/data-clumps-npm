@@ -1,5 +1,3 @@
-import {performance} from "perf_hooks";
-
 export class Timer {
 
     public startTime: number = 0;
@@ -15,11 +13,11 @@ export class Timer {
     }
 
     public start() {
-        this.startTime = performance.now();
+        this.startTime = new Date().getTime()
     }
 
     public stop() {
-        this.endTime = performance.now();
+        this.endTime = new Date().getTime()
     }
 
     public getElapsedTime() {

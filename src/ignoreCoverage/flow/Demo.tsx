@@ -7,6 +7,7 @@ import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
 import { Tree } from 'primereact/tree';
+import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 
 const nodesSource = [
     {
@@ -126,7 +127,7 @@ export const Demo : FunctionComponent = (props) => {
         setTimerId(newTimerId);
     }
 
-    function handleParser(newCode){
+    async function handleParser(newCode){
         console.log("handleParser");
 
         let fakeFilePath = "test.java";
@@ -136,7 +137,9 @@ export const Demo : FunctionComponent = (props) => {
         softwareProject.generateAstForFiles();
         let file = softwareProject.getFile(fakeFilePath);
         let result = file.ast;
-        setResult(JSON.stringify(result, null, 2));
+        let dataClumpsContext: DataClumpsTypeContext = await softwareProject.detectDataClumps()
+
+        setResult(JSON.stringify(dataClumpsContext, null, 2));
     }
 
     return (
