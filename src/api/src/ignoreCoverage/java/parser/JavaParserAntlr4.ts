@@ -4,8 +4,9 @@ import {antlr4} from "./../../util/MyAntlr4";
 import {JavaParserHelper} from "./JavaParserHelper";
 import {JavaParserFieldExtractor} from "./JavaParserFieldExtractor";
 import {JavaParserMethodExtractor} from "./JavaParserMethodExtractor";
-import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./../../ParsedAstTypes";
+import {ClassOrInterfaceTypeContext, MyFile} from "./../../ParsedAstTypes";
 import {LanguageParserInterface} from "../../LanguageParserInterface";
+import {Dictionary} from "../../UtilTypes";
 
 //TODO add support for generics
 

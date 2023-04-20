@@ -1,10 +1,5 @@
 import {JavaParserHelper} from "./JavaParserHelper";
-import {
-    ParameterTypeContext,
-    MethodTypeContext,
-    ClassOrInterfaceTypeContext,
-    MethodParameterTypeContext
-} from "./../../ParsedAstTypes";
+import {ClassOrInterfaceTypeContext, MethodParameterTypeContext, MethodTypeContext} from "./../../ParsedAstTypes";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 

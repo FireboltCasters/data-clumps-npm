@@ -1,6 +1,8 @@
 import {JavaLanguageSupport} from "./java";
 import {SoftwareProject} from "./SoftwareProject";
-import {ClassOrInterfaceTypeContext, Dictionary, MyFile} from "./ParsedAstTypes";
+import {ClassOrInterfaceTypeContext, MyFile} from "./ParsedAstTypes";
+import {Dictionary} from "./UtilTypes";
+import {Timer} from "./Timer";
 
 export class ParserOptions {
     public includePosition: boolean;
@@ -12,6 +14,9 @@ export class ParserOptions {
 export class Parser {
 
   public static parseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions) {
+      let timer = new Timer();
+        timer.start();
+
     let parserOptions = options || new ParserOptions(false);
     let filePaths = softwareProject.getFilePaths();
     for (let filePath of filePaths) {
@@ -21,6 +26,9 @@ export class Parser {
         file.ast = parsedFile;
       }
     }
+
+    timer.stop();
+    timer.printElapsedTime("Parser.parseSoftwareProject");
   }
 
   private static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {

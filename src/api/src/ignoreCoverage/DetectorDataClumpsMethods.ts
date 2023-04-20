@@ -1,7 +1,8 @@
-import {SoftwareProject} from "./SoftwareProject";
-import {ClassOrInterfaceTypeContext, DataClumpTypeContext, Dictionary, MethodTypeContext} from "./ParsedAstTypes";
 import {DetectorUtils} from "./DetectorUtils";
 import {SoftwareProjectDicts} from "./Detector";
+import {Dictionary} from "./UtilTypes";
+import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
+import {MethodTypeContext} from "./ParsedAstTypes";
 
 export class DetectorOptionsDataClumpsMethods {
     public sharedMethodParametersMinimum: number = 3;
@@ -26,14 +27,16 @@ export class DetectorDataClumpsMethods {
         this.options = new DetectorOptionsDataClumpsMethods(options);
     }
 
-    public detect(softwareProjectDicts: SoftwareProjectDicts){
-        console.log("Detecting software project for data clumps in methods");
+    public detect(softwareProjectDicts: SoftwareProjectDicts): Dictionary<DataClumpTypeContext>{
+        //console.log("Detecting software project for data clumps in methods");
         let methodsDict = softwareProjectDicts.dictMethod;
         let methodKeys = Object.keys(methodsDict);
+        let dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext> = {};
         for (let methodKey of methodKeys) {
             let method = methodsDict[methodKey];
-            this.analyzeMethod(method, softwareProjectDicts);
+            this.analyzeMethod(method, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
         }
+        return dataClumpsMethodParameterDataClumps;
     }
 
     /**
@@ -42,7 +45,7 @@ export class DetectorDataClumpsMethods {
      * @param methodToClassOrInterfaceDict
      * @private
      */
-    private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+    private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
 
         let methodParameters = method.parameters;
         let classOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
@@ -50,6 +53,7 @@ export class DetectorDataClumpsMethods {
         /**
          * TODO: DataclumpsInspection.java line 376
          * exclude methods inherited from parent class
+         * We cam't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
          if (method.hasAnnotation("java.lang.Override")) {
                     return;
          }
@@ -63,7 +67,7 @@ export class DetectorDataClumpsMethods {
         }
         // we assume that all methods are not constructors
 
-        this.checkParameterDataClumps(method, softwareProjectDicts);
+        this.checkParameterDataClumps(method, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
     }
 
 
@@ -73,7 +77,7 @@ export class DetectorDataClumpsMethods {
      * @param methodToClassOrInterfaceDict
      * @private
      */
-    private checkParameterDataClumps(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+    private checkParameterDataClumps(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
         //console.log("Checking parameter data clumps for method " + method.key);
         let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
 
@@ -96,7 +100,7 @@ export class DetectorDataClumpsMethods {
             for (let methodKey of methodsKeys) {
                 let otherMethod = methods[methodKey];
                 // DataclumpsInspection.java line 511
-                let foundDataClumps = this.checkMethodParametersForDataClumps(method, otherMethod, currentClassOrInterface, classesOrInterfacesDict, isSameClassOrInterface);
+                let foundDataClumps = this.checkMethodParametersForDataClumps(method, otherMethod, isSameClassOrInterface, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
                 // TODO: DataclumpsInspection.java line 512
             }
         }
@@ -112,7 +116,7 @@ export class DetectorDataClumpsMethods {
      * @param isSameClassOrInterface
      * @private
      */
-    private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, currentClassOrInterface: ClassOrInterfaceTypeContext, classesOrInterfacesDict: Dictionary<ClassOrInterfaceTypeContext>, isSameClassOrInterface: boolean) {
+    private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, isSameClassOrInterface: boolean, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
         /**
          * TODO: DataclumpsInspection.java line 548
          * // avoid inherited methods if checkHierarchyInParametersInstances is off
@@ -137,9 +141,39 @@ export class DetectorDataClumpsMethods {
             //console.log("- No Data Clumps betweeen Method " + method.key + " and " + otherMethod.key)
             return;
         } else {
-            console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
-            let commonParameterKeys = DetectorUtils.getCommonParameterPairKeys(method.parameters, otherMethod.parameters);
-            console.log(commonParameterKeys)
+            //console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
+            let commonMethodParameterPairKeys = DetectorUtils.getCommonParameterPairKeys(method.parameters, otherMethod.parameters);
+
+            let [currentParameters, otherParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonMethodParameterPairKeys, method.parameters, otherMethod.parameters);
+
+            let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
+            let currentFile = softwareProjectDicts.dictFile[currentClassOrInterface.fileKey];
+
+            let otherClassOrInterface = softwareProjectDicts.dictClassOrInterface[otherMethod.classOrInterfaceKey];
+            let otherFile = softwareProjectDicts.dictFile[otherClassOrInterface.fileKey];
+
+            let data_clump_related_to: DataClumpsParameterTypeRelatedToContext = {
+                key: otherFile.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+                file_path: otherFile.path,
+                class_name: otherClassOrInterface.name,
+                method_name: otherMethod.name,
+                parameters: otherParameters
+            }
+
+
+            let dataClumpContext: DataClumpTypeContext = {
+                type: "data_clump",
+                key: currentFile.key+"-"+currentClassOrInterface.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+                file_path: currentFile.path,
+                class_or_interface_name: currentClassOrInterface.name,
+                method_name: method.name,
+
+                data_clump_type: "parameter_data_clump", // "parameter_data_clump" or "field_data_clump"
+                data_clump_related_to: data_clump_related_to, // to which our parameters are related to
+                data_clump_data: currentParameters
+            }
+            dataClumpsMethodParameterDataClumps[dataClumpContext.key] = dataClumpContext;
+
         }
     }
 

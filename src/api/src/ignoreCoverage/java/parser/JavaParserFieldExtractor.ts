@@ -2,8 +2,7 @@ import {JavaParserHelper} from "./JavaParserHelper";
 import {
     ClassOrInterfaceTypeContext,
     MemberFieldParameterTypeContext,
-    MemberFieldTypeContext,
-    ParameterTypeContext
+    MemberFieldTypeContext
 } from "./../../ParsedAstTypes";
 
 export class JavaParserFieldExtractor {

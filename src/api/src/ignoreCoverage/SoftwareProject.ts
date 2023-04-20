@@ -1,10 +1,12 @@
 import {Parser, ParserOptions} from "./Parser";
-import {ClassOrInterfaceTypeContext, DataClumpsTypeContext, Dictionary, MyFile} from "./ParsedAstTypes";
-import {Detector} from "./Detector";
+import {MyFile} from "./ParsedAstTypes";
+import {Detector, SoftwareProjectDicts} from "./Detector";
+import {DataClumpsTypeContext} from "./DataClumpTypes";
+import {Dictionary} from "./UtilTypes";
 
 export class SoftwareProject {
 
-  public filesToParseDict: {[key: string]: MyFile} = {};
+  public filesToParseDict: Dictionary<MyFile> = {};
 
   constructor() {
     this.filesToParseDict = {};
@@ -41,12 +43,17 @@ export class SoftwareProject {
     return this.filesToParseDict;
   }
 
-  public detectDataClumps(): DataClumpsTypeContext {
+  public getSoftwareProjectDicts(){
+    let softwareProjectDicts: SoftwareProjectDicts = new SoftwareProjectDicts(this);
+    return softwareProjectDicts;
+  }
+
+  public async detectDataClumps(): Promise<DataClumpsTypeContext> {
     let detectorOptions = {
 
     };
     let detector = new Detector(detectorOptions, this);
-    let dataClumps = detector.detect();
+    let dataClumps = await detector.detect();
     return dataClumps;
   }
 

@@ -1,17 +1,10 @@
-import {SoftwareProject} from "./SoftwareProject";
-import {
-    ClassOrInterfaceTypeContext,
-    DataClumpsParametersContext,
-    DataClumpsParameterTypeRelatedToContext,
-    DataClumpTypeContext,
-    Dictionary,
-    MemberFieldParameterTypeContext,
-    MemberFieldTypeContext,
-    MethodTypeContext,
-    ParameterTypeContext
-} from "./ParsedAstTypes";
+
 import {DetectorUtils} from "./DetectorUtils";
 import {SoftwareProjectDicts} from "./Detector";
+import {Dictionary} from "./UtilTypes";
+
+import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
+import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./ParsedAstTypes";
 
 export class DetectorOptionsDataClumpsFields {
     public sharedFieldParametersMinimum: number = 3;
@@ -38,7 +31,7 @@ export class DetectorDataClumpsFields {
     }
 
     public detect(softwareProjectDicts: SoftwareProjectDicts): Dictionary<DataClumpTypeContext>{
-        console.log("Detecting software project for data clumps in class fields");
+        //console.log("Detecting software project for data clumps in class fields");
         let dataClumpsDict = this.getCommonFieldParametersForSoftwareProject(softwareProjectDicts);
         //console.log("Common field parameters: ");
         //console.log(JSON.stringify(commonFieldParameters, null, 2));
@@ -54,7 +47,7 @@ export class DetectorDataClumpsFields {
         let dataClumpsFieldParameters: Dictionary<DataClumpTypeContext> = {};
         let classKeys = Object.keys(classesDict);
         for (let classKey of classKeys) {
-            console.log("Generating member field parameters related to for class: " + classKey)
+            //console.log("Generating member field parameters related to for class: " + classKey)
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
             this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict, dataClumpsFieldParameters, softwareProjectDicts);
         }
@@ -104,45 +97,12 @@ export class DetectorDataClumpsFields {
             return; // DataclumpsInspection.java line 410
         }
 
-        console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
+        //console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
         for(let commonFieldParameterKey of commonFieldParameterPairKeys){
-            console.log("  - " + commonFieldParameterKey)
+            //console.log("  - " + commonFieldParameterKey)
         }
 
-        let otherParameters: Dictionary<DataClumpsParametersContext> = {};
-        let currentParameters: Dictionary<DataClumpsParametersContext> = {};
-
-        let commonFieldParamterKeysAsKey = "";
-
-        for(let commonFieldParameterPairKey of commonFieldParameterPairKeys){
-
-            let otherFieldParameterKey = commonFieldParameterPairKey.otherParameterKey;
-
-            for(let otherClassParameter of otherClassParameters){
-                if(otherClassParameter.key === otherFieldParameterKey){
-                    otherParameters[otherClassParameter.key] = {
-                        key: otherClassParameter.key,
-                        name: otherClassParameter.name,
-                        type: otherClassParameter.type,
-                        modifiers: otherClassParameter.modifiers
-                    }
-                }
-            }
-
-            let currentFieldParameterKey = commonFieldParameterPairKey.parameterKey;
-            for(let currentClassParameter of currentClassParameters){
-                if(currentClassParameter.key === currentFieldParameterKey){
-                    commonFieldParamterKeysAsKey += currentClassParameter.name;
-
-                    currentParameters[currentClassParameter.key] = {
-                        key: currentClassParameter.key,
-                        name: currentClassParameter.name,
-                        type: currentClassParameter.type,
-                        modifiers: currentClassParameter.modifiers
-                    }
-                }
-            }
-        }
+        let [currentParameters, otherParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters);
 
         let otherClassFileKey = otherClass.fileKey;
         let otherClassFile = softwareProjectDicts.dictFile[otherClassFileKey]
@@ -161,7 +121,7 @@ export class DetectorDataClumpsFields {
             type: "data_clump",
             key: currentFile.key+"-"+currentClass.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
             file_path: currentFile.path,
-            class_name: currentClass.name,
+            class_or_interface_name: currentClass.name,
             method_name: null,
 
             data_clump_type: "field_data_clump", // "parameter_data_clump" or "field_data_clump"
