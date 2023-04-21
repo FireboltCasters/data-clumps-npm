@@ -8,6 +8,7 @@
   "dependencies": {
     "@fullcalendar/core": "^5.11.0",
     "@monaco-editor/react": "^4.4.6",
+    "@sinm/react-file-tree": "^1.1.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
@@ -22,7 +23,6 @@
     "chart.js": "^3.7.1",
     "dagre": "^0.8.5",
     "dotenv": "^16.0.3",
-    "exploration": "^1.6.0",
     "monaco-editor": "^0.36.1",
     "monaco-editor-webpack-plugin": "^7.0.1",
     "primeicons": "^5.0.0",
