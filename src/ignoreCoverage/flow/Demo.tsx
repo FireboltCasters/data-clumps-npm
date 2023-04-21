@@ -17,11 +17,17 @@ import FileItemWithFileIcon from '@sinm/react-file-tree/lib/FileItemWithFileIcon
 // default style
 import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
+import {useSynchedState} from "../storage/SynchedStateHelper";
+import {SynchedStates} from "../storage/SynchedStates";
+import {WebIDE} from "../webIDE/WebIDE";
 
 
 loader.config({ monaco });
 
 export const Demo : FunctionComponent = (props) => {
+
+    const [exampleState, setExampleState] = useSynchedState(SynchedStates.exampleSynchedText)
+    const [exampleState2, setExampleState2] = useSynchedState(SynchedStates.exampleSynchedText)
 
     const files = JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields;
 
@@ -415,40 +421,25 @@ export const Demo : FunctionComponent = (props) => {
 
     function renderWebIDE(){
         return(
-            <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
-                {/* Render Action bar */}
-                <div style={{width: "100%", display: "flex", flexDirection: "column", backgroundColor: "transparent"}}>
-                    {renderMenuBar()}
-                    {/*  */}
-                    <Splitter style={{height: "100%"}} layout="horizontal" gutterSize={3}
-                        onResizeEnd={() => {
-                            console.log("onResizeEnd");
-                            setReloadForResize(false);
-                        }}
-                        // @ts-ignore
-                        ref={splitterHandleRef} className="p-splitter-handle" onMouseDown={handleMouseDown}
-                    >
-                        <SplitterPanel size={20}>
-                            <div style={{backgroundColor: "transparent"}}>
-                                <div>{"File-Explorer"}</div>
-                                {renderFileExplorer()}
-                            </div>
-                        </SplitterPanel>
-                        <SplitterPanel size={50}>
-                            <div style={{backgroundColor: "transparent"}}>
-                                {renderOpenedFiles()}
-                                {renderCodeEditor()}
-                            </div>
-                        </SplitterPanel>
-                        <SplitterPanel size={30}>
-                            <div style={{backgroundColor: "transparent"}}>
-                                <div>{"Result"}</div>
-                                {renderResult()}
-                            </div>
-                        </SplitterPanel>
-                    </Splitter>
+            <WebIDE
+                menuBarItems={renderMenuBar()}
+                panelInitialSizes={[20, 50, 30]}
+            >
+                <div style={{backgroundColor: "transparent"}}>
+                    <div>{"File-Explorer"}</div>
+                    {renderFileExplorer()}
                 </div>
-            </div>
+                <div style={{backgroundColor: "transparent"}}>
+                    {renderOpenedFiles()}
+                    {renderCodeEditor()}
+                </div>
+                <div style={{backgroundColor: "transparent"}}>
+                    <div>{"Result"}</div>
+                    <div>{JSON.stringify(exampleState, null, 2)}</div>
+                    <div>{JSON.stringify(exampleState2, null, 2)}</div>
+                    {renderResult()}
+                </div>
+            </WebIDE>
         )
     }
 
