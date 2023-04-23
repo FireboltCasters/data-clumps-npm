@@ -21,6 +21,13 @@ export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> =
                     }
                 },
                 {
+                    label:'Import from GitHub (TODO)',
+                    icon:'pi pi-fw pi-folder',
+                    command: () => {
+                        console.log("open")
+                    }
+                },
+                {
                     label:'New',
                     icon:'pi pi-fw pi-plus',
                     items:[

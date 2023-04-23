@@ -5,7 +5,14 @@ import FileItemWithFileIcon from '@sinm/react-file-tree/lib/FileItemWithFileIcon
 // default style
 import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
-import {useSynchedState} from "../storage/SynchedStateHelper";
+import {
+    useSynchedActiveFile,
+    useSynchedJSONState,
+    useSynchedOpenedFiles,
+    useSynchedProject
+} from "../storage/SynchedStateHelper";
+import {SoftwareProject} from "../../api/src";
+import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {SynchedStates} from "../storage/SynchedStates";
 
 // @ts-ignore
@@ -15,107 +22,224 @@ export interface WebIdeFileExplorerProps {
 
 export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (props: WebIdeFileExplorerProps) => {
 
-    const [exampleState, setExampleState] = useSynchedState(SynchedStates.exampleSynchedText)
-    const [exampleState2, setExampleState2] = useSynchedState(SynchedStates.exampleSynchedText)
+    const startUri = "/root";
 
+    const [project, setProject] = useSynchedProject();
+    const [activeFile, setActiveFile] = useSynchedActiveFile();
+    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
+    const [loading, setLoading] = useState(false);
+    const [tree, setTree] = useState<any>(getTreeFromSoftwareProject(project));
 
-    const defaultTree: TreeNode = {
-        type: "directory",
-        uri: "/root",
-        children: [
-            {
-                type: "file",
-                uri: "/root/README.md",
-                children: undefined
-            },
-            {
-                type: "directory",
-                uri: "/root/fileIconTest",
-                children: [
-                    {
+    function getTreeDictFromSoftwareProject(project: SoftwareProject): any{
+
+        let treeAsDict = {
+            type: "directory",
+            expanded: true,
+            uri: startUri,
+            children: {}
+        }
+
+        let filePaths = project.getFilePaths();
+        for(let path of filePaths){
+            let pathParts = path.split("/");
+            let currentDictTree = treeAsDict;
+            let currentPath = startUri+"/"+"";
+            for(let i = 0; i < pathParts.length; i++){
+                let pathPart = pathParts[i];
+                currentPath += pathPart;
+                if(i === pathParts.length - 1){
+                    // Last part
+                    let fileNode: TreeNode = {
                         type: "file",
-                        uri: "/root/fileIconTest/Test.java",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.c",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.cpp",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.class",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.interface",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.json",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/.babelrc",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/.gitignore",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/.npmignore",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/.eslintrc",
-                        children: undefined
-                    },
-                    {
-                        type: "file",
-                        uri: "/root/fileIconTest/Test.py",
+                        uri: currentPath,
                         children: undefined
                     }
-                ]
+                    currentDictTree.children[currentPath] = fileNode;
+                } else {
+                    let currentDictTreeChild = currentDictTree.children[currentPath];
+                    if(!currentDictTreeChild){
+                        let directoryNode: TreeNode = {
+                            type: "directory",
+                            uri: currentPath,
+                            // @ts-ignore
+                            children: {}
+                        }
+                        currentDictTree.children[currentPath] = directoryNode;
+                        currentDictTreeChild = directoryNode;
+                    }
+                    currentPath += "/";
+                    currentDictTree = currentDictTreeChild;
+                }
             }
-        ]
+        }
+        return treeAsDict;
+    }
+
+    function getTreeFromTreeDict(treeDict){
+        let childrenKeys = Object.keys(treeDict.children);
+        let children = [];
+        for(let key of childrenKeys){
+            let child = treeDict.children[key];
+            // @ts-ignore
+            children.push(child);
+            if(child.type === "directory"){
+                child.children = getTreeFromTreeDict(child);
+            }
+        }
+        return children;
+    }
+
+    function getTreeFromSoftwareProject(project: SoftwareProject): TreeNode{
+        const tree: TreeNode = {
+            type: "directory",
+            uri: startUri,
+            expanded: true,
+            children: []
+        }
+        if(!project){
+            return tree;
+        }
+
+        let treeDict = getTreeDictFromSoftwareProject(project);
+        tree.children = getTreeFromTreeDict(treeDict);
+
+        return tree;
     }
 
 
-
-    const [tree, setTree] = useState(defaultTree);
     const toggleExpanded: FileTreeProps["onItemClick"] = (treeNode) => {
-        // @ts-ignore
-        setTree((tree) =>
+
+        if(treeNode.type=="directory"){
             // @ts-ignore
-            utils.assignTreeNode(tree, treeNode.uri, { expanded: !treeNode.expanded })
-        );
+            setTree((tree) =>
+                // @ts-ignore
+                utils.assignTreeNode(tree, treeNode.uri, { expanded: !treeNode.expanded })
+            );
+        }
+        if(treeNode.type=="file"){
+            let fileUri = treeNode.uri;
+            let fileUriWithoutStart = fileUri.replace(startUri+"/", "");
+
+            let newOpenedFiles = [...openedFiles];
+            let fileAlreadyOpened = false;
+            for(let i=0; i<newOpenedFiles.length; i++){
+                let openedFile = newOpenedFiles[i];
+                if(openedFile==fileUriWithoutStart){
+                    fileAlreadyOpened = true;
+                    break;
+                }
+            }
+            if(!fileAlreadyOpened){
+                openedFiles.push(fileUriWithoutStart);
+            }
+            setActiveFile(fileUriWithoutStart);
+            setOpenedFiles(newOpenedFiles);
+        }
     };
 
+    function getFileFromEntry(entry): Promise<File> {
+        return new Promise((resolve, reject) => {
+            entry.file((file) => {
+                resolve(file);
+            }, (error) => {
+                reject(error);
+            });
+        });
+    }
 
-    // https://www.npmjs.com/package/@sinm/react-file-tree // only 6 downloads per week :( so not really usable
-    // sticking back to this
-    // here is a better tutorial: https://github.com/pansinm/react-file-tree
+    function getFileEntriesFromDictionary(entry): Promise<File[]> {
+        return new Promise((resolve, reject) => {
+            const dirReader = entry.createReader();
 
-    // https://github.com/jaredLunde/exploration
-    // okay huge tutorial, but sadly no easy example for a small file tree
-    // https://codesandbox.io/s/basic-example-p1udcm?file=/src/mock-fs.ts
+            dirReader.readEntries((entries) => {
+                resolve(entries);
+            }, (error) => {
+                reject(error);
+            });
+        });
+    }
 
-    const itemRenderer = (treeNode: TreeNode) => <FileItemWithFileIcon treeNode={treeNode} />
+    async function handleDrop(event){
+        event.preventDefault();
+        setLoading(true);
+        const data = event.dataTransfer;
+        const items = data.items;
+
+        const fileList = [];
+        const newProject = new SoftwareProject();
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i].webkitGetAsEntry();
+            if (item) {
+                await traverseFileTree(item, '', newProject);
+            }
+        }
+        let myTestFile = new MyFile("hallo.java", "Hallo Welt");
+        //newProject.addFile(myTestFile);
+
+        setProject(newProject);
+        setTree(getTreeFromSoftwareProject(newProject));
+        setLoading(false);
+    }
+
+    async function traverseFileTree(item, path, newProject){
+        path = path || '';
+        if (item.isFile) {
+            try{
+                let file = await getFileFromEntry(item);
+                // @ts-ignore
+                const fileContent = await file.text();
+                let name = file.name;
+                let myFile: MyFile = new MyFile(
+                    path+name,
+                    fileContent
+                );
+                newProject.addFile(myFile);
+            } catch (err){
+                console.log("Error while reading file");
+                console.log(err);
+            }
+
+        } else if (item.isDirectory) {
+
+            let dirName = item.name;
+            if(dirName === "node_modules"){
+                console.log("Ignore node_modules");
+                return;
+            }
+
+
+            let entries = await getFileEntriesFromDictionary(item);
+            for (let i = 0; i < entries.length; i++) {
+                await traverseFileTree(entries[i], path + item.name + '/', newProject);
+            }
+        }
+    }
+
+    function itemRenderer(treeNode: TreeNode) {
+        let expanded = treeNode?.expanded;
+
+        return (
+            <div style={{}}>
+                <FileItemWithFileIcon treeNode={treeNode} />
+            </div>
+        )
+    }
+
+    if(loading){
+        return (
+            <div>
+                <h1>{"Loading"}</h1>
+            </div>
+        )
+    }
 
     return(
-        <div style={{display: "flex", flexDirection: "column", flex: 1, backgroundColor: "transparent", height: "100vh"}}>
+        <div
+            className="dropzone"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={handleDrop}
+            style={{display: "flex", flexDirection: "column", flex: 1, backgroundColor: "transparent", height: "100vh"}}>
             <FileTree tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
         </div>
     )

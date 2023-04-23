@@ -87,6 +87,8 @@ export class ParameterTypeContextUtils{
     }
 }
 
+//TODO add MyDirectory class
+
 export class MyFile{
     public content: string;
     public path: string;

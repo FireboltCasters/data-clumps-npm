@@ -12,6 +12,12 @@ export class SoftwareProject {
     this.filesToParseDict = {};
   }
 
+  public static fromJson(json: any) {
+    let softwareProject = new SoftwareProject();
+    softwareProject.filesToParseDict = json.filesToParseDict;
+    return softwareProject;
+  }
+
   public addFileContent(path: string, fileContent: string) {
     let newFileToAdd = new MyFile(path, fileContent);
     return this.addFile(newFileToAdd);

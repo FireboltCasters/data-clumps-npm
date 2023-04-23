@@ -2,6 +2,7 @@ import {action, createStore, useStoreActions, useStoreState} from "easy-peasy";
 import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
+import {SoftwareProject} from "../../api/build";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {
@@ -17,11 +18,50 @@ export function useSynchedState(storageKey): [value: string, setValue: (value) =
 export function useSynchedJSONState(storageKey): [value: any, setValue: (value) => {}] {
   const [jsonStateAsString, setJsonStateAsString] = useSynchedState(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
-  const setValue = (dict) => setJsonStateAsString(JSON.stringify(dict))
+  const setValue = (dict) => {
+      console.log("set value");
+      console.log(dict);
+      setJsonStateAsString(JSON.stringify(dict));
+      console.log(JSON.stringify(dict));
+  }
   return [
     parsedJSON,
+      // @ts-ignore
     setValue
   ]
+}
+
+
+export function useSynchedActiveFile(): [value: any, setValue: (value) => {}] {
+    const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.activeFile)
+    let activeFileKeyKey = activeFileKey || null;
+    return [
+        activeFileKeyKey,
+        setActiveFileKey
+    ];
+}
+
+export function useSynchedOpenedFiles(): [value: any, setValue: (value) => {}] {
+    const [openedFileKeys, setOpenedFileKeys] = useSynchedJSONState(SynchedStates.openedFiles)
+    let openedFileKeysList = openedFileKeys || [];
+    return [
+        openedFileKeysList,
+        setOpenedFileKeys
+    ];
+}
+
+export function useSynchedProject(): [value: any, setValue: (value) => {}] {
+    const [projectObj, setProject] = useSynchedJSONState(SynchedStates.softwareProject)
+    let project = new SoftwareProject()
+    if(!projectObj){
+
+    } else {
+        project.filesToParseDict = projectObj.filesToParseDict
+    }
+    return [
+        project,
+        setProject
+    ];
 }
 
 export class SynchedStateHelper {

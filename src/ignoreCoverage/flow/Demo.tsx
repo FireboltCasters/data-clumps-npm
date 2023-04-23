@@ -4,18 +4,18 @@ import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes
 // default style
 import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
-import {useSynchedState} from "../storage/SynchedStateHelper";
-import {SynchedStates} from "../storage/SynchedStates";
+import {useSynchedActiveFile, useSynchedProject} from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
 import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
 import {WebIdeCodeActionBar} from "../webIDE/WebIdeActionBar";
 import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpenedFiles";
+import {MyFile} from "../../api/build/ignoreCoverage/ParsedAstTypes";
 
 export const Demo : FunctionComponent = (props) => {
 
-    const [exampleState, setExampleState] = useSynchedState(SynchedStates.exampleSynchedText)
-    const [exampleState2, setExampleState2] = useSynchedState(SynchedStates.exampleSynchedText)
+    const [project, setProject] = useSynchedProject();
+    const [activeFile, setActiveFile] = useSynchedActiveFile();
 
     const testCase: TestCaseBaseClassForDataClumps = JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields;
     const files = testCase.getFiles()
@@ -33,6 +33,20 @@ export const Demo : FunctionComponent = (props) => {
     useEffect(() => {
         handleParser(code);
     }, [])
+
+    useEffect(() => {
+        console.log("activeFile changed");
+        if(activeFile && project){
+            console.log("We got the project and an activeFileKey: "+activeFile);
+            console.log("Project");
+            console.log(project)
+            let activeProjectFile: MyFile = project.getFile(activeFile);
+            console.log(activeProjectFile);
+            if(activeProjectFile){
+                setCode(activeProjectFile?.content || "");
+            }
+        }
+    }, [activeFile])
 
     //TODO viszualize Graph?: react-graph-vis
 
@@ -58,6 +72,7 @@ export const Demo : FunctionComponent = (props) => {
     function renderCodeEditor(){
         return(
             <WebIdeCodeEditor
+                key={code}
                 defaultValue={code}
                 onDebounce={handleParser}
             />
@@ -104,8 +119,6 @@ export const Demo : FunctionComponent = (props) => {
                     </div>
                     <div style={{backgroundColor: "transparent"}}>
                         <div>{"Result"}</div>
-                        <div>{JSON.stringify(exampleState, null, 2)}</div>
-                        <div>{JSON.stringify(exampleState2, null, 2)}</div>
                         {renderResult()}
                     </div>
                 </WebIdeLayout>
