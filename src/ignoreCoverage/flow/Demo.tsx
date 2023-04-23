@@ -10,7 +10,7 @@ import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
 import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
 import {WebIdeCodeActionBar} from "../webIDE/WebIdeActionBar";
 import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpenedFiles";
-import {MyFile} from "../../api/build/ignoreCoverage/ParsedAstTypes";
+import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
 
 export const Demo : FunctionComponent = (props) => {
 
