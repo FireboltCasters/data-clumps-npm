@@ -39,8 +39,8 @@ export class Parser {
         case 'java':
           try{
               let parser = new JavaLanguageSupport().getParser();
-            let result = parser.parse(file, options.includePosition);
-            return result;
+              //let result = parser.parse(file, options.includePosition);
+              //return result;
           } catch (e) {
             console.log(e);
           }

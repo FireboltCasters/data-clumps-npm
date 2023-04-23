@@ -1,10 +1,10 @@
 import {TestCaseBaseClass} from "./TestCaseBaseClass";
-import {ParameterTypeContext, ParameterTypeContextUtils} from "./ParsedAstTypes";
+import {MyFile, ParameterTypeContext, ParameterTypeContextUtils} from "./ParsedAstTypes";
 
 export class TestCaseBaseClassForDataClumps extends TestCaseBaseClass{
     public dataClumps: ParameterTypeContext[];
 
-    public constructor(name, files, dataClumps){
+    public constructor(name, files: MyFile[], dataClumps){
         super(name, files, ParameterTypeContextUtils.parametersToString(dataClumps));
         this.dataClumps = dataClumps;
     }

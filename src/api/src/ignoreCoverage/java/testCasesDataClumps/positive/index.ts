@@ -4,6 +4,7 @@ import {AnonymousClass} from "./anonymousClass/AnonymousClass";
 import {InnerInterfacePositive} from "./innerInterfacePositive/InnerInterfacePositive";
 import {Polymorphism} from "./polymorphism/Polymorphism";
 import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPositiveSameClass";
+import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
@@ -11,3 +12,7 @@ export {AnonymousClass};
 export {InnerInterfacePositive};
 export {Polymorphism};
 export {SimpleMethodsPositiveSameClass};
+
+export class Positive {
+    public static SimpleFields: TestCaseBaseClassForDataClumps = SimpleFields;
+}

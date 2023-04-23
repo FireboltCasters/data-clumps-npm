@@ -1,14 +1,8 @@
 import React, {FunctionComponent, useRef, useState} from 'react';
-import {loader} from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
 
 import {Splitter, SplitterPanel} from 'primereact/splitter';
 import {Skeleton} from 'primereact/skeleton';
 // default style
-
-
-
-loader.config({ monaco });
 
 // define WebIDEProps
 export interface WebIDEProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -16,7 +10,7 @@ export interface WebIDEProps extends React.HTMLAttributes<HTMLDivElement> {
     panelInitialSizes?: number[];
 }
 
-export const WebIDE : FunctionComponent<WebIDEProps> = (props: WebIDEProps) => {
+export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps) => {
 
     const [reloadForResize, setReloadForResize] = useState<boolean>(false);
 

@@ -4,9 +4,11 @@ import {SoftwareProject} from "./ignoreCoverage/SoftwareProject";
 import * as ParsedAstTypes from "./ignoreCoverage/ParsedAstTypes";
 import {JavaLanguageSupport} from "./ignoreCoverage/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
+import {TestCaseBaseClassForDataClumps} from "./ignoreCoverage/TestCaseBaseClassForDataClumps";
 
-export {antlr4};
 export {SoftwareProject};
+export {TestCaseBaseClassForDataClumps};
+export {antlr4};
 export {ParsedAstTypes};
 export {JavaLanguageSupport};
 
