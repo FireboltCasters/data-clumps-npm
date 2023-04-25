@@ -16,15 +16,38 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
     const [activeFile, setActiveFile] = useSynchedActiveFile();
 
-    function handleCloseOpenedFile(openFileKey){
+    function handleCloseOpenedFile(fileKeyToClose){
+        //console.log("close file: "+fileKeyToClose)
+        //console.log("active file: "+activeFile)
         let newOpenedFiles: any[] = [];
+        let nextActiveFile = activeFile;
+        if(activeFile == fileKeyToClose){
+            nextActiveFile = undefined;
+        }
+
+        if(openedFiles.length>1){
+            let indexOfClosedFile = openedFiles.indexOf(fileKeyToClose);
+            if(indexOfClosedFile!=-1){
+                // get neareast next file
+                let nextFileIndex = indexOfClosedFile+1;
+                if(nextFileIndex < openedFiles.length){
+                    nextActiveFile = openedFiles[nextFileIndex];
+                } else {
+                    // get the previous one
+                    nextActiveFile = openedFiles[indexOfClosedFile-1];
+                }
+            }
+        }
+
+        // get list of opened files, except the one to close
         for(let i=0; i<openedFiles.length; i++){
-            let openedFile = openedFiles[i];
-            if(openedFile!=openFileKey){
-                newOpenedFiles.push(openedFile);
+            let openedFileKey = openedFiles[i];
+            if(openedFileKey!=fileKeyToClose){
+                newOpenedFiles.push(openedFileKey);
             }
         }
         //TODO check if closed the active file, then set the active file as the next open one
+        setActiveFile(nextActiveFile);
         setOpenedFiles(newOpenedFiles);
     }
 
@@ -49,10 +72,11 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
 
         return(
             <div style={{paddingRight: "5px", ...invisibleStyle}}
-                onClick={handleSelectActiveFile.bind(null, openFileKey)}
             >
                 <div style={{...activeStyle, display: "inline-block", flexDirection: "row", border: "solid", borderColor: "gray", borderWidth: 1, paddingTop: paddingVertically+"px", paddingBottom: paddingVertically+"px", paddingLeft: paddingHorizontally+"px", paddingRight: paddingHorizontally+"px"}}>
-                    <div style={{display: "inline-block", ...activeStyle}}>
+                    <div style={{display: "inline-block", ...activeStyle}}
+                         onClick={handleSelectActiveFile.bind(null, openFileKey)}
+                    >
                         <FileItemWithFileIcon treeNode={treeNode} />
                     </div>
                     <div style={{display: "inline-block"}} onClick={handleCloseOpenedFile.bind(null, openFileKey)}>

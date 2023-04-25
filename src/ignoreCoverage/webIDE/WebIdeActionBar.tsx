@@ -3,10 +3,12 @@ import {Menubar} from 'primereact/menubar';
 
 // @ts-ignore
 export interface WebIdeCodeActionBarProps {
-
+    onStartDetection: () => void;
 }
 
 export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> = (props: WebIdeCodeActionBarProps) => {
+
+
 
     const items = [
         {
@@ -17,14 +19,14 @@ export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> =
                     label:'Open (TODO)',
                     icon:'pi pi-fw pi-folder',
                     command: () => {
-                        console.log("open")
+                        //console.log("open")
                     }
                 },
                 {
                     label:'Import from GitHub (TODO)',
                     icon:'pi pi-fw pi-folder',
                     command: () => {
-                        console.log("open")
+                        //console.log("open")
                     }
                 },
                 {
@@ -79,6 +81,29 @@ export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> =
                 {
                     label:'Detected Data-Clumps (TODO)',
                     icon:'pi pi-fw pi-user-minus',
+                },
+            ]
+        },
+        {
+            label:'Detect',
+            icon:'pi pi-fw pi-calendar',
+            items:[
+                {
+                    label:'All (TODO)',
+                    icon:'pi pi-fw pi-pencil',
+                    command: () => {
+                        if(props?.onStartDetection){
+                            props.onStartDetection();
+                        }
+                    }
+                },
+                {
+                    label:'Field Data-Clumps (TODO)',
+                    icon:'pi pi-fw pi-pencil',
+                },
+                {
+                    label:'Parameter Data-Clumps (TODO)',
+                    icon:'pi pi-fw pi-pencil',
                 },
             ]
         },

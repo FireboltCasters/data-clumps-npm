@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import Editor, {loader} from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
@@ -19,6 +19,30 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
 
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
     // @ts-ignore
+
+    const css = `
+    .myLineDecoration {
+      background: lightblue;
+      width: 5px !important;
+      margin-left: 3px;
+    }
+    .myGlyphMarginClass {
+    \tbackground: red;
+    }
+    .myContentClass {
+    \tbackground: lightblue;
+    }
+  `;
+
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.innerHTML = css;
+        document.head.appendChild(style);
+
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, [css]);
 
     const [code, setCode] = useState<string>(props?.defaultValue || "");
     const [debounceTime, setDebounceTime] = useState<number>(props?.debounceTime || 1000);
@@ -46,7 +70,7 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
         // set a new timeout
         let newTimerId = setTimeout(() => {
             // do something
-            console.log("timeout");
+            //console.log("timeout");
             let onDebounce = props?.onDebounce;
             if (onDebounce) {
                 onDebounce(newCode || "");
@@ -57,11 +81,33 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
 
     return(
         <Editor
+
+            onMount={(editor, monaco) => {
+                console.log("onMount");
+                let decorations = editor.createDecorationsCollection([
+                    {
+                        range: new monaco.Range(3, 1, 5, 1),
+                        options: {
+                            isWholeLine: true,
+//                            inlineClassName: "myLineDecoration",
+                            className: "myContentClass",
+                            glyphMarginClassName: "myGlyphMarginClass",
+                            hoverMessage: {
+                                value: "Hallo"
+                            }
+                        },
+                    },
+                    {
+                        range: new monaco.Range(7, 1, 7, 24),
+                        options: { inlineClassName: "myInlineDecoration" },
+                    },
+                ]);
+            }}
             height="90vh"
             width={"auto"}
             defaultLanguage={props?.language}
             defaultValue={code}
-            options={props?.options}
+            options={{glyphMargin: true, ...props?.options}}
             onChange={handleCodeChange}
         />
     )

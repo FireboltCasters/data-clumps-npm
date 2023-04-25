@@ -19,10 +19,10 @@ export function useSynchedJSONState(storageKey): [value: any, setValue: (value) 
   const [jsonStateAsString, setJsonStateAsString] = useSynchedState(storageKey);
   const parsedJSON = JSON.parse(jsonStateAsString || "null");
   const setValue = (dict) => {
-      console.log("set value");
-      console.log(dict);
+      //console.log("set value");
+      //console.log(dict);
       setJsonStateAsString(JSON.stringify(dict));
-      console.log(JSON.stringify(dict));
+      //console.log(JSON.stringify(dict));
   }
   return [
     parsedJSON,
@@ -34,6 +34,15 @@ export function useSynchedJSONState(storageKey): [value: any, setValue: (value) 
 
 export function useSynchedActiveFile(): [value: any, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.activeFile)
+    let activeFileKeyKey = activeFileKey || null;
+    return [
+        activeFileKeyKey,
+        setActiveFileKey
+    ];
+}
+
+export function useSynchedResult(): [value: any, setValue: (value) => {}] {
+    const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.result)
     let activeFileKeyKey = activeFileKey || null;
     return [
         activeFileKeyKey,
@@ -63,6 +72,8 @@ export function useSynchedProject(): [value: any, setValue: (value) => {}] {
         setProject
     ];
 }
+
+
 
 export class SynchedStateHelper {
 

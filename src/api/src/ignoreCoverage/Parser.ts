@@ -14,11 +14,14 @@ export class ParserOptions {
 export class Parser {
 
   public static parseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions) {
+      console.log("Parser.parseSoftwareProject")
       let timer = new Timer();
         timer.start();
 
     let parserOptions = options || new ParserOptions(false);
     let filePaths = softwareProject.getFilePaths();
+    console.log("Parser.parseSoftwareProject filePaths")
+    console.log(filePaths)
     for (let filePath of filePaths) {
       let file = softwareProject.getFile(filePath);
       let parsedFile = Parser.parseFile(file, parserOptions);
@@ -33,14 +36,18 @@ export class Parser {
 
   private static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {
     let filePath = file.path;
+    console.log("Parser.parseFile filePath")
+    console.log(filePath)
     let fileExtension = Parser.getFileExtension(filePath);
+    console.log("Parser.parseFile fileExtension")
+    console.log(fileExtension)
     switch (fileExtension) {
         // TODO own parser for each language as plugin
         case 'java':
           try{
               let parser = new JavaLanguageSupport().getParser();
-              //let result = parser.parse(file, options.includePosition);
-              //return result;
+              let result = parser.parse(file, options.includePosition);
+              return result;
           } catch (e) {
             console.log(e);
           }

@@ -21,12 +21,12 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
         if(!reloadForResize){
             let target = event?.target;
-            console.log(target.classList);
+            //console.log(target.classList);
             for(let i = 0; i < target.classList.length; i++) {
                 let className = target.classList[i];
-                console.log("- "+className);
+                //console.log("- "+className);
                 if (className === "p-splitter-gutter" || className === "p-splitter-gutter-handle") {
-                    console.log("oh yes im inside")
+                    //console.log("oh yes im inside")
                     setReloadForResize(true);
                     break;
                 }
@@ -91,7 +91,7 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
                     <Splitter style={{height: "100%"}} layout="horizontal" gutterSize={3}
                         onResizeEnd={() => {
-                            console.log("onResizeEnd");
+                            //console.log("onResizeEnd");
                             setReloadForResize(false);
                         }}
                         // @ts-ignore

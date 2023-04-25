@@ -29,6 +29,7 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
     const [loading, setLoading] = useState(false);
     const [tree, setTree] = useState<any>(getTreeFromSoftwareProject(project));
+    const [selectedFileInExplorer, setSelectedFileInExplorer] = useState<string>(activeFile);
 
     function getTreeDictFromSoftwareProject(project: SoftwareProject): any{
 
@@ -108,33 +109,41 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
 
 
     const toggleExpanded: FileTreeProps["onItemClick"] = (treeNode) => {
+        let fileUri = treeNode.uri;
+        let fileUriWithoutStart = fileUri.replace(startUri+"/", "");
+        //console.log("fileUriWithoutStart: "+fileUriWithoutStart)
+
 
         if(treeNode.type=="directory"){
             // @ts-ignore
             setTree((tree) =>
                 // @ts-ignore
-                utils.assignTreeNode(tree, treeNode.uri, { expanded: !treeNode.expanded })
+                utils.assignTreeNode(tree, fileUri, { expanded: !treeNode.expanded })
             );
         }
         if(treeNode.type=="file"){
-            let fileUri = treeNode.uri;
-            let fileUriWithoutStart = fileUri.replace(startUri+"/", "");
-
-            let newOpenedFiles = [...openedFiles];
-            let fileAlreadyOpened = false;
-            for(let i=0; i<newOpenedFiles.length; i++){
-                let openedFile = newOpenedFiles[i];
-                if(openedFile==fileUriWithoutStart){
-                    fileAlreadyOpened = true;
-                    break;
+            //console.log("selectedFileInExplorer: "+selectedFileInExplorer)
+            if(selectedFileInExplorer==fileUriWithoutStart){
+                //console.log("file already selected")
+                let newOpenedFiles = [...openedFiles];
+                let fileAlreadyOpened = false;
+                for(let i=0; i<newOpenedFiles.length; i++){
+                    let openedFile = newOpenedFiles[i];
+                    if(openedFile==fileUriWithoutStart){
+                        fileAlreadyOpened = true;
+                    }
                 }
+                //console.log("fileAlreadyOpened: "+fileAlreadyOpened)
+                if(!fileAlreadyOpened){
+                    newOpenedFiles.push(fileUriWithoutStart);
+                }
+                //console.log("newOpenedFiles: ")
+                //console.log(newOpenedFiles)
+                setActiveFile(fileUriWithoutStart);
+                setOpenedFiles(newOpenedFiles);
             }
-            if(!fileAlreadyOpened){
-                openedFiles.push(fileUriWithoutStart);
-            }
-            setActiveFile(fileUriWithoutStart);
-            setOpenedFiles(newOpenedFiles);
         }
+        setSelectedFileInExplorer(fileUriWithoutStart);
     };
 
     function getFileFromEntry(entry): Promise<File> {
@@ -196,15 +205,15 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
                 );
                 newProject.addFile(myFile);
             } catch (err){
-                console.log("Error while reading file");
-                console.log(err);
+                //console.log("Error while reading file");
+                //console.log(err);
             }
 
         } else if (item.isDirectory) {
 
             let dirName = item.name;
             if(dirName === "node_modules"){
-                console.log("Ignore node_modules");
+                //console.log("Ignore node_modules");
                 return;
             }
 
@@ -217,10 +226,17 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     }
 
     function itemRenderer(treeNode: TreeNode) {
-        let expanded = treeNode?.expanded;
+        let treeNodeWithoutStart = treeNode.uri.replace(startUri+"/", "");
+
+        let style = {};
+        if(treeNodeWithoutStart==selectedFileInExplorer){
+            style = {
+                border: "solid", borderColor: "gray", borderWidth: 1
+            }
+        }
 
         return (
-            <div style={{}}>
+            <div style={{...style}}>
                 <FileItemWithFileIcon treeNode={treeNode} />
             </div>
         )

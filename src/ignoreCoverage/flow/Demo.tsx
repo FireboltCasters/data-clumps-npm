@@ -2,9 +2,7 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {JavaLanguageSupport, SoftwareProject, TestCaseBaseClassForDataClumps} from "../../api/src/";
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
-import '@sinm/react-file-tree/styles.css';
-import '@sinm/react-file-tree/icons.css';
-import {useSynchedActiveFile, useSynchedProject} from "../storage/SynchedStateHelper";
+import {useSynchedActiveFile, useSynchedProject, useSynchedResult} from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
 import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
@@ -21,30 +19,25 @@ export const Demo : FunctionComponent = (props) => {
     const files = testCase.getFiles()
 
     // @ts-ignore
-    const [result, setResult] = useState<string>("");
+    const [result, setResult] = useSynchedResult();
 
-    const [code, setCode] = useState<string>(files[0].content);
+    const [code, setCode] = useState<string>("");
 
 
     useEffect(() => {
         document.title = "data-clumps api Demo"
     }, [])
 
-    useEffect(() => {
-        handleParser(code);
-    }, [])
 
+    // Automatically load the active file
     useEffect(() => {
-        console.log("activeFile changed");
         if(activeFile && project){
-            console.log("We got the project and an activeFileKey: "+activeFile);
-            console.log("Project");
-            console.log(project)
             let activeProjectFile: MyFile = project.getFile(activeFile);
-            console.log(activeProjectFile);
             if(activeProjectFile){
                 setCode(activeProjectFile?.content || "");
             }
+        } else {
+            setCode("")
         }
     }, [activeFile])
 
@@ -57,9 +50,22 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    async function onStartDetection(){
+        console.log("onStartDetection");
+        let files = project.getFilePaths();
+        console.log("files");
+        console.log(files);
+        console.log("project.generateAstForFiles();");
+        project.generateAstForFiles();
+        let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps()
+        console.log("dataClumpsContext");
+        console.log(dataClumpsContext);
+        setResult(JSON.stringify(dataClumpsContext, null, 2));
+    }
+
     function renderActionBar(){
         return(
-            <WebIdeCodeActionBar />
+            <WebIdeCodeActionBar onStartDetection={onStartDetection} />
         )
     }
 
@@ -74,7 +80,7 @@ export const Demo : FunctionComponent = (props) => {
             <WebIdeCodeEditor
                 key={code}
                 defaultValue={code}
-                onDebounce={handleParser}
+                //onDebounce={handleParser}
             />
         )
     }
@@ -82,25 +88,11 @@ export const Demo : FunctionComponent = (props) => {
     function renderResult(){
         return(
             <WebIdeCodeEditor
+                key={result}
                 defaultValue={result}
                 options={{ readOnly: true }}
             />
         )
-    }
-
-    async function handleParser(newCode){
-        console.log("handleParser");
-
-        let fakeFilePath = "test.java";
-        // newly added
-        let softwareProject = new SoftwareProject();
-        softwareProject.addFileContent(fakeFilePath, newCode);
-        softwareProject.generateAstForFiles();
-        let file = softwareProject.getFile(fakeFilePath);
-        let result = file.ast;
-        let dataClumpsContext: DataClumpsTypeContext = await softwareProject.detectDataClumps()
-
-        setResult(JSON.stringify(dataClumpsContext, null, 2));
     }
 
     return (
