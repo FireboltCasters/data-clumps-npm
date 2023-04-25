@@ -3,6 +3,7 @@ import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
 import {SoftwareProject} from "../../api/src";
+import {getTreeDictFromSoftwareProject} from "../webIDE/WebIdeFileExplorer";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {
@@ -32,12 +33,26 @@ export function useSynchedJSONState(storageKey): [value: any, setValue: (value) 
 }
 
 
-export function useSynchedActiveFile(): [value: any, setValue: (value) => {}] {
+export function useSynchedActiveFileKey(): [value: any, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.activeFile)
     let activeFileKeyKey = activeFileKey || null;
     return [
         activeFileKeyKey,
         setActiveFileKey
+    ];
+}
+
+
+export function useSynchedFileExplorerTree(): [any, ((value) => void)] {
+    const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.softwareProjectTree)
+    const setTreeWrapper = (tree: any) => {
+        console.log("setTreeWrapper")
+        console.log(tree)
+        setActiveFileKey(tree);
+    }
+    return [
+        activeFileKey,
+        setTreeWrapper
     ];
 }
 
@@ -59,7 +74,7 @@ export function useSynchedOpenedFiles(): [value: any, setValue: (value) => {}] {
     ];
 }
 
-export function useSynchedProject(): [value: any, setValue: (value) => {}] {
+export function useSynchedProject(): [value: SoftwareProject, setValue: (value) => {}] {
     const [projectObj, setProject] = useSynchedJSONState(SynchedStates.softwareProject)
     let project = new SoftwareProject()
     if(!projectObj){

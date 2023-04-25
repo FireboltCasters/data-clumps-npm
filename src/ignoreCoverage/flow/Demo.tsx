@@ -1,22 +1,28 @@
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {JavaLanguageSupport, SoftwareProject, TestCaseBaseClassForDataClumps} from "../../api/src/";
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
-import {useSynchedActiveFile, useSynchedProject, useSynchedResult} from "../storage/SynchedStateHelper";
+import {
+    useSynchedActiveFileKey,
+    useSynchedJSONState,
+    useSynchedProject,
+    useSynchedResult
+} from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
 import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
 import {WebIdeCodeActionBar} from "../webIDE/WebIdeActionBar";
 import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpenedFiles";
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
+import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFilePath";
+import {SynchedStates} from "../storage/SynchedStates";
 
 export const Demo : FunctionComponent = (props) => {
 
     const [project, setProject] = useSynchedProject();
-    const [activeFile, setActiveFile] = useSynchedActiveFile();
+    const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
 
-    const testCase: TestCaseBaseClassForDataClumps = JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields;
-    const files = testCase.getFiles()
+    const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions);
+    let showResults = viewOptions?.showResults;
 
     // @ts-ignore
     const [result, setResult] = useSynchedResult();
@@ -31,15 +37,15 @@ export const Demo : FunctionComponent = (props) => {
 
     // Automatically load the active file
     useEffect(() => {
-        if(activeFile && project){
-            let activeProjectFile: MyFile = project.getFile(activeFile);
+        if(activeFileKey && project){
+            let activeProjectFile: MyFile = project.getFile(activeFileKey);
             if(activeProjectFile){
                 setCode(activeProjectFile?.content || "");
             }
         } else {
             setCode("")
         }
-    }, [activeFile])
+    }, [activeFileKey])
 
     //TODO viszualize Graph?: react-graph-vis
 
@@ -52,6 +58,8 @@ export const Demo : FunctionComponent = (props) => {
 
     async function onStartDetection(){
         console.log("onStartDetection");
+        console.log("project");
+        console.log(project);
         let files = project.getFilePaths();
         console.log("files");
         console.log(files);
@@ -75,12 +83,30 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    function onChangeCode(newCode: string | undefined){
+        if(activeFileKey && project){
+            console.log("onChangeCode");
+            console.log("activeFileKey")
+            console.log(activeFileKey);
+            let activeProjectFile: MyFile = project.getFile(activeFileKey);
+            console.log("activeProjectFile");
+            console.log(activeProjectFile);
+            if(activeProjectFile){
+                activeProjectFile.content = newCode || "";
+                console.log(project);
+                setProject(project);
+                setResult("")
+                setCode(activeProjectFile?.content || "");
+            }
+        }
+    }
+
     function renderCodeEditor(){
         return(
             <WebIdeCodeEditor
                 key={code}
                 defaultValue={code}
-                //onDebounce={handleParser}
+                onDebounce={onChangeCode}
             />
         )
     }
@@ -92,6 +118,23 @@ export const Demo : FunctionComponent = (props) => {
                 defaultValue={result}
                 options={{ readOnly: true }}
             />
+        )
+    }
+
+    function renderActiveFilePath(){
+        return <WebIdeCodeEditorActiveFilePath />
+    }
+
+    function renderResultsPanel(){
+        if(!showResults){
+            return null;
+        }
+
+        return(
+            <div style={{backgroundColor: "transparent"}}>
+                <div>{"Result"}</div>
+                {renderResult()}
+            </div>
         )
     }
 
@@ -107,12 +150,10 @@ export const Demo : FunctionComponent = (props) => {
                     </div>
                     <div style={{backgroundColor: "transparent"}}>
                         {renderOpenedFiles()}
+                        {renderActiveFilePath()}
                         {renderCodeEditor()}
                     </div>
-                    <div style={{backgroundColor: "transparent"}}>
-                        <div>{"Result"}</div>
-                        {renderResult()}
-                    </div>
+                    {renderResultsPanel()}
                 </WebIdeLayout>
             </div>
         );

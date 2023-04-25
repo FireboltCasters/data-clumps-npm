@@ -4,7 +4,7 @@ import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
 import FileItemWithFileIcon from "@sinm/react-file-tree/lib/FileItemWithFileIcon";
 import {TreeNode} from "@sinm/react-file-tree";
-import {useSynchedActiveFile, useSynchedOpenedFiles} from "../storage/SynchedStateHelper";
+import {useSynchedActiveFileKey, useSynchedOpenedFiles} from "../storage/SynchedStateHelper";
 
 // @ts-ignore
 export interface WebIdeCodeEditorLastOpenedFilesProps {
@@ -14,7 +14,7 @@ export interface WebIdeCodeEditorLastOpenedFilesProps {
 export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEditorLastOpenedFilesProps> = (props: WebIdeCodeEditorLastOpenedFilesProps) => {
 
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
-    const [activeFile, setActiveFile] = useSynchedActiveFile();
+    const [activeFile, setActiveFile] = useSynchedActiveFileKey();
 
     function handleCloseOpenedFile(fileKeyToClose){
         //console.log("close file: "+fileKeyToClose)
@@ -87,22 +87,23 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
         )
     }
 
-
-    let renderOpenedFiles: ReactNode[] = [];
-    for(let i = 0; i < openedFiles.length; i++){
-        let openFileKey = openedFiles[i];
-        renderOpenedFiles.push(
-            renderOpenFileTab(openFileKey, false)
-        )
+    function renderOpenedFiles(){
+        let renderedOpenedFiles: ReactNode[] = [];
+        for(let i = 0; i < openedFiles.length; i++){
+            let openFileKey = openedFiles[i];
+            renderedOpenedFiles.push(
+                renderOpenFileTab(openFileKey, false)
+            )
+        }
+        if(renderedOpenedFiles.length==0){
+            renderedOpenedFiles.push(renderOpenFileTab("", true))
+        }
+        return renderedOpenedFiles;
     }
-    if(renderOpenedFiles.length==0){
-        renderOpenedFiles.push(renderOpenFileTab("", true))
-    }
-
 
     return(
         <div style={{width: "100%", backgroundColor: "transparent", display: "flex", justifyContent: "flex-start", flexDirection: "row", flex: 1}}>
-            {renderOpenedFiles}
+            {renderOpenedFiles()}
         </div>
     )
 }

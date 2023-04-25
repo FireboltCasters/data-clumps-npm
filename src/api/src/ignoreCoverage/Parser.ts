@@ -34,7 +34,8 @@ export class Parser {
     timer.printElapsedTime("Parser.parseSoftwareProject");
   }
 
-  private static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {
+  public static parseFile(file: MyFile, options: ParserOptions): Dictionary<ClassOrInterfaceTypeContext> | null {
+      file.ast = {}; // reset ast
     let filePath = file.path;
     console.log("Parser.parseFile filePath")
     console.log(filePath)

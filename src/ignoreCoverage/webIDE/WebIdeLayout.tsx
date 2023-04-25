@@ -50,6 +50,12 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
     function renderPanel(content, index){
         let usedContent = content;
+        console.log("renderPanel");
+        console.log(content);
+        if(!content){
+            return null;
+        }
+
         if(reloadForResize){
             usedContent = renderResizingContent();
         }
@@ -72,12 +78,22 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
             if(Array.isArray(children)){
                 for(let i = 0; i < children.length; i++){
                     let child = children[i];
-                    renderedPanels.push(renderPanel(child, i));
+                    let renderedPanel = renderPanel(child, i);
+                    if(renderedPanel){
+                        renderedPanels.push(renderedPanel);
+                    }
                 }
             }else{
-                renderedPanels.push(renderPanel(children, 0));
+                let renderedPanel = renderPanel(children, 0);
+                if(renderedPanel){
+                    renderedPanels.push(renderPanel(children, 0));
+                }
             }
         }
+        console.log("renderPanels");
+        console.log(renderedPanels);
+        console.log("Amount of panels: "+renderedPanels.length)
+
         return renderedPanels;
     }
 

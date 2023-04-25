@@ -12,12 +12,6 @@ export class SoftwareProject {
     this.filesToParseDict = {};
   }
 
-  public static fromJson(json: any) {
-    let softwareProject = new SoftwareProject();
-    softwareProject.filesToParseDict = json.filesToParseDict;
-    return softwareProject;
-  }
-
   public addFileContent(path: string, fileContent: string) {
     let newFileToAdd = new MyFile(path, fileContent);
     return this.addFile(newFileToAdd);
@@ -43,6 +37,10 @@ export class SoftwareProject {
 
   public generateAstForFiles() {
     Parser.parseSoftwareProject(this, new ParserOptions(false));
+  }
+
+  public generateAstForFile(path: string) {
+    Parser.parseFile(this.getFile(path), new ParserOptions(false));
   }
 
   public getFilesDict() {

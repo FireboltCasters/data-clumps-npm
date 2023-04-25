@@ -13,6 +13,10 @@ export class TestCaseBaseClass {
         this.expectedResult = expectedResult;
     }
 
+    public getName(): string {
+        return this.name;
+    }
+
     public getSoftwareProject(): SoftwareProject {
         let project = new SoftwareProject()
         project.addFiles(this.files)

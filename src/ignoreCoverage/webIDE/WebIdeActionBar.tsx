@@ -1,5 +1,14 @@
 import React, {FunctionComponent} from 'react';
 import {Menubar} from 'primereact/menubar';
+import {
+    useSynchedActiveFileKey,
+    useSynchedFileExplorerTree,
+    useSynchedJSONState, useSynchedOpenedFiles,
+    useSynchedProject
+} from "../storage/SynchedStateHelper";
+import {SynchedStates} from "../storage/SynchedStates";
+import {Languages} from "../../api/src";
+import {getTreeFromSoftwareProject} from "./WebIdeFileExplorer";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarProps {
@@ -8,7 +17,59 @@ export interface WebIdeCodeActionBarProps {
 
 export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> = (props: WebIdeCodeActionBarProps) => {
 
+    const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions);
+    const [project, setProject] = useSynchedProject();
+    const [tree, setTree] = useSynchedFileExplorerTree();
+    const [activeFile, setActiveFile] = useSynchedActiveFileKey();
+    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
 
+    function getViewOptionResultsItem(){
+        let active = viewOptions?.showResults;
+
+        return {
+            label:'Detected Data-Clumps',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                setViewOptions({...viewOptions, showResults: !active})
+            }
+        }
+    }
+
+    function renderExampleLanguageMenuItems(){
+        let languages = Languages.getLanguages();
+        let items: any[] = [];
+        for(let language of languages){
+            let identifier = language.getIdentifier();
+            console.log("identifier", identifier)
+
+            let testCases = language.getTestCasesDataClumps();
+            console.log("testCases")
+            console.log(testCases)
+            let testCasesItems: any[] = [];
+            for(let testCase of testCases){
+                let testCaseProject = testCase.getSoftwareProject()
+                let testCaseName = testCase.getName();
+                let testCaseItem = {
+                    label: testCaseName,
+                    icon:'pi pi-fw',
+                    command: () => {
+                        setProject(testCaseProject);
+                        setTree(getTreeFromSoftwareProject(testCaseProject));
+                        setOpenedFiles([]);
+                        setActiveFile(null);
+                    }
+                }
+                testCasesItems.push(testCaseItem);
+            }
+
+            items.push({
+                label: identifier,
+                icon:'pi pi-fw',
+                items: testCasesItems
+            });
+        }
+        return items;
+    }
 
     const items = [
         {
@@ -28,6 +89,17 @@ export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> =
                     command: () => {
                         //console.log("open")
                     }
+                },
+                {
+                    separator:true
+                },
+                {
+                    label:'Examples (TODO)',
+                    icon:'pi pi-fw pi-folder',
+                    items: renderExampleLanguageMenuItems()
+                },
+                {
+                    separator:true
                 },
                 {
                     label:'New',
@@ -79,8 +151,7 @@ export const WebIdeCodeActionBar : FunctionComponent<WebIdeCodeActionBarProps> =
                     icon:'pi pi-fw pi-user-plus',
                 },
                 {
-                    label:'Detected Data-Clumps (TODO)',
-                    icon:'pi pi-fw pi-user-minus',
+                    ...getViewOptionResultsItem(),
                 },
             ]
         },

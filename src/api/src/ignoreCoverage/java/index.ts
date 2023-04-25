@@ -24,7 +24,7 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
 
     public getTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
         let testCases: TestCaseBaseClassForDataClumps[] = [];
-        //testCases.push(JavaDataClumpsTestCases.Negative.simpleMethodsWithoutDataClumps);
+        testCases.push(JavaDataClumpsTestCases.Negative.simpleMethodsWithoutDataClumps);
         return testCases;
     }
 
