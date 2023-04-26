@@ -21,6 +21,7 @@ export const Demo : FunctionComponent = (props) => {
 
     const [project, setProject] = useSynchedProject();
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
+    const [decorations, setDecorations] = useState<any[]>([]);
 
     const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions);
     let showResults = viewOptions?.showResults;
@@ -98,6 +99,27 @@ export const Demo : FunctionComponent = (props) => {
                 setProject(project);
                 setResult("")
                 setCode(activeProjectFile?.content || "");
+                setDecorations(
+                    [
+                        {
+                            range: {
+                                startLineNumber: 2,
+                                startColumn: 4,
+                                endLineNumber: 2,
+                                endColumn: 10
+                            },
+                            options: {
+                                isWholeLine: false,
+//                            inlineClassName: "myLineDecoration",
+                                className: "myContentClass",
+                                glyphMarginClassName: "myGlyphMarginClass",
+                                hoverMessage: {
+                                    value: "Hallo"
+                                }
+                            },
+                        }
+                    ]
+                )
             }
         }
     }
@@ -108,6 +130,7 @@ export const Demo : FunctionComponent = (props) => {
                 key={code}
                 defaultValue={code}
                 onDebounce={onChangeCode}
+                decorations={decorations}
             />
         )
     }

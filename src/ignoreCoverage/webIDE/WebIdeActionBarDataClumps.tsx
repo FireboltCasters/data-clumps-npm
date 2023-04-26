@@ -96,7 +96,8 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-file',
             items:[
                 {
-                    label:'Open (TODO)',
+                    label:'Open (TODO) (Drop works)',
+                    disabled: true,
                     icon:'pi pi-fw pi-folder',
                     command: () => {
                         //console.log("open")
@@ -104,6 +105,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 },
                 {
                     label:'Import from GitHub (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-github',
                     command: () => {
                         //console.log("open")
@@ -126,6 +128,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     items:[
                         {
                             label:'Project... (TODO)',
+                            disabled: true,
                             icon:'pi pi-fw pi-book'
                         },
                         {
@@ -133,16 +136,19 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                         },
                         {
                             label:'File (TODO)',
+                            disabled: true,
                             icon:'pi pi-fw pi-file'
                         },
                         {
                             label:'Folder (TODO)',
+                            disabled: true,
                             icon:'pi pi-fw pi-folder'
                         }
                     ]
                 },
                 {
                     label:'Export (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-file-export'
                 }
             ]
@@ -153,10 +159,12 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             items:[
                 {
                     label:'Undo (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-undo'
                 },
                 {
                     label:'Redo (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-refresh'
                 },
             ]
@@ -165,17 +173,28 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             label:'View',
             icon:'pi pi-fw pi-user',
             items:[
+                    getViewOptionResultsItem(),
                 {
                     label:'Parsed AST (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-user-plus',
                 },
                 {
-                    ...getViewOptionResultsItem(),
+                    label:'Speed evaluation (TODO)',
+                    disabled: true,
+                    icon:'pi pi-fw pi-clock',
                 },
                 {
-                    label:'Speed evaluation (TODO)',
-                    icon:'pi pi-fw pi-stopwatch',
+                    label:'Graph (TODO)',
+                    disabled: true,
+                    icon:'pi pi-fw pi-share-alt',
                 },
+                {
+                    label:'Chart (Most Data Clumps) (TODO)',
+                    disabled: true,
+                    icon:'pi pi-fw pi-chart-bar',
+                },
+
             ]
         },
         {
@@ -183,7 +202,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-search',
             items:[
                 {
-                    label:'All (TODO)',
+                    label:'All (Testing)',
                     icon:'pi pi-fw pi-pencil',
                     command: () => {
                         if(props?.onStartDetection){
@@ -193,10 +212,12 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 },
                 {
                     label:'Field Data-Clumps (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
                 {
                     label:'Parameter Data-Clumps (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
             ]
@@ -207,14 +228,17 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             items:[
                 {
                     label:'Auto (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
                 {
                     label:'Field Data-Clumps (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
                 {
                     label:'Parameter Data-Clumps (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
             ]
@@ -225,6 +249,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             items:[
                 {
                     label:'Console (TODO)',
+                    disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
 

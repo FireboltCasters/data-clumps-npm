@@ -13,6 +13,14 @@ export interface WebIdeCodeEditorProps {
     onChange?: (newCode: string) => Promise<boolean>;
     onDebounce?: (newCode: string) => void; // Debouce: if the user stops typing for 1 second, then the code is sent to the server
     debounceTime?: number;
+    decorations?: any[];
+}
+
+export type DecorationRange = {
+    startLineNumber: number,
+    startColumn: number,
+    endLineNumber: number,
+    endColumn: number
 }
 
 export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (props: WebIdeCodeEditorProps) => {
@@ -84,24 +92,13 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
 
             onMount={(editor, monaco) => {
                 console.log("onMount");
-                let decorations = editor.createDecorationsCollection([
-                    {
-                        range: new monaco.Range(3, 1, 5, 1),
-                        options: {
-                            isWholeLine: true,
-//                            inlineClassName: "myLineDecoration",
-                            className: "myContentClass",
-                            glyphMarginClassName: "myGlyphMarginClass",
-                            hoverMessage: {
-                                value: "Hallo"
-                            }
-                        },
-                    },
-                    {
-                        range: new monaco.Range(7, 1, 7, 24),
-                        options: { inlineClassName: "myInlineDecoration" },
-                    },
-                ]);
+                if(props?.decorations){
+                    let decorationCopy = JSON.parse(JSON.stringify(props?.decorations));
+                    for(let decoration of decorationCopy){
+                        decoration.range = new monaco.Range(decoration.range.startLineNumber, decoration.range.startColumn, decoration.range.endLineNumber, decoration.range.endColumn);
+                    }
+                    let decorations = editor.createDecorationsCollection(decorationCopy);
+                }
             }}
             height="90vh"
             width={"auto"}

@@ -257,6 +257,27 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
         )
     }
 
+    let dropZoneElement: any = null;
+    if(!project || (project.getFilePaths().length==0)){
+        dropZoneElement = (
+            <div style={{paddingTop: "100px", padding: "10px", display: "inline-block", flexDirection: "row", backgroundColor: "white", alignItems: "center", justifyContent: "center"}}>
+                <div style={{alignItems: 'center',
+                    justifyContent: 'center', display: 'flex'}}>
+                    <div style={{display: "inline-block"}}>
+                        <i className="pi pi-download" style={{fontSize: "3em"}}/>
+                    </div>
+                </div>
+                <div style={{alignItems: 'center',
+                    justifyContent: 'center', display: 'flex'}}>
+                    <div style={{display: "inline-block"}}>
+                            {"Drop your project here"}
+                    </div>
+                </div>
+
+            </div>
+        )
+    }
+
     return(
         <div
             className="dropzone"
@@ -264,6 +285,7 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
             onDrop={handleDrop}
             style={{display: "flex", flexDirection: "column", flex: 1, backgroundColor: "transparent", height: "100vh"}}>
             <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
+            {dropZoneElement}
         </div>
     )
 }
