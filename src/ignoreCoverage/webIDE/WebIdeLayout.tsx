@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useRef, useState} from 'react';
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 
 import {Splitter, SplitterPanel} from 'primereact/splitter';
 import {Skeleton} from 'primereact/skeleton';
@@ -11,6 +11,26 @@ export interface WebIDEProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps) => {
+
+    const css = `
+    .p-splitter-gutter{
+          width: 5px !important;    
+    }
+        .p-splitter-gutter-handle {
+          background-color: blue !important;
+          /* other styles */
+        }
+  `;
+
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.innerHTML = css;
+        document.head.appendChild(style);
+
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, [css]);
 
     const [reloadForResize, setReloadForResize] = useState<boolean>(false);
 
@@ -39,8 +59,16 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
             <div style={{flex: 1, width: "100%", height: "100vh", backgroundColor: "transparent"}}>
                 <Skeleton width={"100%"} height={"100%"}>
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-                        <div style={{display: "inline-block", backgroundColor: "white", alignItems: "center", justifyContent: "center"}}>
-                            {"Wait to end resizing"}
+                        <div style={{padding: "10px", display: "inline-block", flexDirection: "row", backgroundColor: "white", alignItems: "center", justifyContent: "center"}}>
+                            <div style={{alignItems: 'center',
+                                justifyContent: 'center', display: 'flex'}}>
+                                <div style={{display: "inline-block"}}>
+                                    <i className="pi pi-spin pi-spinner" style={{fontSize: "5em"}}/>
+                                </div>
+                            </div>
+                            <div style={{display: "inline-block"}}>
+                                {"Wait to end resizing"}
+                            </div>
                         </div>
                     </div>
                 </Skeleton>

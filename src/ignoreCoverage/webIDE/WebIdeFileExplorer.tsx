@@ -231,7 +231,9 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     }
 
     function itemRenderer(treeNode: TreeNode) {
-        let treeNodeWithoutStart = treeNode.uri.replace(startUri+"/", "");
+        let uri = treeNode.uri;
+
+        let treeNodeWithoutStart = uri.replace(startUri+"/", "");
 
         let style = {};
         if(treeNodeWithoutStart==selectedFileInExplorer){

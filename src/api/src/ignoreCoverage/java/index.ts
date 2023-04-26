@@ -22,7 +22,13 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
         return new JavaParserAntlr4();
     }
 
-    public getTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
+    public getPositiveTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
+        let testCases: TestCaseBaseClassForDataClumps[] = [];
+        testCases.push(JavaDataClumpsTestCases.Positive.SimpleFields);
+        return testCases;
+    }
+
+    public getNegativeTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
         let testCases: TestCaseBaseClassForDataClumps[] = [];
         testCases.push(JavaDataClumpsTestCases.Negative.simpleMethodsWithoutDataClumps);
         return testCases;

@@ -5,6 +5,7 @@ export interface LanguageSupportInterface {
     getIdentifier(): string;
     getFileExtensions(): string[];
     getParser(): LanguageParserInterface;
-    getTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
+    getPositiveTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
+    getNegativeTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
     getTestCasesParser(): any;
 }

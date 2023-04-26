@@ -15,6 +15,7 @@ import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpe
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFilePath";
 import {SynchedStates} from "../storage/SynchedStates";
+import {WebIdeCodeActionBarDataClumps} from "../webIDE/WebIdeActionBarDataClumps";
 
 export const Demo : FunctionComponent = (props) => {
 
@@ -73,7 +74,7 @@ export const Demo : FunctionComponent = (props) => {
 
     function renderActionBar(){
         return(
-            <WebIdeCodeActionBar onStartDetection={onStartDetection} />
+            <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} />
         )
     }
 

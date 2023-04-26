@@ -3,7 +3,6 @@ import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
 import {SoftwareProject} from "../../api/src";
-import {getTreeDictFromSoftwareProject} from "../webIDE/WebIdeFileExplorer";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {

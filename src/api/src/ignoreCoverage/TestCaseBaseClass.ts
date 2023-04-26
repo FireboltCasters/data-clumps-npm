@@ -6,11 +6,13 @@ export class TestCaseBaseClass {
     public name: string;
     public files: MyFile[];
     public expectedResult: any;
+    public description: string;
 
-    public constructor(name, files: MyFile[], expectedResult){
+    public constructor(name, files: MyFile[], expectedResult, description?: string) {
         this.name = name;
         this.files = files;
         this.expectedResult = expectedResult;
+        this.description = "";
     }
 
     public getName(): string {

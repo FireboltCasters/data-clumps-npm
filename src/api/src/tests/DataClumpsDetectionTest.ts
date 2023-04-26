@@ -4,7 +4,7 @@ function testAllLanguages() {
     let languages = Languages.getLanguages();
     for (let language of languages) {
       let identifier = language.getIdentifier();
-      let testCasesDataClumps = language.getTestCasesDataClumps();
+      let testCasesDataClumps = language.getPositiveTestCasesDataClumps();
       for(let testCase of testCasesDataClumps) {
         let softwareProject = new SoftwareProject();
         softwareProject.addFiles(testCase.getFiles());
