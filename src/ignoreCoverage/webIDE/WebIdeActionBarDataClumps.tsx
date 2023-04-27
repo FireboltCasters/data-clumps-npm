@@ -129,7 +129,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     }
                 },
                 {
-                    label:'Import from GitHub (Debug)',
+                    label:'Import from GitHub',
                     icon:'pi pi-fw pi-github',
                     command: () => {
                         githubModalOptions.visible = true;

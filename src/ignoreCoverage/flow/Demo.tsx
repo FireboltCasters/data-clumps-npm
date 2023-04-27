@@ -70,8 +70,11 @@ export const Demo : FunctionComponent = (props) => {
 
     async function generateAstCallback(message, index, total){
         let content = `${index}/${total}: ${message}`;
-        setModalOptions({visible: true, content: content});
-        await sleep(0); // Allow the UI to update before the next message is set
+        let isEveryHundreds = index % 100 === 0;
+        if(isEveryHundreds) {
+            setModalOptions({visible: true, content: content});
+            await sleep(0); // Allow the UI to update before the next message is set
+        }
     }
 
     async function sleep(ms: number) {
