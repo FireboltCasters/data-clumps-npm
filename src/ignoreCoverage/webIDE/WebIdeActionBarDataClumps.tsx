@@ -27,7 +27,8 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
     const [dataClumpsDict, setDataClumpsDict] = useSynchedDataClumpsDict();
 
-    const [modalOptions, setModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
+    const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
+    const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
 
     function setRightPanelToDataClumpsDirectory(){
         viewOptions.rightPanel = ViewOptionValues.dataClumpsDictionary
@@ -123,16 +124,16 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     label:'Open',
                     icon:'pi pi-fw pi-folder',
                     command: () => {
-                        modalOptions.visible = true;
-                        setModalOptions({...modalOptions});
+                        dropZoneModalOptions.visible = true;
+                        setDropZoneModalOptions({...dropZoneModalOptions});
                     }
                 },
                 {
-                    label:'Import from GitHub (TODO)',
-                    disabled: true,
+                    label:'Import from GitHub (Debug)',
                     icon:'pi pi-fw pi-github',
                     command: () => {
-                        //console.log("open")
+                        githubModalOptions.visible = true;
+                        setGitHubModalOptions({...githubModalOptions});
                     }
                 },
                 {

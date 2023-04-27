@@ -18,6 +18,7 @@ import {WebIdeCodeActionBarDataClumps} from "../webIDE/WebIdeActionBarDataClumps
 import {WebIdeModalProgress} from "../webIDE/WebIdeModalProgress";
 import {MyAbortController} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
+import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
@@ -241,6 +242,7 @@ export const Demo : FunctionComponent = (props) => {
                 </WebIdeLayout>
                 <WebIdeModalProgress onAbort={onAbort} />
                 <WebIdeFileExplorerDropZoneModal />
+                <WebIdeProjectImportGithubModal />
             </div>
         );
 }

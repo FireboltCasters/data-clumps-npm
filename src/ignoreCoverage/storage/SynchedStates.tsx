@@ -6,6 +6,7 @@ export class SynchedStates {
 	static softwareProjectTree = "MySynchedStates.softwareProjectTree";
 	static modalOptions = "MySynchedStates.modalOptions";
 
+	static githubImportModal = "MySynchedStates.githubImportModal"
 	static dropzoneModal = "MySynchedStates.dropzoneModal"
 	static openedFiles = "MySynchedStates.openedFiles"
 	static activeFile = "MySynchedStates.activeFile"
