@@ -1,15 +1,17 @@
 import React, {FunctionComponent} from 'react';
-import {Menubar} from 'primereact/menubar';
 import {
     useSynchedActiveFileKey,
-    useSynchedFileExplorerTree,
-    useSynchedJSONState, useSynchedOpenedFiles,
-    useSynchedProject
+    useSynchedDataClumpsDict,
+    useSynchedFileExplorerTree, useSynchedModalState,
+    useSynchedOpenedFiles,
+    useSynchedProject,
+    useSynchedViewOptions,
+    ViewOptionValues
 } from "../storage/SynchedStateHelper";
-import {SynchedStates} from "../storage/SynchedStates";
 import {Languages} from "../../api/src";
 import {getTreeFromSoftwareProject} from "./WebIdeFileExplorer";
 import {WebIdeCodeActionBar} from "./WebIdeActionBar";
+import {SynchedStates} from "../storage/SynchedStates";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarDataClumpsProps {
@@ -18,23 +20,44 @@ export interface WebIdeCodeActionBarDataClumpsProps {
 
 export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionBarDataClumpsProps> = (props: WebIdeCodeActionBarDataClumpsProps) => {
 
-    const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions);
+    const [viewOptions, setViewOptions] = useSynchedViewOptions()
     const [project, setProject] = useSynchedProject();
     const [tree, setTree] = useSynchedFileExplorerTree();
     const [activeFile, setActiveFile] = useSynchedActiveFileKey();
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
+    const [dataClumpsDict, setDataClumpsDict] = useSynchedDataClumpsDict();
 
-    function getViewOptionResultsItem(){
-        let active = viewOptions?.showResults;
+    const [modalOptions, setModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
+
+    function setRightPanelToDataClumpsDirectory(){
+        viewOptions.rightPanel = ViewOptionValues.dataClumpsDictionary
+        setViewOptions({...viewOptions})
+    }
+
+    function getViewOptionItemDataClumpsDict(){
+        let active = viewOptions.rightPanel === ViewOptionValues.dataClumpsDictionary
 
         return {
-            label:'Detected Data-Clumps',
+            label:'Data-Clumps Dict',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => setRightPanelToDataClumpsDirectory()
+        }
+    }
+
+    function getViewOptionItemFileAst(){
+        let active = viewOptions.rightPanel === ViewOptionValues.fileAst
+
+        return {
+            label:'File AST',
             icon: active ? 'pi pi-check': "pi",
             command: () => {
-                setViewOptions({...viewOptions, showResults: !active})
+                viewOptions.rightPanel = ViewOptionValues.fileAst
+                setViewOptions({...viewOptions})
             }
         }
     }
+
+
 
     function getTestCaseMenuItems(testCases){
         let testCasesItems: any[] = [];
@@ -49,6 +72,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     setTree(getTreeFromSoftwareProject(testCaseProject));
                     setOpenedFiles([]);
                     setActiveFile(null);
+                    setDataClumpsDict(null)
                 }
             }
             testCasesItems.push(testCaseItem);
@@ -96,11 +120,11 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-file',
             items:[
                 {
-                    label:'Open (TODO) (Drop works)',
-                    disabled: true,
+                    label:'Open',
                     icon:'pi pi-fw pi-folder',
                     command: () => {
-                        //console.log("open")
+                        modalOptions.visible = true;
+                        setModalOptions({...modalOptions});
                     }
                 },
                 {
@@ -173,12 +197,8 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             label:'View',
             icon:'pi pi-fw pi-user',
             items:[
-                    getViewOptionResultsItem(),
-                {
-                    label:'Parsed AST (TODO)',
-                    disabled: true,
-                    icon:'pi pi-fw pi-user-plus',
-                },
+                    getViewOptionItemDataClumpsDict(),
+                    getViewOptionItemFileAst(),
                 {
                     label:'Speed evaluation (TODO)',
                     disabled: true,
@@ -194,7 +214,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     disabled: true,
                     icon:'pi pi-fw pi-chart-bar',
                 },
-
             ]
         },
         {
@@ -202,7 +221,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-search',
             items:[
                 {
-                    label:'All (Testing)',
+                    label:'All Data-Clumps',
                     icon:'pi pi-fw pi-pencil',
                     command: () => {
                         if(props?.onStartDetection){

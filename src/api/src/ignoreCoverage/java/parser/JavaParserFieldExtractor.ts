@@ -48,7 +48,8 @@ export class JavaParserFieldExtractor {
                               "node": "TypeTypeContext",
          */
         let modifiers = JavaParserHelper.getModifiers(ctx.parentCtx.parentCtx);
-        let type = this.custom_getFieldType(ctx.children[0]);
+        let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
+        let type = this.custom_getFieldType(typeType);
         let position: any = undefined;
         if(this.includePosition){
             position = JavaParserHelper.custom_getPosition(ctx);

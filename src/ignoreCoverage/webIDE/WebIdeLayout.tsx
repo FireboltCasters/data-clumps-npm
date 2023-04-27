@@ -78,8 +78,6 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
     function renderPanel(content, index){
         let usedContent = content;
-        console.log("renderPanel");
-        console.log(content);
         if(!content){
             return null;
         }
@@ -92,7 +90,7 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
         return(
             <SplitterPanel size={size}>
-                <div style={{backgroundColor: "transparent"}}>
+                <div style={{backgroundColor: "transparent", height: "100%"}}>
                     {usedContent}
                 </div>
             </SplitterPanel>
@@ -118,9 +116,6 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
                 }
             }
         }
-        console.log("renderPanels");
-        console.log(renderedPanels);
-        console.log("Amount of panels: "+renderedPanels.length)
 
         return renderedPanels;
     }

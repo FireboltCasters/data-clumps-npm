@@ -1,33 +1,42 @@
-import React, {FunctionComponent, useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
     useSynchedActiveFileKey,
     useSynchedJSONState,
     useSynchedProject,
-    useSynchedResult
+    useSynchedDataClumpsDict, useSynchedViewOptions, ViewOptionValues
 } from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
 import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
-import {WebIdeCodeActionBar} from "../webIDE/WebIdeActionBar";
 import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpenedFiles";
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFilePath";
 import {SynchedStates} from "../storage/SynchedStates";
 import {WebIdeCodeActionBarDataClumps} from "../webIDE/WebIdeActionBarDataClumps";
+import {WebIdeModalProgress} from "../webIDE/WebIdeModalProgress";
+import {MyAbortController} from "../../api/src/";
+import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
+
+let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
 export const Demo : FunctionComponent = (props) => {
 
     const [project, setProject] = useSynchedProject();
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
     const [decorations, setDecorations] = useState<any[]>([]);
+    const [modalOptions, setModalOptions] = useSynchedJSONState(SynchedStates.modalOptions);
 
-    const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions);
-    let showResults = viewOptions?.showResults;
+    const [viewOptions, setViewOptions] = useSynchedViewOptions();
 
-    // @ts-ignore
-    const [result, setResult] = useSynchedResult();
+    let onAbort = async () => {
+        console.log("Demo: onAbort")
+        abortController.abort();
+
+    }
+
+    const [dataClumpsDict, setDataClumpsDict] = useSynchedDataClumpsDict();
 
     const [code, setCode] = useState<string>("");
 
@@ -58,7 +67,20 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    async function generateAstCallback(message, index, total){
+        let content = `${index}/${total}: ${message}`;
+        setModalOptions({visible: true, content: content});
+        await sleep(0); // Allow the UI to update before the next message is set
+    }
+
+    async function sleep(ms: number) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
+    }
+
     async function onStartDetection(){
+        abortController.reset();
         console.log("onStartDetection");
         console.log("project");
         console.log(project);
@@ -66,11 +88,19 @@ export const Demo : FunctionComponent = (props) => {
         console.log("files");
         console.log(files);
         console.log("project.generateAstForFiles();");
-        project.generateAstForFiles();
+        setModalOptions({visible: true, content: "Generating AST for files..."})
+
+        // For web 100 files took 30 seconds, which is long
+        await project.generateAstForFiles(generateAstCallback, abortController);
+        setProject(project);
+
         let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps()
         console.log("dataClumpsContext");
         console.log(dataClumpsContext);
-        setResult(JSON.stringify(dataClumpsContext, null, 2));
+        setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
+
+        await sleep(1000);
+        setModalOptions({visible: false, content: ""})
     }
 
     function renderActionBar(){
@@ -97,7 +127,7 @@ export const Demo : FunctionComponent = (props) => {
                 activeProjectFile.content = newCode || "";
                 console.log(project);
                 setProject(project);
-                setResult("")
+                setDataClumpsDict("")
                 setCode(activeProjectFile?.content || "");
                 setDecorations(
                     [
@@ -135,11 +165,32 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
-    function renderResult(){
+    function renderDataClumpsDict(){
         return(
             <WebIdeCodeEditor
-                key={result}
-                defaultValue={result}
+                key={dataClumpsDict}
+                defaultValue={dataClumpsDict}
+                options={{ readOnly: true }}
+            />
+        )
+    }
+
+    function renderFileAst(){
+        console.log("renderFileAst")
+        console.log("activeFileKey")
+        console.log(activeFileKey);
+        let activeProjectFile: MyFile = project.getFile(activeFileKey);
+        console.log("activeProjectFile");
+        console.log(activeProjectFile);
+        let ast = activeProjectFile?.ast;
+        console.log("ast");
+        console.log(ast);
+        let astString = JSON.stringify(ast, null, 2);
+
+        return(
+            <WebIdeCodeEditor
+                key={astString}
+                defaultValue={astString}
                 options={{ readOnly: true }}
             />
         )
@@ -149,15 +200,19 @@ export const Demo : FunctionComponent = (props) => {
         return <WebIdeCodeEditorActiveFilePath />
     }
 
-    function renderResultsPanel(){
-        if(!showResults){
-            return null;
+    function renderRightPanel(){
+        let content: any = null;
+        if(viewOptions.rightPanel === ViewOptionValues.dataClumpsDictionary){
+            content = renderDataClumpsDict();
+        }
+        if(viewOptions.rightPanel === ViewOptionValues.fileAst){
+            content = renderFileAst();
         }
 
         return(
             <div style={{backgroundColor: "transparent"}}>
                 <div>{"Result"}</div>
-                {renderResult()}
+                {content}
             </div>
         )
     }
@@ -168,17 +223,24 @@ export const Demo : FunctionComponent = (props) => {
                     menuBarItems={renderActionBar()}
                     panelInitialSizes={[20, 50, 30]}
                 >
-                    <div style={{backgroundColor: "transparent"}}>
-                        <div>{"File-Explorer"}</div>
-                        {renderFileExplorer()}
+                    <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
+                        <div style={{backgroundColor: 'transparent'}}>
+                            {"File Explorer"}
+                        </div>
+                        <div style={{backgroundColor: 'transparent', flex: '1'}}>
+                            {renderFileExplorer()}
+                        </div>
                     </div>
-                    <div style={{backgroundColor: "transparent"}}>
+
+                    <div style={{backgroundColor: "transparent", height: "100%"}}>
                         {renderOpenedFiles()}
                         {renderActiveFilePath()}
                         {renderCodeEditor()}
                     </div>
-                    {renderResultsPanel()}
+                    {renderRightPanel()}
                 </WebIdeLayout>
+                <WebIdeModalProgress onAbort={onAbort} />
+                <WebIdeFileExplorerDropZoneModal />
             </div>
         );
 }

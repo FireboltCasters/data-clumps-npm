@@ -5,6 +5,7 @@ import {Dictionary} from "./UtilTypes";
 
 import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
 import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./ParsedAstTypes";
+import {MyAbortController} from "./SoftwareProject";
 
 export class DetectorOptionsDataClumpsFields {
     public sharedFieldParametersMinimum: number = 3;
@@ -25,34 +26,35 @@ export class DetectorOptionsDataClumpsFields {
 export class DetectorDataClumpsFields {
 
     public options: DetectorOptionsDataClumpsFields;
+    public progressCallback: any;
+    public abortController: MyAbortController | undefined;
 
-    public constructor(options: any){
+    public constructor(options: any, progressCallback?: any, abortController?: MyAbortController){
         this.options = new DetectorOptionsDataClumpsFields(options);
+        this.progressCallback = progressCallback;
+        this.abortController = abortController;
     }
 
-    public detect(softwareProjectDicts: SoftwareProjectDicts): Dictionary<DataClumpTypeContext>{
-        console.log("Detecting software project for data clumps in class fields");
-        let dataClumpsDict = this.getCommonFieldParametersForSoftwareProject(softwareProjectDicts);
-        console.log("Common field parameters: ");
-        console.log(JSON.stringify(dataClumpsDict, null, 2));
-        return dataClumpsDict;
-    }
-
-
-    /**
-     * DataclumpsInspection.java line 399
-     */
-    private getCommonFieldParametersForSoftwareProject(softwareProjectDicts: SoftwareProjectDicts): Dictionary<DataClumpTypeContext>{
+    public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<Dictionary<DataClumpTypeContext> | null>{
         let classesDict = DetectorUtils.getClassesDict(softwareProjectDicts);
         let dataClumpsFieldParameters: Dictionary<DataClumpTypeContext> = {};
         let classKeys = Object.keys(classesDict);
         console.log("Generating member field parameters related to for all classes")
         console.log("Amount of classes: " + classKeys.length)
+        let amountOfClasses = classKeys.length;
         console.log(classKeys)
+        let index = 0;
         for (let classKey of classKeys) {
+            if(this.progressCallback){
+                await this.progressCallback("Field Detector: "+classKey, index, amountOfClasses);
+            }
             console.log("Generating member field parameters related to for class: " + classKey)
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
             this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict, dataClumpsFieldParameters, softwareProjectDicts);
+            if(this.abortController && this.abortController.isAbort()){
+                return null;
+            }
+            index++;
         }
         return dataClumpsFieldParameters;
     }

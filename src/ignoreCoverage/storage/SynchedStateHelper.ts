@@ -31,6 +31,53 @@ export function useSynchedJSONState(storageKey): [value: any, setValue: (value) 
   ]
 }
 
+export type ModalOptions = {
+    visible: boolean,
+    content: any,
+    title: any,
+}
+export function useSynchedModalState(storageKey): [value: ModalOptions, setValue: (value: ModalOptions) => void] {
+    const [modalOptions, setModalOptions] = useSynchedJSONState(storageKey);
+
+    const useModalOptions = modalOptions || {
+        visible: false,
+        content: null,
+        title: null,
+    };
+
+    const setValue = (dict) => {
+        setModalOptions(dict);
+    }
+    return [
+        useModalOptions,
+        setValue
+    ]
+}
+
+export enum ViewOptionValues {
+    dataClumpsDictionary = "dataClumpsDictionary",
+    fileContent = "fileContent",
+    fileExplorer = "fileExplorer",
+    fileAst = "fileAst",
+}
+export type ViewOptions = {
+    rightPanel: string,
+    middlePanel: string,
+    leftPanel: string
+}
+export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) => {}] {
+    const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions)
+    let useViewOptions = viewOptions || {
+        rightPanel: "dataClumpsDictionary",
+        middlePanel: "fileContent",
+        leftPanel: "fileExplorer"
+    };
+    return [
+        useViewOptions,
+        setViewOptions
+    ];
+}
+
 
 export function useSynchedActiveFileKey(): [value: any, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.activeFile)
@@ -55,7 +102,7 @@ export function useSynchedFileExplorerTree(): [any, ((value) => void)] {
     ];
 }
 
-export function useSynchedResult(): [value: any, setValue: (value) => {}] {
+export function useSynchedDataClumpsDict(): [value: any, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.result)
     let activeFileKeyKey = activeFileKey || null;
     return [

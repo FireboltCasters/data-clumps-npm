@@ -4,6 +4,7 @@ import {InnerInterfaceNegative} from "./innerInterfaceNegative/InnerInterfaceNeg
 import {SimpleMethodsWithoutDataClumps} from "./simpleMethods/SimpleMethodsWithoutDataClumps";
 import {FieldAndMethodMix} from "./fieldAndMethodMix/FieldAndMethodMix";
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
+import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
 
 export {SimpleFields};
 export {MultipleClassesInOneFile};
@@ -11,7 +12,6 @@ export {InnerInterfaceNegative};
 //export {SimpleMethodsWithoutDataClumps};
 
 export class Negative {
-    public static simpleFields = SimpleFields;
-    public static fieldAndMethodMix = FieldAndMethodMix;
     public static simpleMethodsWithoutDataClumps: TestCaseBaseClassForDataClumps = SimpleMethodsWithoutDataClumps;
+    public static ParametersWithModifiers: TestCaseBaseClassForDataClumps = ParametersWithModifiers;
 }

@@ -5,6 +5,7 @@ import {InnerInterfacePositive} from "./innerInterfacePositive/InnerInterfacePos
 import {Polymorphism} from "./polymorphism/Polymorphism";
 import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPositiveSameClass";
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
+import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
@@ -15,4 +16,5 @@ export {SimpleMethodsPositiveSameClass};
 
 export class Positive {
     public static SimpleFields: TestCaseBaseClassForDataClumps = SimpleFields;
+    public static ParametersWithModifiers: TestCaseBaseClassForDataClumps = ParametersWithModifiers;
 }

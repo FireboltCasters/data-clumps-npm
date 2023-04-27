@@ -24,13 +24,19 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
 
     public getPositiveTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
         let testCases: TestCaseBaseClassForDataClumps[] = [];
-        testCases.push(JavaDataClumpsTestCases.Positive.SimpleFields);
+        let keys = Object.keys(JavaDataClumpsTestCases.Positive);
+        for (let key of keys) {
+            testCases.push(JavaDataClumpsTestCases.Positive[key]);
+        }
         return testCases;
     }
 
     public getNegativeTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
         let testCases: TestCaseBaseClassForDataClumps[] = [];
-        testCases.push(JavaDataClumpsTestCases.Negative.simpleMethodsWithoutDataClumps);
+        let keys = Object.keys(JavaDataClumpsTestCases.Negative);
+        for (let key of keys) {
+            testCases.push(JavaDataClumpsTestCases.Negative[key]);
+        }
         return testCases;
     }
 

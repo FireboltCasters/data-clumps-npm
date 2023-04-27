@@ -1,5 +1,6 @@
 import {JavaParserHelper} from "./JavaParserHelper";
 import {ClassOrInterfaceTypeContext, MethodParameterTypeContext, MethodTypeContext} from "./../../ParsedAstTypes";
+import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 
@@ -36,11 +37,15 @@ export class JavaParserMethodExtractor {
                           "children": [
                             "List"
          */
-        let typeType = ctx.children[0];
+        let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
         let type = this.custom_getFormalParameterType(typeType);
-        let variableDeclaratorId = ctx.children[1];
+
+        let modifiers = JavaParserHelper.getModifiers(ctx);
+
+        let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");
+        // @ts-ignore
         let name = variableDeclaratorId.getText();
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, [], method);
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, modifiers, method);
 
         if(this.includePosition){
             parameter.position = JavaParserHelper.custom_getPosition(ctx);

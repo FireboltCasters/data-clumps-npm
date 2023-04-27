@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 import {antlr4} from "./ignoreCoverage/util/MyAntlr4";
-import {SoftwareProject} from "./ignoreCoverage/SoftwareProject";
+import {SoftwareProject, MyAbortController} from "./ignoreCoverage/SoftwareProject";
 import * as ParsedAstTypes from "./ignoreCoverage/ParsedAstTypes";
 import {JavaLanguageSupport} from "./ignoreCoverage/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
 import {TestCaseBaseClassForDataClumps} from "./ignoreCoverage/TestCaseBaseClassForDataClumps";
 
-export {SoftwareProject};
+export {SoftwareProject, MyAbortController};
 export {TestCaseBaseClassForDataClumps};
 export {antlr4};
 export {ParsedAstTypes};

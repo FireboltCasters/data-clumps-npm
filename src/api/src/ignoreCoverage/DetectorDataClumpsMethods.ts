@@ -3,6 +3,7 @@ import {SoftwareProjectDicts} from "./Detector";
 import {Dictionary} from "./UtilTypes";
 import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
 import {MethodTypeContext} from "./ParsedAstTypes";
+import {MyAbortController} from "./SoftwareProject";
 
 export class DetectorOptionsDataClumpsMethods {
     public sharedMethodParametersMinimum: number = 3;
@@ -22,19 +23,33 @@ export class DetectorOptionsDataClumpsMethods {
 export class DetectorDataClumpsMethods {
 
     public options: DetectorOptionsDataClumpsMethods;
+    public progressCallback: any;
+    public abortController: MyAbortController | undefined;
 
-    public constructor(options: any){
+    public constructor(options: any, progressCallback?: any, abortController?: MyAbortController){
         this.options = new DetectorOptionsDataClumpsMethods(options);
+        this.progressCallback = progressCallback;
+        this.abortController = abortController;
     }
 
-    public detect(softwareProjectDicts: SoftwareProjectDicts): Dictionary<DataClumpTypeContext>{
+    public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<Dictionary<DataClumpTypeContext> | null>{
         //console.log("Detecting software project for data clumps in methods");
         let methodsDict = softwareProjectDicts.dictMethod;
         let methodKeys = Object.keys(methodsDict);
         let dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext> = {};
+
+        let amountMethods = methodKeys.length;
+        let index = 0;
         for (let methodKey of methodKeys) {
+            if(this.progressCallback){
+                await this.progressCallback("Parameter Detector: "+methodKey, index, amountMethods);
+            }
             let method = methodsDict[methodKey];
             this.analyzeMethod(method, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
+            if(this.abortController && this.abortController.isAbort()){
+                return null;
+            }
+            index++;
         }
         return dataClumpsMethodParameterDataClumps;
     }
@@ -100,6 +115,9 @@ export class DetectorDataClumpsMethods {
             for (let methodKey of methodsKeys) {
                 let otherMethod = methods[methodKey];
                 // DataclumpsInspection.java line 511
+                if(this.abortController && this.abortController.isAbort()){
+                    return;
+                }
                 let foundDataClumps = this.checkMethodParametersForDataClumps(method, otherMethod, isSameClassOrInterface, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
                 // TODO: DataclumpsInspection.java line 512
             }

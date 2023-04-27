@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect, useState} from 'react';
+import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
 
 import {FileTree, FileTreeProps, TreeNode, utils} from '@sinm/react-file-tree';
 import FileItemWithFileIcon from '@sinm/react-file-tree/lib/FileItemWithFileIcon';
@@ -13,13 +13,16 @@ import {
 } from "../storage/SynchedStateHelper";
 import {SoftwareProject} from "../../api/src";
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
+import {FileUpload} from "primereact/fileupload";
+import {WebIdeFileExplorerDropZone} from "./WebIdeFileExplorerDropZone";
 
 // @ts-ignore
 export interface WebIdeFileExplorerProps {
-
+    uploadRef?: any;
 }
 
-const startUri = "/root";
+export const startUri = "/root";
+
 function getTreeDictFromSoftwareProject(project: SoftwareProject): any{
 
     let treeAsDict = {
@@ -105,7 +108,6 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     const [tree, setTree] = useSynchedFileExplorerTree();
     const [selectedFileInExplorer, setSelectedFileInExplorer] = useState<string>(activeFile);
 
-
     useEffect(() => {
         if(!project){
             return;
@@ -150,86 +152,6 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
         setSelectedFileInExplorer(fileUriWithoutStart);
     };
 
-    function getFileFromEntry(entry): Promise<File> {
-        return new Promise((resolve, reject) => {
-            entry.file((file) => {
-                resolve(file);
-            }, (error) => {
-                reject(error);
-            });
-        });
-    }
-
-    function getFileEntriesFromDictionary(entry): Promise<File[]> {
-        return new Promise((resolve, reject) => {
-            const dirReader = entry.createReader();
-
-            dirReader.readEntries((entries) => {
-                resolve(entries);
-            }, (error) => {
-                reject(error);
-            });
-        });
-    }
-
-    async function handleDrop(event){
-        event.preventDefault();
-        setLoading(true);
-        const data = event.dataTransfer;
-        const items = data.items;
-
-        const fileList = [];
-        const newProject = new SoftwareProject();
-
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i].webkitGetAsEntry();
-            if (item) {
-                await traverseFileTree(item, '', newProject);
-            }
-        }
-
-        setProject(newProject);
-        // @ts-ignore
-        setTree(getTreeFromSoftwareProject(newProject));
-        setOpenedFiles([]);
-        setActiveFile(null);
-        setLoading(false);
-    }
-
-    async function traverseFileTree(item, path, newProject){
-        path = path || '';
-        if (item.isFile) {
-            try{
-                let file = await getFileFromEntry(item);
-                // @ts-ignore
-                const fileContent = await file.text();
-                let name = file.name;
-                let myFile: MyFile = new MyFile(
-                    path+name,
-                    fileContent
-                );
-                newProject.addFile(myFile);
-            } catch (err){
-                //console.log("Error while reading file");
-                //console.log(err);
-            }
-
-        } else if (item.isDirectory) {
-
-            let dirName = item.name;
-            if(dirName === "node_modules"){
-                //console.log("Ignore node_modules");
-                return;
-            }
-
-
-            let entries = await getFileEntriesFromDictionary(item);
-            for (let i = 0; i < entries.length; i++) {
-                await traverseFileTree(entries[i], path + item.name + '/', newProject);
-            }
-        }
-    }
-
     function itemRenderer(treeNode: TreeNode) {
         let uri = treeNode.uri;
 
@@ -257,38 +179,18 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
         )
     }
 
-    let dropZoneElement: any = null;
+    let content: any = null;
     if(!project || (project.getFilePaths().length==0)){
-        dropZoneElement = (
-            <div style={{height: "100%", flexDirection: "row", display: "flex", alignItems: "center", justifyContent: "center"}}>
-                <div style={{alignItems: 'center',
-                    justifyContent: 'center', display: "inline-block", flex: "row"}}>
-                    <div style={{alignItems: 'center',
-                        justifyContent: 'center', display: 'flex'}}>
-                        <div style={{display: "inline-block"}}>
-                            <i className="pi pi-download" style={{fontSize: "3em"}}/>
-                        </div>
-                    </div>
-                    <div style={{alignItems: 'center',
-                        justifyContent: 'center', display: 'flex'}}>
-                        <div style={{display: "inline-block"}}>
-                            {"Drop your project here"}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        )
+        // show nothing
+    } else {
+        content = <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
     }
 
     return(
-        <div
-            className="dropzone"
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={handleDrop}
-            style={{display: "flex", flexDirection: "column", flex: 1, backgroundColor: "transparent", height: "100vh"}}>
-            <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
-            {dropZoneElement}
+        <div style={{height: "100%", width: "100%", backgroundColor: "transparent"}}>
+            <WebIdeFileExplorerDropZone>
+                {content}
+            </WebIdeFileExplorerDropZone>
         </div>
     )
 }

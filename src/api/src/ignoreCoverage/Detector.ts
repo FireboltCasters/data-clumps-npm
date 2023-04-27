@@ -1,4 +1,4 @@
-import {SoftwareProject} from "./SoftwareProject";
+import {MyAbortController, SoftwareProject} from "./SoftwareProject";
 import {DetectorDataClumpsMethods, DetectorOptionsDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields, DetectorOptionsDataClumpsFields} from "./DetectorDataClumpsFields";
 import {
@@ -85,11 +85,15 @@ export class Detector {
     public options: DetectorOptions;
     public project: SoftwareProject;
     public timer: Timer;
+    public progressCallback: any;
+    public abortController: MyAbortController | undefined;
 
-    public constructor(options: any, project: SoftwareProject){
+    public constructor(options: any, project: SoftwareProject, progressCallback?: any, abortController?: MyAbortController){
         this.options = new DetectorOptions(options);
         this.project = project;
         this.timer = new Timer();
+        this.progressCallback = progressCallback;
+        this.abortController = abortController;
     }
 
     public async detect(): Promise<DataClumpsTypeContext>{
@@ -102,19 +106,24 @@ export class Detector {
         let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
         console.log("Detecting software project for data clumps");
         console.log(softwareProjectDicts);
-        let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options.optionsDataClumpsMethod);
-        let commonMethodParameters = detectorDataClumpsMethods.detect(softwareProjectDicts);
-        let commonMethodParametersKeys = Object.keys(commonMethodParameters);
-        for (let commonMethodParametersKey of commonMethodParametersKeys) {
-            let commonMethodParameter = commonMethodParameters[commonMethodParametersKey];
-            dataClumpsTypeContext.data_clumps[commonMethodParameter.key] = commonMethodParameter;
+        let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options.optionsDataClumpsMethod, this.progressCallback, this.abortController);
+        let commonMethodParameters = await detectorDataClumpsMethods.detect(softwareProjectDicts);
+        if(!!commonMethodParameters){
+            let commonMethodParametersKeys = Object.keys(commonMethodParameters);
+            for (let commonMethodParametersKey of commonMethodParametersKeys) {
+                let commonMethodParameter = commonMethodParameters[commonMethodParametersKey];
+                dataClumpsTypeContext.data_clumps[commonMethodParameter.key] = commonMethodParameter;
+            }
         }
-        let detectorDataClumpsFields = new DetectorDataClumpsFields(this.options.optionsDataClumpsField);
-        let commonFields = detectorDataClumpsFields.detect(softwareProjectDicts);
-        let commonFieldsKeys = Object.keys(commonFields);
-        for (let commonFieldsKey of commonFieldsKeys) {
-            let commonField = commonFields[commonFieldsKey];
-            dataClumpsTypeContext.data_clumps[commonField.key] = commonField;
+
+        let detectorDataClumpsFields = new DetectorDataClumpsFields(this.options.optionsDataClumpsField, this.progressCallback, this.abortController);
+        let commonFields = await detectorDataClumpsFields.detect(softwareProjectDicts);
+        if(!!commonFields){
+            let commonFieldsKeys = Object.keys(commonFields);
+            for (let commonFieldsKey of commonFieldsKeys) {
+                let commonField = commonFields[commonFieldsKey];
+                dataClumpsTypeContext.data_clumps[commonField.key] = commonField;
+            }
         }
 
         // timeout for testing
