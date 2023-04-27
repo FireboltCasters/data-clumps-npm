@@ -3,7 +3,8 @@ import {Menubar} from 'primereact/menubar';
 
 // @ts-ignore
 export interface WebIdeCodeActionBarProps {
-    startComponent: any;
+    startComponent?: any;
+    endComponent?: any;
     items: any[];
 }
 

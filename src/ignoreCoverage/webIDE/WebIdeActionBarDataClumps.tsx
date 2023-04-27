@@ -254,6 +254,22 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 },
 
             ]
+        },
+        {
+            label:'All right reserved 2023 (C) Nils Baumgartner',
+            icon: <div style={{marginRight: "8px"}}>{"§"}</div>,
+            items:[
+                {
+                    label:'GitHub project',
+                    icon:'pi pi-fw pi-github',
+                    url: "https://github.com/FireboltCasters/data-clumps"
+                },
+                {
+                    label:'Homepage',
+                    icon:'pi pi-fw pi-external-link',
+                    url: "https://nilsbaumgartner.de"
+                },
+            ]
         }
     ];
 
