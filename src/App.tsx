@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import "primereact/resources/themes/lara-light-indigo/theme.css";  //theme
 import "primereact/resources/primereact.min.css";                  //core css
 import "primeicons/primeicons.css";
-import {Demo} from "./ignoreCoverage/flow/Demo";
+import {Demo} from "./ignoreCoverage/main/Demo";
 import {SynchedStateHelper} from "./ignoreCoverage/storage/SynchedStateHelper";
 import {StoreProvider} from "easy-peasy";
 

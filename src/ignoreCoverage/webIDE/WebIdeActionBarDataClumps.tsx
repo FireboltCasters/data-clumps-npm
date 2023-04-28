@@ -12,6 +12,8 @@ import {Languages} from "../../api/src";
 import {getTreeFromSoftwareProject} from "./WebIdeFileExplorer";
 import {WebIdeCodeActionBar} from "./WebIdeActionBar";
 import {SynchedStates} from "../storage/SynchedStates";
+import ProjectImportExportHelper from "../helper/ProjectImportExportHelper";
+import DownloadHelper from "../helper/DownloadHelper";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarDataClumpsProps {
@@ -30,9 +32,17 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
 
-    function setRightPanelToDataClumpsDirectory(){
-        viewOptions.rightPanel = ViewOptionValues.dataClumpsDictionary
-        setViewOptions({...viewOptions})
+    function getViewOptionItemDataClumpsGraph(){
+        let active = viewOptions.rightPanel === ViewOptionValues.dataClumpsGraph
+
+        return {
+            label:'Data-Clumps Graph (Experimental)',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                viewOptions.rightPanel = ViewOptionValues.dataClumpsGraph
+                setViewOptions({...viewOptions})
+            }
+        }
     }
 
     function getViewOptionItemDataClumpsDict(){
@@ -41,7 +51,10 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         return {
             label:'Data-Clumps Dict',
             icon: active ? 'pi pi-check': "pi",
-            command: () => setRightPanelToDataClumpsDirectory()
+            command: () => {
+                viewOptions.rightPanel = ViewOptionValues.dataClumpsDictionary
+                setViewOptions({...viewOptions})
+            }
         }
     }
 
@@ -121,33 +134,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-file',
             items:[
                 {
-                    label:'Open',
-                    icon:'pi pi-fw pi-folder',
-                    command: () => {
-                        dropZoneModalOptions.visible = true;
-                        setDropZoneModalOptions({...dropZoneModalOptions});
-                    }
-                },
-                {
-                    label:'Import from GitHub',
-                    icon:'pi pi-fw pi-github',
-                    command: () => {
-                        githubModalOptions.visible = true;
-                        setGitHubModalOptions({...githubModalOptions});
-                    }
-                },
-                {
-                    separator:true
-                },
-                {
-                    label:'Examples',
-                    icon:'pi pi-fw pi-book',
-                    items: renderExampleLanguageMenuItems()
-                },
-                {
-                    separator:true
-                },
-                {
                     label:'New',
                     icon:'pi pi-fw pi-plus',
                     items:[
@@ -172,9 +158,45 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     ]
                 },
                 {
-                    label:'Export (TODO)',
-                    disabled: true,
-                    icon:'pi pi-fw pi-file-export'
+                    label:'Open',
+                    icon:'pi pi-fw pi-folder',
+                    command: () => {
+                        dropZoneModalOptions.visible = true;
+                        setDropZoneModalOptions({...dropZoneModalOptions});
+                    }
+                },
+                {
+                    label:'Import from GitHub (Experimental)',
+                    icon:'pi pi-fw pi-github',
+                    command: () => {
+                        githubModalOptions.visible = true;
+                        setGitHubModalOptions({...githubModalOptions});
+                    }
+                },
+                {
+                    separator:true
+                },
+                {
+                    label:'Examples',
+                    icon:'pi pi-fw pi-book',
+                    items: renderExampleLanguageMenuItems()
+                },
+                {
+                    separator:true
+                },
+                {
+                    label:'Export as ... (Experimental)',
+                    icon:'pi pi-fw pi-file-export',
+                    items:[
+                        {
+                            label:'JSON (Experimental)',
+                            icon:'pi pi-fw pi-book',
+                            command: () => {
+                                let asString = ProjectImportExportHelper.getDownloadString(project, tree);
+                                DownloadHelper.downloadTextAsFiletile(asString, "project.json");
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -200,15 +222,11 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             items:[
                     getViewOptionItemDataClumpsDict(),
                     getViewOptionItemFileAst(),
+                    getViewOptionItemDataClumpsGraph(),
                 {
                     label:'Speed evaluation (TODO)',
                     disabled: true,
                     icon:'pi pi-fw pi-clock',
-                },
-                {
-                    label:'Graph (TODO)',
-                    disabled: true,
-                    icon:'pi pi-fw pi-share-alt',
                 },
                 {
                     label:'Chart (Most Data Clumps) (TODO)',

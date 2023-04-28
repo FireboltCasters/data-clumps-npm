@@ -19,6 +19,7 @@ import {WebIdeModalProgress} from "../webIDE/WebIdeModalProgress";
 import {MyAbortController} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
+import {DataClumpsGraph} from "../graph/DataClumpsGraph";
 
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
@@ -169,6 +170,12 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    function renderDataClumpsGraph(){
+        return(
+            <DataClumpsGraph key={dataClumpsDict} dataClumpsDict={dataClumpsDict} />
+        )
+    }
+
     function renderDataClumpsDict(){
         return(
             <WebIdeCodeEditor
@@ -209,12 +216,15 @@ export const Demo : FunctionComponent = (props) => {
         if(viewOptions.rightPanel === ViewOptionValues.dataClumpsDictionary){
             content = renderDataClumpsDict();
         }
+        if(viewOptions.rightPanel === ViewOptionValues.dataClumpsGraph){
+            content = renderDataClumpsGraph();
+        }
         if(viewOptions.rightPanel === ViewOptionValues.fileAst){
             content = renderFileAst();
         }
 
         return(
-            <div style={{backgroundColor: "transparent"}}>
+            <div style={{backgroundColor: "transparent", height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
                 <div>{"Result"}</div>
                 {content}
             </div>
