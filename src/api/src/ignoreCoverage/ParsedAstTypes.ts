@@ -1,5 +1,4 @@
 import {Dictionary} from "./UtilTypes";
-export {Dictionary};
 
 export class AstElementTypeContext {
     public name: string;

@@ -1,5 +1,6 @@
 import React, {Component} from "react";
-import {ClassOrInterfaceTypeContext, Dictionary} from "../../api/src/ignoreCoverage/ParsedAstTypes";
+import {ClassOrInterfaceTypeContext} from "../../api/src/ignoreCoverage/ParsedAstTypes";
+import {Dictionary} from "../../api/src/ignoreCoverage/UtilTypes";
 
 export default class DecorationHelper extends Component {
 

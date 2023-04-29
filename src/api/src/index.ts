@@ -6,7 +6,6 @@ import {JavaLanguageSupport} from "./ignoreCoverage/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
 import {TestCaseBaseClassForDataClumps} from "./ignoreCoverage/TestCaseBaseClassForDataClumps";
 import {ParserOptions} from "./ignoreCoverage/Parser";
-
 export {SoftwareProject, MyAbortController};
 export {TestCaseBaseClassForDataClumps};
 export {antlr4};
