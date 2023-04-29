@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, useState} from 'react';
 
 import {FileTree, FileTreeProps, TreeNode, utils} from '@sinm/react-file-tree';
 import FileItemWithFileIcon from '@sinm/react-file-tree/lib/FileItemWithFileIcon';
@@ -9,16 +9,13 @@ import {
     useSynchedActiveFileKey,
     useSynchedFileExplorerTree,
     useSynchedOpenedFiles,
-    useSynchedProject
 } from "../storage/SynchedStateHelper";
 import {SoftwareProject} from "../../api/src";
-import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
-import {FileUpload} from "primereact/fileupload";
 import {WebIdeFileExplorerDropZone} from "./WebIdeFileExplorerDropZone";
 
 // @ts-ignore
 export interface WebIdeFileExplorerProps {
-    uploadRef?: any;
+    loadSoftwareProject: (project: SoftwareProject) => Promise<void>;
 }
 
 export const startUri = "/root";
@@ -101,20 +98,11 @@ export function getTreeFromSoftwareProject(project: SoftwareProject): TreeNode{
 
 export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (props: WebIdeFileExplorerProps) => {
 
-    const [project, setProject] = useSynchedProject();
     const [activeFile, setActiveFile] = useSynchedActiveFileKey();
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
     const [loading, setLoading] = useState(false);
     const [tree, setTree] = useSynchedFileExplorerTree();
     const [selectedFileInExplorer, setSelectedFileInExplorer] = useState<string>(activeFile);
-
-    useEffect(() => {
-        if(!project){
-            return;
-        }
-        setTree(getTreeFromSoftwareProject(project));
-    }, []);
-
 
     const toggleExpanded: FileTreeProps["onItemClick"] = (treeNode) => {
         let fileUri = treeNode.uri;
@@ -180,15 +168,11 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     }
 
     let content: any = null;
-    if(!project || (project.getFilePaths().length==0)){
-        // show nothing
-    } else {
-        content = <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
-    }
+    content = <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
 
     return(
         <div style={{height: "100%", width: "100%", backgroundColor: "transparent"}}>
-            <WebIdeFileExplorerDropZone>
+            <WebIdeFileExplorerDropZone loadSoftwareProject={props?.loadSoftwareProject}>
                 {content}
             </WebIdeFileExplorerDropZone>
         </div>

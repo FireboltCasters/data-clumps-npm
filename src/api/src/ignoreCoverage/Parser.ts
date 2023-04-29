@@ -42,11 +42,11 @@ export class Parser {
                 break;
             }
         }
-      let file = softwareProject.getFile(filePath);
-      let parsedFile = await Parser.parseFile(file, parserOptions, index, amountOfFiles, progressCallback);
-      if(parsedFile){
-        file.ast = parsedFile;
-      }
+          let file = softwareProject.getFile(filePath);
+          let parsedFile = await Parser.parseFile(file, parserOptions, index, amountOfFiles, progressCallback);
+          if(parsedFile){
+            file.ast = parsedFile;
+          }
         index++;
     }
 

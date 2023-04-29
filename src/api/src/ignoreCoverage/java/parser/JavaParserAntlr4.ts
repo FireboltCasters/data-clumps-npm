@@ -51,6 +51,7 @@ class BaseExtractor{
             let key = innerInterfaceOutput.key;
             this.classOrInterface.innerDefinedInterfaces[key] = innerInterfaceOutput;
         }
+        // TODO: Maybe go further down the rabbit hole and check for more inner classes/interfaces
         let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
         if(classDeclaration!==null){
             let classListener = new ClassExtractor(this.file, classDeclaration, this.includePosition, true);

@@ -37,6 +37,9 @@ export class DetectorDataClumpsFields {
 
     public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<Dictionary<DataClumpTypeContext> | null>{
         let classesDict = DetectorUtils.getClassesDict(softwareProjectDicts);
+        console.log("detecting data clumps fields")
+        console.log(classesDict);
+
         let dataClumpsFieldParameters: Dictionary<DataClumpTypeContext> = {};
         let classKeys = Object.keys(classesDict);
         console.log("Generating member field parameters related to for all classes")

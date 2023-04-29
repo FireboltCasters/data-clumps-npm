@@ -7,7 +7,6 @@ import {
     useSynchedFileExplorerTree,
     useSynchedModalState,
     useSynchedOpenedFiles,
-    useSynchedProject
 } from "../storage/SynchedStateHelper";
 import {SynchedStates} from "../storage/SynchedStates";
 import {Dialog} from "primereact/dialog";
@@ -23,15 +22,12 @@ import JSZip from "jszip";
 
 export interface WebIdeFileExplorerDropZoneModalProps {
     children?: ReactNode;
+    loadSoftwareProject: (project: SoftwareProject) => Promise<void>;
 }
 
 export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplorerDropZoneModalProps> = (props: WebIdeFileExplorerDropZoneModalProps) => {
 
-    const [project, setProject] = useSynchedProject();
-    const [activeFile, setActiveFile] = useSynchedActiveFileKey();
-    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
     const [loading, setLoading] = useState(false);
-    const [tree, setTree] = useSynchedFileExplorerTree();
 
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
 
@@ -133,7 +129,7 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
                     const newFile = new MyFile(path, fileContent);
                     newProject.addFile(newFile);
                 }
-                loadSoftwareProject(newProject);
+                await props.loadSoftwareProject(newProject);
                 onHide();
                 return;
             }
@@ -143,14 +139,6 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
 
         setLoading(false);
         return
-    }
-
-    function loadSoftwareProject(newProject){
-        setProject(newProject);
-        setTree(getTreeFromSoftwareProject(newProject));
-        setOpenedFiles([]);
-        setActiveFile(null);
-        setLoading(false);
     }
 
     const importButtonEnabled = githubRepoURL && githubBranch && !loading;

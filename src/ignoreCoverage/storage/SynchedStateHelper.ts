@@ -121,6 +121,7 @@ export function useSynchedOpenedFiles(): [value: any, setValue: (value) => {}] {
     ];
 }
 
+/**
 export function useSynchedProject(): [value: SoftwareProject, setValue: (value) => {}] {
     const [projectObj, setProject] = useSynchedJSONState(SynchedStates.softwareProject)
     let project = new SoftwareProject()
@@ -130,10 +131,11 @@ export function useSynchedProject(): [value: SoftwareProject, setValue: (value) 
         project.filesToParseDict = projectObj.filesToParseDict
     }
     return [
-        project,
+        projectObj,
         setProject
     ];
 }
+ */
 
 
 

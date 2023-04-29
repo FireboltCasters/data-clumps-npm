@@ -1,15 +1,18 @@
-import React, {FunctionComponent, useEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
     useSynchedActiveFileKey,
-    useSynchedJSONState,
-    useSynchedProject,
-    useSynchedDataClumpsDict, useSynchedViewOptions, ViewOptionValues
+    useSynchedDataClumpsDict,
+    useSynchedFileExplorerTree,
+    useSynchedModalState,
+    useSynchedOpenedFiles,
+    useSynchedViewOptions,
+    ViewOptionValues
 } from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
-import {WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
+import {getTreeFromSoftwareProject, WebIdeFileExplorer} from "../webIDE/WebIdeFileExplorer";
 import {WebIdeCodeEditorLastOpenedFiles} from "../webIDE/WebIdeCodeEditorLastOpenedFiles";
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFilePath";
@@ -20,17 +23,24 @@ import {MyAbortController} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
+import {SoftwareProject} from "../../api/src";
 
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
+export class ProjectHolder{
+    public static project: SoftwareProject = new SoftwareProject();
+}
+
 export const Demo : FunctionComponent = (props) => {
 
-    const [project, setProject] = useSynchedProject();
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
     const [decorations, setDecorations] = useState<any[]>([]);
-    const [modalOptions, setModalOptions] = useSynchedJSONState(SynchedStates.modalOptions);
-
+    const [modalOptions, setModalOptions] = useSynchedModalState(SynchedStates.modalOptions);
     const [viewOptions, setViewOptions] = useSynchedViewOptions();
+
+    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
+    const [loading, setLoading] = useState(false);
+    const [tree, setTree] = useSynchedFileExplorerTree();
 
     let onAbort = async () => {
         console.log("Demo: onAbort")
@@ -50,7 +60,8 @@ export const Demo : FunctionComponent = (props) => {
 
     // Automatically load the active file
     useEffect(() => {
-        if(activeFileKey && project){
+        if(activeFileKey && ProjectHolder.project){
+            let project: SoftwareProject = ProjectHolder.project;
             let activeProjectFile: MyFile = project.getFile(activeFileKey);
             if(activeProjectFile){
                 setCode(activeProjectFile?.content || "");
@@ -65,15 +76,17 @@ export const Demo : FunctionComponent = (props) => {
 
     function renderFileExplorer(){
         return(
-            <WebIdeFileExplorer />
+            <WebIdeFileExplorer loadSoftwareProject={loadSoftwareProject} />
         )
     }
 
-    async function generateAstCallback(message, index, total){
+    async function generateAstCallback(message, index, total): Promise<void> {
         let content = `${index}/${total}: ${message}`;
         let isEveryHundreds = index % 100 === 0;
         if(isEveryHundreds) {
-            setModalOptions({visible: true, content: content});
+            modalOptions.content = content;
+            modalOptions.visible = true;
+            setModalOptions(modalOptions);
             await sleep(0); // Allow the UI to update before the next message is set
         }
     }
@@ -86,31 +99,56 @@ export const Demo : FunctionComponent = (props) => {
 
     async function onStartDetection(){
         abortController.reset();
-        console.log("onStartDetection");
-        console.log("project");
-        console.log(project);
-        let files = project.getFilePaths();
-        console.log("files");
-        console.log(files);
-        console.log("project.generateAstForFiles();");
-        setModalOptions({visible: true, content: "Generating AST for files..."})
+        if(ProjectHolder.project){
+            let project: SoftwareProject = ProjectHolder.project;
+            console.log("onStartDetection");
+            console.log("project");
+            console.log(project);
+            let files = project.getFilePaths();
+            console.log("files");
+            console.log(files);
 
-        // For web 100 files took 30 seconds, which is long
-        await project.generateAstForFiles(generateAstCallback, abortController);
-        setProject(project);
+            if(activeFileKey && false){
+                console.log("project.generateAstForFiles();");
+                modalOptions.content = "Generating AST for files..."
+                modalOptions.visible = true;
+                setModalOptions(modalOptions)
 
-        let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps()
-        console.log("dataClumpsContext");
-        console.log(dataClumpsContext);
-        setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
+                let activeProjectFile: MyFile = project.getFile(activeFileKey);
+                await project.generateAstForFile(activeProjectFile, generateAstCallback);
+                ProjectHolder.project = project;
+            }
 
-        await sleep(1000);
-        setModalOptions({visible: false, content: ""})
+            modalOptions.content = "Detecting Data Clumps..."
+            modalOptions.visible = true;
+            setModalOptions(modalOptions)
+            console.log("project.detectDataClumps();");
+            console.log(project)
+            let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps()
+            console.log("dataClumpsContext");
+            console.log(dataClumpsContext);
+            setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
+
+            await sleep(1000);
+
+            modalOptions.visible = false;
+            modalOptions.content = "";
+            setModalOptions(modalOptions)
+        } else {
+            console.log("project is undefined");
+            modalOptions.visible = true;
+            modalOptions.content = "No project is loaded";
+            setModalOptions(modalOptions)
+            await sleep(5000);
+            modalOptions.visible = false;
+            modalOptions.content = "";
+            setModalOptions(modalOptions)
+        }
     }
 
     function renderActionBar(){
         return(
-            <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} />
+            <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} loadSoftwareProject={loadSoftwareProject} />
         )
     }
 
@@ -120,18 +158,22 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
-    function onChangeCode(newCode: string | undefined){
-        if(activeFileKey && project){
+    async function onChangeCode(newCode: string | undefined){
+        if(activeFileKey && ProjectHolder.project){
             console.log("onChangeCode");
             console.log("activeFileKey")
+            let project: SoftwareProject = ProjectHolder.project;
             console.log(activeFileKey);
             let activeProjectFile: MyFile = project.getFile(activeFileKey);
             console.log("activeProjectFile");
             console.log(activeProjectFile);
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
-                console.log(project);
-                setProject(project);
+                await project.generateAstForFile(activeProjectFile, generateAstCallback);
+                ProjectHolder.project = project;
+                modalOptions.visible = false;
+                modalOptions.content = "";
+                setModalOptions(modalOptions)
                 setDataClumpsDict("")
                 setCode(activeProjectFile?.content || "");
                 setDecorations(
@@ -157,6 +199,27 @@ export const Demo : FunctionComponent = (props) => {
                 )
             }
         }
+    }
+
+    async function loadSoftwareProject(newProject: SoftwareProject){
+        console.log("loadSoftwareProject")
+        console.log(newProject)
+        setLoading(true);
+        abortController.reset();
+        modalOptions.visible = true;
+        modalOptions.content = "Loading project...";
+        setModalOptions(modalOptions);
+        console.log("generateAstForFiles")
+        await newProject.generateAstForFiles(generateAstCallback, abortController);
+        ProjectHolder.project = newProject;
+        console.log("getTreeFromSoftwareProject")
+        setTree(getTreeFromSoftwareProject(newProject));
+        setOpenedFiles([]);
+        setActiveFileKey(null);
+        modalOptions.visible = false;
+        modalOptions.content = "";
+        setModalOptions(modalOptions);
+        setLoading(false);
     }
 
     function renderCodeEditor(){
@@ -190,6 +253,7 @@ export const Demo : FunctionComponent = (props) => {
         console.log("renderFileAst")
         console.log("activeFileKey")
         console.log(activeFileKey);
+        let project: SoftwareProject = ProjectHolder.project;
         let activeProjectFile: MyFile = project.getFile(activeFileKey);
         console.log("activeProjectFile");
         console.log(activeProjectFile);
@@ -254,8 +318,8 @@ export const Demo : FunctionComponent = (props) => {
                     {renderRightPanel()}
                 </WebIdeLayout>
                 <WebIdeModalProgress onAbort={onAbort} />
-                <WebIdeFileExplorerDropZoneModal />
-                <WebIdeProjectImportGithubModal />
+                <WebIdeFileExplorerDropZoneModal loadSoftwareProject={loadSoftwareProject} />
+                <WebIdeProjectImportGithubModal loadSoftwareProject={loadSoftwareProject} />
             </div>
         );
 }

@@ -9,6 +9,7 @@ import {WebIdeFileExplorerDropZone} from "./WebIdeFileExplorerDropZone";
 
 export interface WebIdeFileExplorerDropZoneModalProps {
     children?: ReactNode;
+    loadSoftwareProject: (project: any) => Promise<void>;
 }
 
 export const WebIdeFileExplorerDropZoneModal : FunctionComponent<WebIdeFileExplorerDropZoneModalProps> = (props: WebIdeFileExplorerDropZoneModalProps) => {
@@ -26,7 +27,7 @@ export const WebIdeFileExplorerDropZoneModal : FunctionComponent<WebIdeFileExplo
 
     return(
         <Dialog key={visible+""} visible={visible} header={"Open File"} onHide={onHide} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '50vw', height: "50vh"}}>
-            <WebIdeFileExplorerDropZone onDropComplete={() => {
+            <WebIdeFileExplorerDropZone loadSoftwareProject={props?.loadSoftwareProject} onDropComplete={() => {
                 onHide();
             }}>
                 {props?.children}

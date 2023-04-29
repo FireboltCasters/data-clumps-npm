@@ -11,7 +11,7 @@ export interface WebIdeCodeEditorProps {
     options?: monaco.editor.IStandaloneEditorConstructionOptions;
     language?: string;
     onChange?: (newCode: string) => Promise<boolean>;
-    onDebounce?: (newCode: string) => void; // Debouce: if the user stops typing for 1 second, then the code is sent to the server
+    onDebounce?: (newCode: string) => Promise<void>; // Debouce: if the user stops typing for 1 second, then the code is sent to the server
     debounceTime?: number;
     decorations?: any[];
 }
@@ -76,12 +76,12 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
             clearTimeout(timerId);
         }
         // set a new timeout
-        let newTimerId = setTimeout(() => {
+        let newTimerId = setTimeout(async () => {
             // do something
             //console.log("timeout");
             let onDebounce = props?.onDebounce;
             if (onDebounce) {
-                onDebounce(newCode || "");
+                await onDebounce(newCode || "");
             }
         }, debounceTime);
         setTimerId(newTimerId);

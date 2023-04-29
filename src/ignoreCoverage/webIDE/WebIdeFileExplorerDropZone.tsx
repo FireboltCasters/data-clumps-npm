@@ -2,29 +2,17 @@ import React, {FunctionComponent, ReactNode, useState} from 'react';
 // default style
 import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
-import {
-    useSynchedActiveFileKey,
-    useSynchedFileExplorerTree,
-    useSynchedOpenedFiles,
-    useSynchedProject
-} from "../storage/SynchedStateHelper";
 import {SoftwareProject} from "../../api/src";
 import {MyFile} from "../../api/src/ignoreCoverage/ParsedAstTypes";
-import {getTreeFromSoftwareProject} from "./WebIdeFileExplorer";
 
 // @ts-ignore
 export interface WebIdeFileExplorerDropZoneProps {
     children?: ReactNode;
     onDropComplete?: () => void;
+    loadSoftwareProject: (project: SoftwareProject) => Promise<void>;
 }
 
 export const WebIdeFileExplorerDropZone : FunctionComponent<WebIdeFileExplorerDropZoneProps> = (props: WebIdeFileExplorerDropZoneProps) => {
-
-    const [project, setProject] = useSynchedProject();
-    const [activeFile, setActiveFile] = useSynchedActiveFileKey();
-    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
-    const [loading, setLoading] = useState(false);
-    const [tree, setTree] = useSynchedFileExplorerTree();
 
     function getFileFromEntry(entry): Promise<File> {
         return new Promise((resolve, reject) => {
@@ -60,23 +48,18 @@ export const WebIdeFileExplorerDropZone : FunctionComponent<WebIdeFileExplorerDr
             }
         }
 
-        setProject(newProject);
-        setTree(getTreeFromSoftwareProject(newProject));
-        setOpenedFiles([]);
-        setActiveFile(null);
-        setLoading(false);
+        await props.loadSoftwareProject(newProject);
     }
 
     async function handleDrop(event){
         event.preventDefault();
         console.log("handleDrop")
         console.log(event)
-        setLoading(true);
         const data = event.dataTransfer;
         const items = data.items;
         await handleLoadFiles(items);
         if(props.onDropComplete){
-            props.onDropComplete();
+            await props.onDropComplete();
         }
     }
 
@@ -113,15 +96,6 @@ export const WebIdeFileExplorerDropZone : FunctionComponent<WebIdeFileExplorerDr
             }
         }
     }
-
-    if(loading){
-        return (
-            <div>
-                <h1>{"Loading"}</h1>
-            </div>
-        )
-    }
-
 
     const defaultDropZoneContent = (
         <div style={{height: "100%", flexDirection: "row", display: "flex", alignItems: "center", justifyContent: "center"}}>

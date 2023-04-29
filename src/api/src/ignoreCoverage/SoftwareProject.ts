@@ -26,7 +26,6 @@ export class MyAbortController {
 export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
-  public abortController: MyAbortController = new MyAbortController();
 
   constructor() {
     this.filesToParseDict = {};
@@ -56,7 +55,13 @@ export class SoftwareProject {
   }
 
   public async generateAstForFiles(progressCallback?: any, abortController?: MyAbortController) {
-    await Parser.parseSoftwareProject(this, new ParserOptions(false), abortController, progressCallback);
+    let parserOptions = new ParserOptions(false);
+    await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
+  }
+
+  public async generateAstForFile(file: MyFile, progressCallback?: any) {
+    let parserOptions = new ParserOptions(false);
+    await Parser.parseFile(file, parserOptions, 0, 1, progressCallback)
   }
 
   public getAstAsString(): string {

@@ -1,33 +1,27 @@
 import React, {FunctionComponent} from 'react';
 import {
-    useSynchedActiveFileKey,
-    useSynchedDataClumpsDict,
-    useSynchedFileExplorerTree, useSynchedModalState,
-    useSynchedOpenedFiles,
-    useSynchedProject,
+    useSynchedFileExplorerTree,
+    useSynchedModalState,
     useSynchedViewOptions,
     ViewOptionValues
 } from "../storage/SynchedStateHelper";
-import {Languages} from "../../api/src";
-import {getTreeFromSoftwareProject} from "./WebIdeFileExplorer";
+import {Languages, SoftwareProject} from "../../api/src";
 import {WebIdeCodeActionBar} from "./WebIdeActionBar";
 import {SynchedStates} from "../storage/SynchedStates";
 import ProjectImportExportHelper from "../helper/ProjectImportExportHelper";
 import DownloadHelper from "../helper/DownloadHelper";
+import {ProjectHolder} from "../main/Demo";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarDataClumpsProps {
     onStartDetection: () => void;
+    loadSoftwareProject: (project: SoftwareProject) => Promise<void>;
 }
 
 export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionBarDataClumpsProps> = (props: WebIdeCodeActionBarDataClumpsProps) => {
 
     const [viewOptions, setViewOptions] = useSynchedViewOptions()
-    const [project, setProject] = useSynchedProject();
     const [tree, setTree] = useSynchedFileExplorerTree();
-    const [activeFile, setActiveFile] = useSynchedActiveFileKey();
-    const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
-    const [dataClumpsDict, setDataClumpsDict] = useSynchedDataClumpsDict();
 
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
@@ -71,8 +65,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         }
     }
 
-
-
     function getTestCaseMenuItems(testCases){
         let testCasesItems: any[] = [];
         for(let testCase of testCases){
@@ -81,12 +73,11 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             let testCaseItem = {
                 label: testCaseName,
                 icon:'pi pi-fw',
-                command: () => {
-                    setProject(testCaseProject);
-                    setTree(getTreeFromSoftwareProject(testCaseProject));
-                    setOpenedFiles([]);
-                    setActiveFile(null);
-                    setDataClumpsDict(null)
+                command: async () => {
+                    console.log("load test case", testCaseName)
+                    console.log("testCaseProject")
+                    console.log(testCaseProject)
+                    await props.loadSoftwareProject(testCaseProject)
                 }
             }
             testCasesItems.push(testCaseItem);
@@ -192,6 +183,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                             label:'JSON (Experimental)',
                             icon:'pi pi-fw pi-book',
                             command: () => {
+                                let project = ProjectHolder.project
                                 let asString = ProjectImportExportHelper.getDownloadString(project, tree);
                                 DownloadHelper.downloadTextAsFiletile(asString, "project.json");
                             }
