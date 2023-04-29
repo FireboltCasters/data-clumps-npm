@@ -24,6 +24,9 @@ import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZ
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
 import {SoftwareProject} from "../../api/src";
+import {DetectorOptions} from "../../api/src/ignoreCoverage/Detector";
+import {ParserOptions} from "../../api/src";
+import DecorationHelper from "../helper/DecorationHelper";
 
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
@@ -66,6 +69,8 @@ export const Demo : FunctionComponent = (props) => {
             if(activeProjectFile){
                 setCode(activeProjectFile?.content || "");
             }
+            let decorations = getEditorDecorations();
+            setDecorations(decorations)
         } else {
             setCode("")
         }
@@ -73,6 +78,12 @@ export const Demo : FunctionComponent = (props) => {
 
     //TODO viszualize Graph?: react-graph-vis
 
+    function getParserOptions(){
+        let parserOptions = new ParserOptions({
+            includePositions: true,
+        });
+        return parserOptions;
+    }
 
     function renderFileExplorer(){
         return(
@@ -108,26 +119,21 @@ export const Demo : FunctionComponent = (props) => {
             console.log("files");
             console.log(files);
 
-            if(activeFileKey && false){
-                console.log("project.generateAstForFiles();");
-                modalOptions.content = "Generating AST for files..."
-                modalOptions.visible = true;
-                setModalOptions(modalOptions)
-
-                let activeProjectFile: MyFile = project.getFile(activeFileKey);
-                await project.generateAstForFile(activeProjectFile, generateAstCallback);
-                ProjectHolder.project = project;
-            }
-
             modalOptions.content = "Detecting Data Clumps..."
             modalOptions.visible = true;
             setModalOptions(modalOptions)
             console.log("project.detectDataClumps();");
             console.log(project)
-            let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps()
+            let options = new DetectorOptions({
+
+            });
+            let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps(options)
             console.log("dataClumpsContext");
             console.log(dataClumpsContext);
             setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
+
+            let decorations = await getEditorDecorations();
+            setDecorations(decorations)
 
             await sleep(1000);
 
@@ -158,6 +164,21 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    function getEditorDecorations(){
+        console.log("getEditorDecorations")
+        let decorationFieldAndParametersActive = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
+        if(decorationFieldAndParametersActive){
+            console.log("getEditorDecorations: decorationFieldAndParametersActive")
+            let ast = getActiveFileAstDict();
+            console.log("getEditorDecorations: ast")
+            console.log(ast)
+            // @ts-ignore
+            return DecorationHelper.getDecorationForFieldsAndParameters(ast);
+        }
+
+        return [];
+    }
+
     async function onChangeCode(newCode: string | undefined){
         if(activeFileKey && ProjectHolder.project){
             console.log("onChangeCode");
@@ -169,34 +190,17 @@ export const Demo : FunctionComponent = (props) => {
             console.log(activeProjectFile);
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
-                await project.generateAstForFile(activeProjectFile, generateAstCallback);
+                let parserOptions = getParserOptions();
+                await project.generateAstForFile(activeProjectFile, parserOptions, generateAstCallback);
                 ProjectHolder.project = project;
                 modalOptions.visible = false;
                 modalOptions.content = "";
                 setModalOptions(modalOptions)
                 setDataClumpsDict("")
                 setCode(activeProjectFile?.content || "");
-                setDecorations(
-                    [
-                        {
-                            range: {
-                                startLineNumber: 2,
-                                startColumn: 4,
-                                endLineNumber: 2,
-                                endColumn: 10
-                            },
-                            options: {
-                                isWholeLine: false,
-//                            inlineClassName: "myLineDecoration",
-                                className: "myContentClass",
-                                glyphMarginClassName: "myGlyphMarginClass",
-                                hoverMessage: {
-                                    value: "Hallo"
-                                }
-                            },
-                        }
-                    ]
-                )
+
+                let decorations = await getEditorDecorations();
+                setDecorations(decorations)
             }
         }
     }
@@ -210,7 +214,8 @@ export const Demo : FunctionComponent = (props) => {
         modalOptions.content = "Loading project...";
         setModalOptions(modalOptions);
         console.log("generateAstForFiles")
-        await newProject.generateAstForFiles(generateAstCallback, abortController);
+        let parserOptions = getParserOptions();
+        await newProject.generateAstForFiles(parserOptions, generateAstCallback, abortController);
         ProjectHolder.project = newProject;
         console.log("getTreeFromSoftwareProject")
         setTree(getTreeFromSoftwareProject(newProject));
@@ -225,7 +230,7 @@ export const Demo : FunctionComponent = (props) => {
     function renderCodeEditor(){
         return(
             <WebIdeCodeEditor
-                key={code}
+                key={code+JSON.stringify(decorations)}
                 defaultValue={code}
                 onDebounce={onChangeCode}
                 decorations={decorations}
@@ -249,17 +254,23 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    function getActiveFileAstDict(){
+        console.log("getActiveFileAst")
+        let project: SoftwareProject = ProjectHolder.project;
+        console.log("activeFileKey")
+        console.log(activeFileKey)
+        let activeProjectFile: MyFile = project.getFile(activeFileKey);
+        let ast = activeProjectFile?.ast;
+        if(!ast){
+            console.log("ast is undefined");
+            return {};
+        }
+        return ast;
+    }
+
     function renderFileAst(){
         console.log("renderFileAst")
-        console.log("activeFileKey")
-        console.log(activeFileKey);
-        let project: SoftwareProject = ProjectHolder.project;
-        let activeProjectFile: MyFile = project.getFile(activeFileKey);
-        console.log("activeProjectFile");
-        console.log(activeProjectFile);
-        let ast = activeProjectFile?.ast;
-        console.log("ast");
-        console.log(ast);
+        let ast = getActiveFileAstDict()
         let astString = JSON.stringify(ast, null, 2);
 
         return(

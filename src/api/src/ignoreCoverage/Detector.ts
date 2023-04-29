@@ -88,7 +88,7 @@ export class Detector {
     public progressCallback: any;
     public abortController: MyAbortController | undefined;
 
-    public constructor(options: any, project: SoftwareProject, progressCallback?: any, abortController?: MyAbortController){
+    public constructor(project: SoftwareProject, options?: DetectorOptions, progressCallback?: any, abortController?: MyAbortController){
         this.options = new DetectorOptions(options);
         this.project = project;
         this.timer = new Timer();

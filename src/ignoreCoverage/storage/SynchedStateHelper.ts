@@ -60,18 +60,21 @@ export enum ViewOptionValues {
     fileContent = "fileContent",
     fileExplorer = "fileExplorer",
     fileAst = "fileAst",
+    decorationFieldAndParameters = "decorationFieldAndParameters",
 }
 export type ViewOptions = {
     rightPanel: string,
     middlePanel: string,
+    editor: string,
     leftPanel: string
 }
 export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) => {}] {
     const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions)
     let useViewOptions = viewOptions || {
-        rightPanel: "dataClumpsDictionary",
-        middlePanel: "fileContent",
-        leftPanel: "fileExplorer"
+        rightPanel: ViewOptionValues.dataClumpsDictionary,
+        middlePanel: ViewOptionValues.fileContent,
+        editor: ViewOptionValues.decorationFieldAndParameters,
+        leftPanel: ViewOptionValues.fileExplorer
     };
     return [
         useViewOptions,

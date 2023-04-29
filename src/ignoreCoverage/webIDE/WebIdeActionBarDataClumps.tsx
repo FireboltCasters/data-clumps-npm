@@ -65,6 +65,19 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         }
     }
 
+    function getViewOptionItemEditorHighlightFieldAndParameters(){
+        let active = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
+
+        return {
+            label:'Highlight Field and Parameters',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                viewOptions.editor = ViewOptionValues.decorationFieldAndParameters
+                setViewOptions({...viewOptions})
+            }
+        }
+    }
+
     function getTestCaseMenuItems(testCases){
         let testCasesItems: any[] = [];
         for(let testCase of testCases){
@@ -211,20 +224,33 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         {
             label:'View',
             icon:'pi pi-fw pi-user',
-            items:[
-                    getViewOptionItemDataClumpsDict(),
-                    getViewOptionItemFileAst(),
-                    getViewOptionItemDataClumpsGraph(),
+            items: [
                 {
-                    label:'Speed evaluation (TODO)',
-                    disabled: true,
-                    icon:'pi pi-fw pi-clock',
+                    label: "Result",
+                    icon:'pi pi-fw pi-user',
+                    items: [
+                        getViewOptionItemDataClumpsDict(),
+                        getViewOptionItemFileAst(),
+                        getViewOptionItemDataClumpsGraph(),
+                        {
+                            label:'Speed evaluation (TODO)',
+                            disabled: true,
+                            icon:'pi pi-fw pi-clock',
+                        },
+                        {
+                            label:'Chart (Most Data Clumps) (TODO)',
+                            disabled: true,
+                            icon:'pi pi-fw pi-chart-bar',
+                        },
+                    ]
                 },
                 {
-                    label:'Chart (Most Data Clumps) (TODO)',
-                    disabled: true,
-                    icon:'pi pi-fw pi-chart-bar',
-                },
+                    label: "Editor",
+                    icon:'pi pi-fw pi-user',
+                    items: [
+                        getViewOptionItemEditorHighlightFieldAndParameters(),
+                    ]
+                }
             ]
         },
         {

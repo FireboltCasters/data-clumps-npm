@@ -5,9 +5,16 @@ import {Dictionary} from "./UtilTypes";
 import {Timer} from "./Timer";
 
 export class ParserOptions {
-    public includePosition: boolean;
-    public constructor(includePosition: boolean) {
-        this.includePosition = includePosition;
+    public includePositions: boolean = false;
+
+    public constructor(options: any){
+        let keys = Object.keys(options || {});
+        for (let key of keys) {
+            // check if this key exists in this class
+            if (this.hasOwnProperty(key)) {
+                this[key] = options[key]; // set the value
+            }
+        }
     }
 }
 
@@ -42,11 +49,8 @@ export class Parser {
                 break;
             }
         }
-          let file = softwareProject.getFile(filePath);
-          let parsedFile = await Parser.parseFile(file, parserOptions, index, amountOfFiles, progressCallback);
-          if(parsedFile){
-            file.ast = parsedFile;
-          }
+        let file = softwareProject.getFile(filePath);
+        await Parser.parseFile(file, parserOptions, index, amountOfFiles, progressCallback);
         index++;
     }
 
@@ -55,6 +59,8 @@ export class Parser {
   }
 
   public static async parseFile(file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<Dictionary<ClassOrInterfaceTypeContext> | null> {
+        console.log("Parser.parseFile")
+        console.log(JSON.stringify(file.ast))
         file.ast = {}; // reset ast
         let filePath = file.path;
         let fileExtension = Parser.getFileExtension(filePath);
@@ -66,7 +72,10 @@ export class Parser {
             case 'java':
               try{
                   let parser = new JavaLanguageSupport().getParser();
-                  let result = parser.parse(file, options.includePosition);
+                  let result = parser.parse(file, options.includePositions);
+                  if(result){
+                      file.ast = result;
+                  }
                   return result;
               } catch (e) {
                 console.log(e);

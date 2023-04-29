@@ -54,13 +54,21 @@ export class SoftwareProject {
     return this.filesToParseDict[path];
   }
 
-  public async generateAstForFiles(progressCallback?: any, abortController?: MyAbortController) {
-    let parserOptions = new ParserOptions(false);
+  private getDefaultParserOptionsIfUndefined(parserOptions?: ParserOptions){
+    if(parserOptions){
+      return parserOptions;
+    }
+    return new ParserOptions({});
+  }
+
+  public async generateAstForFiles(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
+    parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
     await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
   }
 
-  public async generateAstForFile(file: MyFile, progressCallback?: any) {
-    let parserOptions = new ParserOptions(false);
+  public async generateAstForFile(file: MyFile, parserOptions?: ParserOptions, progressCallback?: any) {
+    console.log("SoftwareProject.generateAstForFile")
+    parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
     await Parser.parseFile(file, parserOptions, 0, 1, progressCallback)
   }
 
@@ -87,11 +95,8 @@ export class SoftwareProject {
     return softwareProjectDicts;
   }
 
-  public async detectDataClumps(progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {
-    let detectorOptions = {
-
-    };
-    let detector = new Detector(detectorOptions, this, progressCallback, abortController);
+  public async detectDataClumps(detectorOptions?, progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {
+    let detector = new Detector(this, detectorOptions, progressCallback, abortController);
     let dataClumps = await detector.detect();
     return dataClumps;
   }

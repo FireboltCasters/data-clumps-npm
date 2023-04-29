@@ -35,13 +35,13 @@ export class JavaParserHelper {
         let stop = ctx.stop;
         let startLine = start.line;
         let startColumn = start.column;
-        let stopLine = stop.line;
-        let stopColumn = stop.column;
+        let endLine = stop.line;
+        let endColumn = stop.column;
         return {
             startLine: startLine,
             startColumn: startColumn,
-            stopLine: stopLine,
-            stopColumn: stopColumn+1 // +1 because the stop column is the last character of the token
+            endLine: endLine,
+            endColumn: endColumn+1 // +1 because the stop column is the last character of the token
         }
     }
 

@@ -65,6 +65,7 @@ export class JavaParserFieldExtractor {
             } else {
                 let variableName = variableDeclarator.children[0].getText(); // get the name of the variable
                 let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
+                parameter.position = JavaParserHelper.custom_getPosition(variableDeclarator.children[0]);
                 parameters.push(parameter);
             }
         }
