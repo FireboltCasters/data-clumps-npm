@@ -59,8 +59,8 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
     }
 
     async function getAllFilesFromRepo(octokit, owner, repo, branch) {
-        console.log("getAllFilesFromRepo")
-        console.log("branch: "+branch)
+        //console.log("getAllFilesFromRepo")
+        //console.log("branch: "+branch)
         const fileDict = {};
         const ref = branch || "master";
 
@@ -70,16 +70,16 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
                 repo,
                 ref,
             });
-            console.log(response)
+            //console.log(response)
 
             const arrayBuffer = await response.data;
-            console.log(arrayBuffer)
+            //console.log(arrayBuffer)
 
             // get all files from zip
             const zip = new JSZip();
             const zipFile = await zip.loadAsync(arrayBuffer);
             const zipFileKeys = Object.keys(zipFile.files);
-            console.log(zipFileKeys);
+            //console.log(zipFileKeys);
             for(let i = 0; i < zipFileKeys.length; i++){
                 const key = zipFileKeys[i];
                 const file = zipFile.files[key];
@@ -118,7 +118,7 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
                 const owner = githubRepoURL.split("/")[3];
 
                 const response = await getAllFilesFromRepo(octokit, owner, repo, githubBranch);
-                console.log(response)
+                //console.log(response)
 
                 const newProject = new SoftwareProject();
 

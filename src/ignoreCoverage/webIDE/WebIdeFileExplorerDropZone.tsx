@@ -53,8 +53,8 @@ export const WebIdeFileExplorerDropZone : FunctionComponent<WebIdeFileExplorerDr
 
     async function handleDrop(event){
         event.preventDefault();
-        console.log("handleDrop")
-        console.log(event)
+        //console.log("handleDrop")
+        //console.log(event)
         const data = event.dataTransfer;
         const items = data.items;
         await handleLoadFiles(items);

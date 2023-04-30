@@ -44,11 +44,16 @@ export class JavaParserMethodExtractor {
 
         let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");
         // @ts-ignore
-        let name = variableDeclaratorId.getText();
+        let name: string = variableDeclaratorId.getText();
         let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, modifiers, method);
 
         if(this.includePosition){
-            parameter.position = JavaParserHelper.custom_getPosition(ctx);
+            let position = JavaParserHelper.custom_getPosition(variableDeclaratorId);
+            // Somehow the position is not correct for the parameter name, so we fix it here
+            // we get the correct start column for the parameter
+            // but the end column is not correct, so we add the length of the parameter name
+            position.endColumn = position.endColumn+name.length-1;
+            parameter.position = position;
         }
 
         return parameter;

@@ -27,25 +27,25 @@ export class Parser {
     }
 
   public static async parseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions, abortController?: MyAbortController, progressCallback?: any) {
-      console.log("Parser.parseSoftwareProject")
+      //console.log("Parser.parseSoftwareProject")
       let timer = new Timer();
         timer.start();
 
     let parserOptions = options || new ParserOptions(false);
     let filePaths = softwareProject.getFilePaths();
-    console.log("Parser.parseSoftwareProject filePaths")
-    console.log(filePaths)
+    //console.log("Parser.parseSoftwareProject filePaths")
+    //console.log(filePaths)
     let index = 0;
     let amountOfFiles = filePaths.length;
 
     for (let filePath of filePaths) {
-        console.log("Parser.parseSoftwareProject filePath")
-        console.log(filePath)
+        //console.log("Parser.parseSoftwareProject filePath")
+        //console.log(filePath)
         if(abortController){
-            console.log(abortController);
-            console.log("--- abortController.getStatus()? "+abortController.isAbort());
+            //console.log(abortController);
+            //console.log("--- abortController.getStatus()? "+abortController.isAbort());
             if(abortController.isAbort()){
-                console.log("+++++++ stop parsing because of abortController");
+                //console.log("+++++++ stop parsing because of abortController");
                 break;
             }
         }
@@ -59,8 +59,8 @@ export class Parser {
   }
 
   public static async parseFile(file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<Dictionary<ClassOrInterfaceTypeContext> | null> {
-        console.log("Parser.parseFile")
-        console.log(JSON.stringify(file.ast))
+        //console.log("Parser.parseFile")
+        //console.log(JSON.stringify(file.ast))
         file.ast = {}; // reset ast
         let filePath = file.path;
         let fileExtension = Parser.getFileExtension(filePath);

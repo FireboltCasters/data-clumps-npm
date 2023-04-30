@@ -46,7 +46,7 @@ export const Demo : FunctionComponent = (props) => {
     const [tree, setTree] = useSynchedFileExplorerTree();
 
     let onAbort = async () => {
-        console.log("Demo: onAbort")
+        //console.log("Demo: onAbort")
         abortController.abort();
 
     }
@@ -112,24 +112,24 @@ export const Demo : FunctionComponent = (props) => {
         abortController.reset();
         if(ProjectHolder.project){
             let project: SoftwareProject = ProjectHolder.project;
-            console.log("onStartDetection");
-            console.log("project");
-            console.log(project);
+            //console.log("onStartDetection");
+            //console.log("project");
+            //console.log(project);
             let files = project.getFilePaths();
-            console.log("files");
-            console.log(files);
+            //console.log("files");
+            //console.log(files);
 
             modalOptions.content = "Detecting Data Clumps..."
             modalOptions.visible = true;
             setModalOptions(modalOptions)
-            console.log("project.detectDataClumps();");
-            console.log(project)
+            //console.log("project.detectDataClumps();");
+            //console.log(project)
             let options = new DetectorOptions({
 
             });
             let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps(options)
-            console.log("dataClumpsContext");
-            console.log(dataClumpsContext);
+            //console.log("dataClumpsContext");
+            //console.log(dataClumpsContext);
             setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
 
             let decorations = await getEditorDecorations();
@@ -141,7 +141,7 @@ export const Demo : FunctionComponent = (props) => {
             modalOptions.content = "";
             setModalOptions(modalOptions)
         } else {
-            console.log("project is undefined");
+            //console.log("project is undefined");
             modalOptions.visible = true;
             modalOptions.content = "No project is loaded";
             setModalOptions(modalOptions)
@@ -165,13 +165,13 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function getEditorDecorations(){
-        console.log("getEditorDecorations")
+        //console.log("getEditorDecorations")
         let decorationFieldAndParametersActive = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
         if(decorationFieldAndParametersActive){
-            console.log("getEditorDecorations: decorationFieldAndParametersActive")
+            //console.log("getEditorDecorations: decorationFieldAndParametersActive")
             let ast = getActiveFileAstDict();
-            console.log("getEditorDecorations: ast")
-            console.log(ast)
+            //console.log("getEditorDecorations: ast")
+            //console.log(ast)
             // @ts-ignore
             return DecorationHelper.getDecorationForFieldsAndParameters(ast);
         }
@@ -181,13 +181,13 @@ export const Demo : FunctionComponent = (props) => {
 
     async function onChangeCode(newCode: string | undefined){
         if(activeFileKey && ProjectHolder.project){
-            console.log("onChangeCode");
-            console.log("activeFileKey")
+            //console.log("onChangeCode");
+            //console.log("activeFileKey")
             let project: SoftwareProject = ProjectHolder.project;
-            console.log(activeFileKey);
+            //console.log(activeFileKey);
             let activeProjectFile: MyFile = project.getFile(activeFileKey);
-            console.log("activeProjectFile");
-            console.log(activeProjectFile);
+            //console.log("activeProjectFile");
+            //console.log(activeProjectFile);
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
                 let parserOptions = getParserOptions();
@@ -206,18 +206,18 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     async function loadSoftwareProject(newProject: SoftwareProject){
-        console.log("loadSoftwareProject")
-        console.log(newProject)
+        //console.log("loadSoftwareProject")
+        //console.log(newProject)
         setLoading(true);
         abortController.reset();
         modalOptions.visible = true;
         modalOptions.content = "Loading project...";
         setModalOptions(modalOptions);
-        console.log("generateAstForFiles")
+        //console.log("generateAstForFiles")
         let parserOptions = getParserOptions();
         await newProject.generateAstForFiles(parserOptions, generateAstCallback, abortController);
         ProjectHolder.project = newProject;
-        console.log("getTreeFromSoftwareProject")
+        //console.log("getTreeFromSoftwareProject")
         setTree(getTreeFromSoftwareProject(newProject));
         setOpenedFiles([]);
         setActiveFileKey(null);
@@ -255,21 +255,21 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function getActiveFileAstDict(){
-        console.log("getActiveFileAst")
+        //console.log("getActiveFileAst")
         let project: SoftwareProject = ProjectHolder.project;
-        console.log("activeFileKey")
-        console.log(activeFileKey)
+        //console.log("activeFileKey")
+        //console.log(activeFileKey)
         let activeProjectFile: MyFile = project.getFile(activeFileKey);
         let ast = activeProjectFile?.ast;
         if(!ast){
-            console.log("ast is undefined");
+            //console.log("ast is undefined");
             return {};
         }
         return ast;
     }
 
     function renderFileAst(){
-        console.log("renderFileAst")
+        //console.log("renderFileAst")
         let ast = getActiveFileAstDict()
         let astString = JSON.stringify(ast, null, 2);
 

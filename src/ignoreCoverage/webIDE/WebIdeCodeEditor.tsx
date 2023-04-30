@@ -91,7 +91,7 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
         <Editor
 
             onMount={(editor, monaco) => {
-                console.log("onMount");
+                //console.log("onMount");
                 if(props?.decorations){
                     let decorationCopy = JSON.parse(JSON.stringify(props?.decorations));
                     for(let decoration of decorationCopy){

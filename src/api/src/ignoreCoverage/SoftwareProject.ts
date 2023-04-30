@@ -11,10 +11,10 @@ export class MyAbortController {
   }
   public abort() {
     this.aborted = true;
-    console.log("MyAbortController.abort called");
+    //console.log("MyAbortController.abort called");
   }
   public isAbort() {
-    console.log("MyAbortController.getStatus called");
+    //console.log("MyAbortController.getStatus called");
     return this.aborted;
   }
   public reset() {
@@ -67,7 +67,7 @@ export class SoftwareProject {
   }
 
   public async generateAstForFile(file: MyFile, parserOptions?: ParserOptions, progressCallback?: any) {
-    console.log("SoftwareProject.generateAstForFile")
+    //console.log("SoftwareProject.generateAstForFile")
     parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
     await Parser.parseFile(file, parserOptions, 0, 1, progressCallback)
   }

@@ -96,8 +96,8 @@ export function useSynchedActiveFileKey(): [value: any, setValue: (value) => {}]
 export function useSynchedFileExplorerTree(): [any, ((value) => void)] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.softwareProjectTree)
     const setTreeWrapper = (tree: any) => {
-        console.log("setTreeWrapper")
-        console.log(tree)
+        //console.log("setTreeWrapper")
+        //console.log(tree)
         setActiveFileKey(tree);
     }
     return [

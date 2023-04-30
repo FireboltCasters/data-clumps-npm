@@ -37,21 +37,21 @@ export class DetectorDataClumpsFields {
 
     public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<Dictionary<DataClumpTypeContext> | null>{
         let classesDict = DetectorUtils.getClassesDict(softwareProjectDicts);
-        console.log("detecting data clumps fields")
-        console.log(classesDict);
+        //console.log("detecting data clumps fields")
+        //console.log(classesDict);
 
         let dataClumpsFieldParameters: Dictionary<DataClumpTypeContext> = {};
         let classKeys = Object.keys(classesDict);
-        console.log("Generating member field parameters related to for all classes")
-        console.log("Amount of classes: " + classKeys.length)
+        //console.log("Generating member field parameters related to for all classes")
+        //console.log("Amount of classes: " + classKeys.length)
         let amountOfClasses = classKeys.length;
-        console.log(classKeys)
+        //console.log(classKeys)
         let index = 0;
         for (let classKey of classKeys) {
             if(this.progressCallback){
                 await this.progressCallback("Field Detector: "+classKey, index, amountOfClasses);
             }
-            console.log("Generating member field parameters related to for class: " + classKey)
+            //console.log("Generating member field parameters related to for class: " + classKey)
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
             this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict, dataClumpsFieldParameters, softwareProjectDicts);
             if(this.abortController && this.abortController.isAbort()){
@@ -105,9 +105,9 @@ export class DetectorDataClumpsFields {
             return; // DataclumpsInspection.java line 410
         }
 
-        console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
+        //console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
         for(let commonFieldParameterKey of commonFieldParameterPairKeys){
-            console.log("  - " + commonFieldParameterKey)
+            //console.log("  - " + commonFieldParameterKey)
         }
 
         let [currentParameters, otherParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters);

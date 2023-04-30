@@ -87,9 +87,9 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 label: testCaseName,
                 icon:'pi pi-fw',
                 command: async () => {
-                    console.log("load test case", testCaseName)
-                    console.log("testCaseProject")
-                    console.log(testCaseProject)
+                    //console.log("load test case", testCaseName)
+                    //console.log("testCaseProject")
+                    //console.log(testCaseProject)
                     await props.loadSoftwareProject(testCaseProject)
                 }
             }
@@ -103,7 +103,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         let items: any[] = [];
         for(let language of languages){
             let identifier = language.getIdentifier();
-            console.log("identifier", identifier)
+            //console.log("identifier", identifier)
 
             let positiveTestCases = language.getPositiveTestCasesDataClumps();
             let testCasePositiveItem = {
