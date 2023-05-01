@@ -124,12 +124,14 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         return testCasesItems;
     }
 
-    function renderExampleLanguageMenuItems(){
+    function renderTestCasesMenuItems(){
         let languages = Languages.getLanguages();
         let items: any[] = [];
         for(let language of languages){
             let identifier = language.getIdentifier();
             //console.log("identifier", identifier)
+
+
 
             let positiveTestCases = language.getPositiveTestCasesDataClumps();
             let testCasePositiveItem = {
@@ -145,13 +147,28 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 items: getTestCaseMenuItems(negativeTestCases)
             }
 
+            let testCasesDataClumps = {
+                label: "Data-Clumps",
+                icon:'pi pi-fw',
+                items: [
+                    testCasePositiveItem,
+                    testCaseNegativeItem
+                ]
+            }
+
+            let parserTestCases = language.getTestCasesParser();
+            let testCasesParser = {
+                label: "Parser",
+                icon:'pi pi-fw',
+                items: getTestCaseMenuItems(parserTestCases)
+            }
 
             items.push({
                 label: identifier,
                 icon:'pi pi-fw',
                 items: [
-                    testCasePositiveItem,
-                    testCaseNegativeItem
+                    testCasesDataClumps,
+                    testCasesParser
                 ]
             });
         }
@@ -207,9 +224,9 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     separator:true
                 },
                 {
-                    label:'Examples',
+                    label:'Test Cases',
                     icon:'pi pi-fw pi-book',
-                    items: renderExampleLanguageMenuItems()
+                    items: renderTestCasesMenuItems()
                 },
                 {
                     separator:true

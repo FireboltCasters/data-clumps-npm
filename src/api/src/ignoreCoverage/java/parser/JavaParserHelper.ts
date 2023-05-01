@@ -30,6 +30,18 @@ export class JavaParserHelper {
         }
     }
 
+    static getChildIndexesByName(ctx, name){
+        let indexes: number[] = [];
+        for(let i = 0; i < ctx.children.length; i++){
+            let child = ctx.children[i];
+            let childName = antlr4.tree.Trees.getNodeText(child, JavaParser.ruleNames);
+            if(childName===name){
+                indexes.push(i);
+            }
+        }
+        return indexes;
+    }
+
     static custom_getPosition(ctx){
         let start = ctx.start;
         let stop = ctx.stop;

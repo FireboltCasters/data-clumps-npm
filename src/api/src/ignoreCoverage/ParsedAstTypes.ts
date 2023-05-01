@@ -115,8 +115,12 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;
     public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
+    public static getClassOrInterfaceAstKey(key, type, file: MyFile){
+        return file.key+"/"+type+"/"+key;
+    }
+
     public constructor(key, name, type, file: MyFile){
-        super(file.key+"/"+type+"/"+key, name, type);
+        super(ClassOrInterfaceTypeContext.getClassOrInterfaceAstKey(key, type, file), name, type);
         this.fileKey = file.key;
         this.name = name;
         this.modifiers = [];

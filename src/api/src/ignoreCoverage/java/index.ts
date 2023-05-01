@@ -3,6 +3,8 @@ import {JavaDataClumpsTestCases} from "./testCasesDataClumps";
 import * as TestCasesParserJava from "./testCasesParser";
 import {LanguageSupportInterface} from "../LanguageSupportInterface";
 import {TestCaseBaseClassForDataClumps} from "../TestCaseBaseClassForDataClumps";
+import {TestCaseBaseClass} from "../TestCaseBaseClass";
+import {JavaTestCasesParser} from "./testCasesParser";
 
 export {JavaDataClumpsTestCases};
 export {TestCasesParserJava};
@@ -40,7 +42,12 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
         return testCases;
     }
 
-    public getTestCasesParser(): any {
-        return TestCasesParserJava;
+    public getTestCasesParser(): TestCaseBaseClass[] {
+        let testCases: TestCaseBaseClass[] = [];
+        let keys = Object.keys(JavaTestCasesParser);
+        for (let key of keys) {
+            testCases.push(JavaTestCasesParser[key]);
+        }
+        return testCases;
     }
 }

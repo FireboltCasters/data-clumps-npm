@@ -27,7 +27,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
 
 
     function getInitialGraphFromDataClumpsDict(){
-        console.log("getInitialGraphFromDataClumpsDict");
+        //console.log("getInitialGraphFromDataClumpsDict");
 
         let softwareProjectDicts: SoftwareProjectDicts | null = props.softwareProjectDicts;
         let activeFileKey: string | null = props.activeFileKey;
@@ -41,10 +41,10 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
         let parameters_dict = {};
 
         let copyOfDataClumpsDict = JSON.parse(JSON.stringify(dataClumpsDict));
-        console.log("dataClumpsDict", copyOfDataClumpsDict);
+        //console.log("dataClumpsDict", copyOfDataClumpsDict);
 
         let copyOfSoftwareProjectDicts = JSON.parse(JSON.stringify(softwareProjectDicts));
-        console.log("softwareProjectDicts", copyOfSoftwareProjectDicts);
+        //console.log("softwareProjectDicts", copyOfSoftwareProjectDicts);
 
         if(dataClumpsDict && softwareProjectDicts){
 
@@ -53,7 +53,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
             for(let dataClumpKey of dataClumpsKeys){
                 let dataClump = dataClumps[dataClumpKey];
                 let copyOfDataClump = JSON.parse(JSON.stringify(dataClump));
-                console.log("dataClump", copyOfDataClump);
+                //console.log("dataClump", copyOfDataClump);
 
                 let file_path = dataClump.file_path;
 
@@ -263,23 +263,23 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
 
         let data_clump_type = dataClumpHolder.data_clump_type;
         if(data_clump_type==="parameter_data_clump"){
-            console.log("parameter_data_clump")
-            console.log(dataClumpData);
+            //console.log("parameter_data_clump")
+            //console.log(dataClumpData);
 
             let parameter_key = dataClumpData.key;
-            console.log("parameter_key")
-            console.log(parameter_key)
+            //console.log("parameter_key")
+            //console.log(parameter_key)
 
             let parameter = softwareProjectDicts.dictMethodParameters[parameter_key];
-            console.log("parameter")
-            console.log(parameter)
+            //console.log("parameter")
+            //console.log(parameter)
 
             let method_key = parameter.methodKey;
-            console.log("method_key")
-            console.log(method_key)
+            //console.log("method_key")
+            //console.log(method_key)
             let method = softwareProjectDicts.dictMethod[method_key];
-            console.log("method")
-            console.log(method)
+            //console.log("method")
+            //console.log(method)
 
             let classOrInterfaceKey = method.classOrInterfaceKey
             let class_or_interface = softwareProjectDicts.dictClassOrInterface[classOrInterfaceKey];
@@ -318,19 +318,19 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
         }
         else if(data_clump_type==="field_data_clump"){
 
-            console.log("field_data_clump")
+            //console.log("field_data_clump")
 
             let field_key = dataClumpData.key;
-            console.log("field_key")
-            console.log(field_key)
+            //console.log("field_key")
+            //console.log(field_key)
             let field = softwareProjectDicts.dictMemberFieldParameters[field_key];
-            console.log("field")
+            //console.log("field")
             let copy_field = JSON.parse(JSON.stringify(field));
-            console.log(copy_field)
+            //console.log(copy_field)
 
             let classOrInterfaceKey = field.classOrInterfaceKey;
-            console.log("classOrInterfaceKey")
-            console.log(classOrInterfaceKey)
+            //console.log("classOrInterfaceKey")
+            //console.log(classOrInterfaceKey)
             let class_or_interface = softwareProjectDicts.dictClassOrInterface[classOrInterfaceKey];
             let class_or_interface_node = getRawClassesOrInterfacesNode(class_or_interface, softwareProjectDicts, classes_dict);
             file_node.classes_or_interfaces_ids[class_or_interface_node.id] = class_or_interface_node.id;

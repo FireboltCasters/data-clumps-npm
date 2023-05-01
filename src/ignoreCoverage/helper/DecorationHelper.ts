@@ -50,7 +50,7 @@ export default class DecorationHelper extends Component {
 
 
     static getDecorationForParameters(ast: Dictionary<ClassOrInterfaceTypeContext>){
-        console.log("getDecorationForParameters")
+        //console.log("getDecorationForParameters")
         //console.log(ast)
         let decoration: any[] = [];
 
@@ -67,8 +67,8 @@ export default class DecorationHelper extends Component {
             let methods = classOrInterface.methods || {};
             let methodKeys = Object.keys(methods);
             for(let methodKey of methodKeys){
-                console.log("methodKey")
-                console.log(methodKey)
+                //console.log("methodKey")
+                //console.log(methodKey)
                 let method = methods[methodKey];
 
                 let parameters = method.parameters || {};
@@ -101,15 +101,15 @@ export default class DecorationHelper extends Component {
         }
 
 
-        console.log("final decoration")
-        console.log(decoration)
+        //console.log("final decoration")
+        //console.log(decoration)
 
         return decoration;
     }
 
     static getDecorationForFieldsAndParameters(ast: Dictionary<ClassOrInterfaceTypeContext>){
-        console.log("getDecorationForFieldsAndParameters")
-        console.log(ast)
+        //console.log("getDecorationForFieldsAndParameters")
+        //console.log(ast)
         let decoration: any[] = [];
         decoration.push(...DecorationHelper.getDecorationForFields(ast));
         decoration.push(...DecorationHelper.getDecorationForParameters(ast));

@@ -7,6 +7,7 @@ import {JavaParserMethodExtractor} from "./JavaParserMethodExtractor";
 import {ClassOrInterfaceTypeContext, MyFile} from "./../../ParsedAstTypes";
 import {LanguageParserInterface} from "../../LanguageParserInterface";
 import {Dictionary} from "../../UtilTypes";
+import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 //TODO add support for generics
 
@@ -15,12 +16,29 @@ class BaseExtractor{
     public includePosition: boolean;
     public file: MyFile;
 
+    static getNameForExtendedClassOrInterface(ctx, extendsOrImplementsKeyword){
+        let extendsOrImplementsRawNames: any[] = [];
+        let extendsOrImplementsIndexes = JavaParserHelper.getChildIndexesByName(ctx, extendsOrImplementsKeyword);
+        for(let extendsOrImplementsIndex of extendsOrImplementsIndexes){
+            let extendsOrImplementsTypeType = ctx.children[extendsOrImplementsIndex+1];
+            if(!!extendsOrImplementsTypeType){
+                let extendsOrImplementsClassOrInterfaceType = JavaParserHelper.getChildByType(extendsOrImplementsTypeType, "classOrInterfaceType");
+                let extendsOrImplementsTypeIdentifier = JavaParserHelper.getChildByType(extendsOrImplementsClassOrInterfaceType, "typeIdentifier");
+                // @ts-ignore
+                let extendsOrImplementsTypeIdentifierOnlyChild = extendsOrImplementsTypeIdentifier.children[0];
+                let extendsOrImplementsName = extendsOrImplementsTypeIdentifierOnlyChild.getText();
+                extendsOrImplementsRawNames.push(extendsOrImplementsName);
+            }
+        }
+        return extendsOrImplementsRawNames;
+    }
+
     constructor(file: MyFile, ctx, type, includePosition= false, innerClassOrInterface = false) {
         this.includePosition = includePosition;
         this.file = file;
 
-//        let type = ctx.children[0]; // "class" or "interface"
-  //      this.output["type"] = type;
+        //JavaAntlr4CstPrinter.print(ctx, file.path);
+
 
         let identifier = JavaParserHelper.getChildByType(ctx, "identifier");
         // @ts-ignore
@@ -28,6 +46,16 @@ class BaseExtractor{
         let key = className;
 
         this.classOrInterface = new ClassOrInterfaceTypeContext(key, className, type, file);
+
+        let extendsRawNames = BaseExtractor.getNameForExtendedClassOrInterface(ctx, "extends");
+        // @ts-ignore
+        this.classOrInterface.searchExtends = extendsRawNames; //TODO: after creating and parsing every file, we can check if the extends class/interface exists
+        // TODO handle wildcard imports
+
+        let implementsRawNames = BaseExtractor.getNameForExtendedClassOrInterface(ctx, "implements");
+        // @ts-ignore
+        this.classOrInterface.searchImplements = implementsRawNames; //TODO: after creating and parsing every file, we can check if the implements class/interface exists
+        // TODO handle wildcard imports
 
         let modifiers = [];
         if(!innerClassOrInterface){
@@ -177,7 +205,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
 
-        //JavaAntlr4CstPrinter.print(cst, "Whole cst")
+        JavaAntlr4CstPrinter.print(cst, "Whole cst")
 
         let output: Dictionary<ClassOrInterfaceTypeContext> = {};
         // @ts-ignore

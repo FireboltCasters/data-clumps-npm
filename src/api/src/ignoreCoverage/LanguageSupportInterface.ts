@@ -1,5 +1,6 @@
 import {LanguageParserInterface} from "./LanguageParserInterface";
 import {TestCaseBaseClassForDataClumps} from "./TestCaseBaseClassForDataClumps";
+import {TestCaseBaseClass} from "./TestCaseBaseClass";
 
 export interface LanguageSupportInterface {
     getIdentifier(): string;
@@ -7,5 +8,5 @@ export interface LanguageSupportInterface {
     getParser(): LanguageParserInterface;
     getPositiveTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
     getNegativeTestCasesDataClumps(): TestCaseBaseClassForDataClumps[];
-    getTestCasesParser(): any;
+    getTestCasesParser(): TestCaseBaseClass[];
 }
