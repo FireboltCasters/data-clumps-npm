@@ -3,7 +3,7 @@ import {DetectorDataClumpsMethods, DetectorOptionsDataClumpsMethods} from "./Det
 import {DetectorDataClumpsFields, DetectorOptionsDataClumpsFields} from "./DetectorDataClumpsFields";
 import {
     ClassOrInterfaceTypeContext,
-    MemberFieldParameterTypeContext,
+    MemberFieldParameterTypeContext, MemberFieldTypeContext,
     MethodParameterTypeContext,
     MethodTypeContext,
     MyFile
@@ -52,6 +52,7 @@ export class SoftwareProjectDicts {
 
                 // Fill memberFieldParameters
                 let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;
+
                 let memberFieldParameterKeys = Object.keys(memberFieldParametersDictForClassOrInterface);
                 for (let memberFieldParameterKey of memberFieldParameterKeys) {
                     let memberFieldParameter = memberFieldParametersDictForClassOrInterface[memberFieldParameterKey];

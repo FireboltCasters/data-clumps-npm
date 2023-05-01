@@ -78,6 +78,32 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         }
     }
 
+    function getViewOptionItemExplorerFile(){
+        let active = viewOptions.leftPanel === ViewOptionValues.explorerFile
+
+        return {
+            label:'FileExplorer',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                viewOptions.leftPanel = ViewOptionValues.explorerFile
+                setViewOptions({...viewOptions})
+            }
+        }
+    }
+
+    function getViewOptionItemExplorerDataClumps(){
+        let active = viewOptions.leftPanel === ViewOptionValues.explorerDataClumps
+
+        return {
+            label:'Data-Clumps Explorer',
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                viewOptions.leftPanel = ViewOptionValues.explorerDataClumps
+                setViewOptions({...viewOptions})
+            }
+        }
+    }
+
     function getTestCaseMenuItems(testCases){
         let testCasesItems: any[] = [];
         for(let testCase of testCases){
@@ -226,6 +252,21 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon:'pi pi-fw pi-user',
             items: [
                 {
+                    label: "Explorer",
+                    icon:'pi pi-fw pi-user',
+                    items: [
+                        getViewOptionItemExplorerFile(),
+                        getViewOptionItemExplorerDataClumps(),
+                    ]
+                },
+                {
+                    label: "Editor",
+                    icon:'pi pi-fw pi-user',
+                    items: [
+                        getViewOptionItemEditorHighlightFieldAndParameters(),
+                    ]
+                },
+                {
                     label: "Result",
                     icon:'pi pi-fw pi-user',
                     items: [
@@ -242,13 +283,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                             disabled: true,
                             icon:'pi pi-fw pi-chart-bar',
                         },
-                    ]
-                },
-                {
-                    label: "Editor",
-                    icon:'pi pi-fw pi-user',
-                    items: [
-                        getViewOptionItemEditorHighlightFieldAndParameters(),
                     ]
                 }
             ]

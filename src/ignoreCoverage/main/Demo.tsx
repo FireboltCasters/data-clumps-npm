@@ -85,10 +85,15 @@ export const Demo : FunctionComponent = (props) => {
         return parserOptions;
     }
 
-    function renderFileExplorer(){
-        return(
-            <WebIdeFileExplorer loadSoftwareProject={loadSoftwareProject} />
-        )
+    function renderExplorer(){
+
+        let explorerFileActive = viewOptions.leftPanel === ViewOptionValues.explorerFile;
+
+        if(explorerFileActive){
+            return(
+                <WebIdeFileExplorer loadSoftwareProject={loadSoftwareProject} />
+            )
+        }
     }
 
     async function generateAstCallback(message, index, total): Promise<void> {
@@ -111,6 +116,7 @@ export const Demo : FunctionComponent = (props) => {
     async function onStartDetection(){
         abortController.reset();
         if(ProjectHolder.project){
+            setDataClumpsDict({});
             let project: SoftwareProject = ProjectHolder.project;
             //console.log("onStartDetection");
             //console.log("project");
@@ -130,7 +136,7 @@ export const Demo : FunctionComponent = (props) => {
             let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps(options)
             //console.log("dataClumpsContext");
             //console.log(dataClumpsContext);
-            setDataClumpsDict(JSON.stringify(dataClumpsContext, null, 2));
+            setDataClumpsDict(dataClumpsContext);
 
             let decorations = await getEditorDecorations();
             setDecorations(decorations)
@@ -181,6 +187,7 @@ export const Demo : FunctionComponent = (props) => {
 
     async function onChangeCode(newCode: string | undefined){
         if(activeFileKey && ProjectHolder.project){
+            setDataClumpsDict(undefined)
             //console.log("onChangeCode");
             //console.log("activeFileKey")
             let project: SoftwareProject = ProjectHolder.project;
@@ -196,9 +203,8 @@ export const Demo : FunctionComponent = (props) => {
                 modalOptions.visible = false;
                 modalOptions.content = "";
                 setModalOptions(modalOptions)
-                setDataClumpsDict("")
                 setCode(activeProjectFile?.content || "");
-
+                setDataClumpsDict(undefined)
                 let decorations = await getEditorDecorations();
                 setDecorations(decorations)
             }
@@ -225,6 +231,10 @@ export const Demo : FunctionComponent = (props) => {
         modalOptions.content = "";
         setModalOptions(modalOptions);
         setLoading(false);
+        let autoDetectOnProjectLoad = true;
+        if(autoDetectOnProjectLoad){
+            await onStartDetection();
+        }
     }
 
     function renderCodeEditor(){
@@ -239,16 +249,23 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function renderDataClumpsGraph(){
+        let softwareProjectDicts = ProjectHolder.project.getSoftwareProjectDicts();
+
         return(
-            <DataClumpsGraph key={dataClumpsDict} dataClumpsDict={dataClumpsDict} />
+            <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} activeFileKey={activeFileKey} dataClumpsDict={dataClumpsDict} softwareProjectDicts={softwareProjectDicts} />
         )
     }
 
     function renderDataClumpsDict(){
+        let defaultValue = "";
+        if(dataClumpsDict && JSON.stringify(dataClumpsDict) !== "{}"){
+            defaultValue = JSON.stringify(dataClumpsDict, null, 2);
+        }
+
         return(
             <WebIdeCodeEditor
-                key={dataClumpsDict}
-                defaultValue={dataClumpsDict}
+                key={JSON.stringify(dataClumpsDict)}
+                defaultValue={defaultValue}
                 options={{ readOnly: true }}
             />
         )
@@ -307,30 +324,30 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     return (
-            <div style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
-                <WebIdeLayout
-                    menuBarItems={renderActionBar()}
-                    panelInitialSizes={[20, 50, 30]}
-                >
-                    <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
-                        <div style={{backgroundColor: 'transparent'}}>
-                            {"File Explorer"}
-                        </div>
-                        <div style={{backgroundColor: 'transparent', flex: '1'}}>
-                            {renderFileExplorer()}
-                        </div>
+        <div style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
+            <WebIdeLayout
+                menuBarItems={renderActionBar()}
+                panelInitialSizes={[20, 50, 30]}
+            >
+                <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
+                    <div style={{backgroundColor: 'transparent'}}>
+                        {"Explorer"}
                     </div>
+                    <div style={{backgroundColor: 'transparent', flex: '1'}}>
+                        {renderExplorer()}
+                    </div>
+                </div>
 
-                    <div style={{backgroundColor: "transparent", height: "100%"}}>
-                        {renderOpenedFiles()}
-                        {renderActiveFilePath()}
-                        {renderCodeEditor()}
-                    </div>
-                    {renderRightPanel()}
-                </WebIdeLayout>
-                <WebIdeModalProgress onAbort={onAbort} />
-                <WebIdeFileExplorerDropZoneModal loadSoftwareProject={loadSoftwareProject} />
-                <WebIdeProjectImportGithubModal loadSoftwareProject={loadSoftwareProject} />
-            </div>
-        );
+                <div style={{backgroundColor: "transparent", height: "100%"}}>
+                    {renderOpenedFiles()}
+                    {renderActiveFilePath()}
+                    {renderCodeEditor()}
+                </div>
+                {renderRightPanel()}
+            </WebIdeLayout>
+            <WebIdeModalProgress onAbort={onAbort} />
+            <WebIdeFileExplorerDropZoneModal loadSoftwareProject={loadSoftwareProject} />
+            <WebIdeProjectImportGithubModal loadSoftwareProject={loadSoftwareProject} />
+        </div>
+    );
 }

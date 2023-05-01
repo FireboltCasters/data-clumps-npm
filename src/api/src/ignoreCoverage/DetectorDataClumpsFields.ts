@@ -110,18 +110,7 @@ export class DetectorDataClumpsFields {
             //console.log("  - " + commonFieldParameterKey)
         }
 
-        let [currentParameters, otherParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters);
-
-        let otherClassFileKey = otherClass.fileKey;
-        let otherClassFile = softwareProjectDicts.dictFile[otherClassFileKey]
-
-        let data_clump_related_to: DataClumpsParameterTypeRelatedToContext = {
-            key: otherClassFile.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-            file_path: otherClassFile.path,
-            class_name: otherClass.name,
-            method_name: null,
-            parameters: otherParameters
-        }
+        let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters, softwareProjectDicts, otherClass, null);
 
         let fileKey = currentClass.fileKey;
         let currentFile = softwareProjectDicts.dictFile[fileKey]
@@ -133,7 +122,6 @@ export class DetectorDataClumpsFields {
             method_name: null,
 
             data_clump_type: "field_data_clump", // "parameter_data_clump" or "field_data_clump"
-            data_clump_related_to: data_clump_related_to, // to which our parameters are related to
             data_clump_data: currentParameters
         }
         dataClumpsFieldParameters[dataClumpContext.key] = dataClumpContext;

@@ -162,22 +162,12 @@ export class DetectorDataClumpsMethods {
             //console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
             let commonMethodParameterPairKeys = DetectorUtils.getCommonParameterPairKeys(method.parameters, otherMethod.parameters);
 
-            let [currentParameters, otherParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonMethodParameterPairKeys, method.parameters, otherMethod.parameters);
+            let otherClassOrInterface = softwareProjectDicts.dictClassOrInterface[otherMethod.classOrInterfaceKey];
+
+            let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonMethodParameterPairKeys, method.parameters, otherMethod.parameters, softwareProjectDicts, otherClassOrInterface, otherMethod)
 
             let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
             let currentFile = softwareProjectDicts.dictFile[currentClassOrInterface.fileKey];
-
-            let otherClassOrInterface = softwareProjectDicts.dictClassOrInterface[otherMethod.classOrInterfaceKey];
-            let otherFile = softwareProjectDicts.dictFile[otherClassOrInterface.fileKey];
-
-            let data_clump_related_to: DataClumpsParameterTypeRelatedToContext = {
-                key: otherFile.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-                file_path: otherFile.path,
-                class_name: otherClassOrInterface.name,
-                method_name: otherMethod.name,
-                parameters: otherParameters
-            }
-
 
             let dataClumpContext: DataClumpTypeContext = {
                 type: "data_clump",
@@ -187,7 +177,6 @@ export class DetectorDataClumpsMethods {
                 method_name: method.name,
 
                 data_clump_type: "parameter_data_clump", // "parameter_data_clump" or "field_data_clump"
-                data_clump_related_to: data_clump_related_to, // to which our parameters are related to
                 data_clump_data: currentParameters
             }
             dataClumpsMethodParameterDataClumps[dataClumpContext.key] = dataClumpContext;

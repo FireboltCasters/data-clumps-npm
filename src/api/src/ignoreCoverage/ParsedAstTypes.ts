@@ -139,9 +139,11 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
 
 export class MemberFieldParameterTypeContext extends ParameterTypeContext{
     public memberFieldKey: string | undefined;
+    public classOrInterfaceKey: string;
 
     public constructor(key, name, type, modifiers, classOrInterface: ClassOrInterfaceTypeContext){
         super(classOrInterface.key+"/"+"memberParameter"+"/"+key, name, type, modifiers);
+        this.classOrInterfaceKey = classOrInterface.key;
     }
 }
 

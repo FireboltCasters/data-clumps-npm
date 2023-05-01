@@ -3,6 +3,7 @@ import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
 import {SoftwareProject} from "../../api/src";
+import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {
@@ -58,7 +59,8 @@ export enum ViewOptionValues {
     dataClumpsDictionary = "dataClumpsDictionary",
     dataClumpsGraph = "dataClumpsGraph",
     fileContent = "fileContent",
-    fileExplorer = "fileExplorer",
+    explorerFile = "explorerFile",
+    explorerDataClumps = "explorerDataClumps",
     fileAst = "fileAst",
     decorationFieldAndParameters = "decorationFieldAndParameters",
 }
@@ -74,7 +76,7 @@ export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) 
         rightPanel: ViewOptionValues.dataClumpsDictionary,
         middlePanel: ViewOptionValues.fileContent,
         editor: ViewOptionValues.decorationFieldAndParameters,
-        leftPanel: ViewOptionValues.fileExplorer
+        leftPanel: ViewOptionValues.explorerFile
     };
     return [
         useViewOptions,
@@ -106,7 +108,7 @@ export function useSynchedFileExplorerTree(): [any, ((value) => void)] {
     ];
 }
 
-export function useSynchedDataClumpsDict(): [value: any, setValue: (value) => {}] {
+export function useSynchedDataClumpsDict(): [value: DataClumpsTypeContext | null, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.result)
     let activeFileKeyKey = activeFileKey || null;
     return [

@@ -1,7 +1,11 @@
 import {SoftwareProject} from "./SoftwareProject";
 import {SoftwareProjectDicts} from "./Detector";
 import {Dictionary} from "./UtilTypes";
-import {DataClumpsParametersContext} from "./DataClumpTypes";
+import {
+    DataClumpsParameterFromContext,
+    DataClumpsParameterToContext,
+    DataClumpsParameterTypeRelatedToContext
+} from "./DataClumpTypes";
 import {ClassOrInterfaceTypeContext, MethodTypeContext, MyFile, ParameterTypeContext} from "./ParsedAstTypes";
 
 type ParameterPair = {
@@ -43,11 +47,10 @@ export class DetectorUtils {
         return commonParameterPairKeys;
     }
 
-    public static getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys: ParameterPair[], currentClassParameters: ParameterTypeContext[], otherClassParameters: ParameterTypeContext[])
-        :[Dictionary<DataClumpsParametersContext>, Dictionary<DataClumpsParametersContext>, string]
+    public static getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys: ParameterPair[], currentClassParameters: ParameterTypeContext[], otherClassParameters: ParameterTypeContext[], softwareProjectDicts, otherClass, otherMethod)
+        :[Dictionary<DataClumpsParameterFromContext>, string]
     {
-        let otherParameters: Dictionary<DataClumpsParametersContext> = {};
-        let currentParameters: Dictionary<DataClumpsParametersContext> = {};
+        let currentParameters: Dictionary<DataClumpsParameterFromContext> = {};
 
         let commonFieldParamterKeysAsKey = "";
 
@@ -58,30 +61,46 @@ export class DetectorUtils {
                 if(currentClassParameter.key === currentFieldParameterKey){
                     commonFieldParamterKeysAsKey += currentClassParameter.name;
 
+                    let related_to_context: any | DataClumpsParameterTypeRelatedToContext = null;
+
+                    let otherFieldParameterKey = commonFieldParameterPairKey.otherParameterKey;
+                    for(let otherClassParameter of otherClassParameters){
+                        if(otherClassParameter.key === otherFieldParameterKey){
+
+                            let related_to_parameter: DataClumpsParameterToContext = {
+                                key: otherClassParameter.key,
+                                name: otherClassParameter.name,
+                                type: otherClassParameter.type,
+                                modifiers: otherClassParameter.modifiers
+                            }
+
+                            let otherClassFileKey = otherClass.fileKey;
+                            let otherClassFile = softwareProjectDicts.dictFile[otherClassFileKey]
+
+                            let related_to_context_found: DataClumpsParameterTypeRelatedToContext = {
+                                key: otherClassFile.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+                                file_path: otherClassFile.path,
+                                class_name: otherClass.name,
+                                method_name: otherMethod?.name,
+                                parameter: related_to_parameter
+                            }
+                            related_to_context = related_to_context_found;
+                        }
+                    }
+
                     currentParameters[currentClassParameter.key] = {
                         key: currentClassParameter.key,
                         name: currentClassParameter.name,
                         type: currentClassParameter.type,
-                        modifiers: currentClassParameter.modifiers
-                    }
-                }
-            }
-
-            let otherFieldParameterKey = commonFieldParameterPairKey.otherParameterKey;
-            for(let otherClassParameter of otherClassParameters){
-                if(otherClassParameter.key === otherFieldParameterKey){
-                    otherParameters[otherClassParameter.key] = {
-                        key: otherClassParameter.key,
-                        name: otherClassParameter.name,
-                        type: otherClassParameter.type,
-                        modifiers: otherClassParameter.modifiers
+                        modifiers: currentClassParameter.modifiers,
+                        related_to_context: related_to_context
                     }
                 }
             }
 
 
         }
-        return [currentParameters, otherParameters, commonFieldParamterKeysAsKey];
+        return [currentParameters, commonFieldParamterKeysAsKey];
     }
 
     public static printDictKeys(dict: Dictionary<any>){
