@@ -3,6 +3,10 @@
 </h2>
 
 <p align="center">
+    <img src="https://github.com/FireboltCasters/data-clumps/raw/master/public/logo.png" alt="backup" style="height:100px;"/>
+</p>
+
+<p align="center">
   <a href="https://badge.fury.io/js/data-clumps.svg"><img src="https://badge.fury.io/js/data-clumps.svg" alt="npm package" /></a>
   <a href="https://img.shields.io/github/license/FireboltCasters/data-clumps"><img src="https://img.shields.io/github/license/FireboltCasters/data-clumps" alt="MIT" /></a>
   <a href="https://img.shields.io/github/last-commit/FireboltCasters/data-clumps?logo=git"><img src="https://img.shields.io/github/last-commit/FireboltCasters/data-clumps?logo=git" alt="last commit" /></a>
@@ -28,6 +32,15 @@ https://fireboltcasters.github.io/data-clumps/
 ```
 npm install data-clumps
 ```
+
+## Roadmap
+
+- [x] Support TypeScript
+- [ ] Support Java
+- [ ] Support JavaScript
+- [ ] Support Python
+- [ ] Support C#
+- [ ] Support C++
 
 ## Usage example
 
