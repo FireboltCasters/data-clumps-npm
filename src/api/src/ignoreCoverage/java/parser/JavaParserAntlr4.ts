@@ -33,7 +33,7 @@ class BaseExtractor{
         return extendsOrImplementsRawNames;
     }
 
-    constructor(file: MyFile, ctx, type, includePosition= false, innerClassOrInterface = false) {
+    constructor(file: MyFile, ctx, type, includePosition= false, innerClassOrInterface = false, parentKey?: string) {
         this.includePosition = includePosition;
         this.file = file;
 
@@ -44,6 +44,9 @@ class BaseExtractor{
         // @ts-ignore
         let className = identifier.getText();
         let key = className;
+        if(parentKey){
+            key = parentKey + "." + className;
+        }
 
         this.classOrInterface = new ClassOrInterfaceTypeContext(key, className, type, file);
 
@@ -74,15 +77,14 @@ class BaseExtractor{
     extractClassOrInterfaceFromMember(memberDeclarationCtx){
         let interfaceDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "interfaceDeclaration");
         if(interfaceDeclaration!==null){
-            let interfaceExtractor = new InterfaceExtractor(this.file, interfaceDeclaration, this.includePosition, true);
+            let interfaceExtractor = new InterfaceExtractor(this.file, interfaceDeclaration, this.includePosition, true, this.classOrInterface.name);
             let innerInterfaceOutput = interfaceExtractor.classOrInterface;
             let key = innerInterfaceOutput.key;
             this.classOrInterface.innerDefinedInterfaces[key] = innerInterfaceOutput;
         }
-        // TODO: Maybe go further down the rabbit hole and check for more inner classes/interfaces
         let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
         if(classDeclaration!==null){
-            let classListener = new ClassExtractor(this.file, classDeclaration, this.includePosition, true);
+            let classListener = new ClassExtractor(this.file, classDeclaration, this.includePosition, true, this.classOrInterface.name);
             let innerClassOutput = classListener.classOrInterface;
             let key = innerClassOutput.key;
             this.classOrInterface.innerDefinedClasses[key] = innerClassOutput;
@@ -91,8 +93,8 @@ class BaseExtractor{
 }
 
 class ClassExtractor extends BaseExtractor{
-    constructor(file: MyFile, ctx, includePosition= false, innerClass = false) {
-        super(file, ctx, "class", includePosition, innerClass);
+    constructor(file: MyFile, ctx, includePosition= false, innerClass = false, parentKey?: string) {
+        super(file, ctx, "class", includePosition, innerClass, parentKey);
 
         let classBody = JavaParserHelper.getChildByType(ctx, "classBody");
         this.extractFromClassBody(classBody);
@@ -139,8 +141,8 @@ class ClassExtractor extends BaseExtractor{
 
 
 class InterfaceExtractor extends BaseExtractor{
-    constructor(file: MyFile, ctx, includePosition= false, innerInterface = false) {
-        super(file, ctx, "interface", includePosition, innerInterface);
+    constructor(file: MyFile, ctx, includePosition= false, innerInterface = false, parentKey?: string) {
+        super(file, ctx, "interface", includePosition, innerInterface, parentKey);
 
         let interfaceBody = JavaParserHelper.getChildByType(ctx, "interfaceBody");
         this.extractFromInterfaceBody(interfaceBody);
@@ -205,7 +207,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         parser.buildParseTrees = true;
         const cst = parser.compilationUnit();
 
-        JavaAntlr4CstPrinter.print(cst, "Whole cst")
+//        JavaAntlr4CstPrinter.print(cst, "Whole cst")
 
         let output: Dictionary<ClassOrInterfaceTypeContext> = {};
         // @ts-ignore

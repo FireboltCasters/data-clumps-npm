@@ -29,6 +29,19 @@ export class SoftwareProjectDicts {
     public dictMethod: Dictionary<MethodTypeContext> = {};
     public dictMethodParameters: Dictionary<MethodParameterTypeContext> = {};
 
+    private fillClassOrInterfaceDicts(classOrInterface: ClassOrInterfaceTypeContext) {
+        // Fill dictClassOrInterface
+        this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
+
+        // Fill inner defined classes
+        let innerClassOrInterfacesDictForClassOrInterface = classOrInterface.innerDefinedInterfaces;
+        let innerClassOrInterfaceKeys = Object.keys(innerClassOrInterfacesDictForClassOrInterface);
+        for (let innerClassOrInterfaceKey of innerClassOrInterfaceKeys) {
+            let innerClassOrInterface = innerClassOrInterfacesDictForClassOrInterface[innerClassOrInterfaceKey];
+            this.fillClassOrInterfaceDicts(innerClassOrInterface);
+        }
+    }
+
     public constructor(project: SoftwareProject) {
         this.dictFile = project.getFilesDict();
         //console.log("dictFile: ")
@@ -47,8 +60,7 @@ export class SoftwareProjectDicts {
             for (let classOrInterfaceKey of classOrInterfaceKeys) {
                 let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
 
-                // Fill dictClassOrInterface
-                this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
+                this.fillClassOrInterfaceDicts(classOrInterface);
 
                 // Fill memberFieldParameters
                 let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;

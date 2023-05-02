@@ -3,7 +3,7 @@ import {
     useSynchedFileExplorerTree,
     useSynchedModalState,
     useSynchedViewOptions,
-    ViewOptionValues
+    ViewOptionValues, ViewPanelValues
 } from "../storage/SynchedStateHelper";
 import {Languages, SoftwareProject} from "../../api/src";
 import {WebIdeCodeActionBar} from "./WebIdeActionBar";
@@ -26,45 +26,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
 
-    function getViewOptionItemDataClumpsGraph(){
-        let active = viewOptions.rightPanel === ViewOptionValues.dataClumpsGraph
-
-        return {
-            label:'Data-Clumps Graph (Experimental)',
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions.rightPanel = ViewOptionValues.dataClumpsGraph
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemDataClumpsDict(){
-        let active = viewOptions.rightPanel === ViewOptionValues.dataClumpsDictionary
-
-        return {
-            label:'Data-Clumps Dict',
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions.rightPanel = ViewOptionValues.dataClumpsDictionary
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemFileAst(){
-        let active = viewOptions.rightPanel === ViewOptionValues.fileAst
-
-        return {
-            label:'File AST',
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions.rightPanel = ViewOptionValues.fileAst
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
     function getViewOptionItemEditorHighlightFieldAndParameters(){
         let active = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
 
@@ -73,32 +34,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon: active ? 'pi pi-check': "pi",
             command: () => {
                 viewOptions.editor = ViewOptionValues.decorationFieldAndParameters
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemExplorerFile(){
-        let active = viewOptions.leftPanel === ViewOptionValues.explorerFile
-
-        return {
-            label:'FileExplorer',
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions.leftPanel = ViewOptionValues.explorerFile
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemExplorerDataClumps(){
-        let active = viewOptions.leftPanel === ViewOptionValues.explorerDataClumps
-
-        return {
-            label:'Data-Clumps Explorer',
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions.leftPanel = ViewOptionValues.explorerDataClumps
                 setViewOptions({...viewOptions})
             }
         }
@@ -174,6 +109,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         }
         return items;
     }
+
 
     const items = [
         {
@@ -265,43 +201,10 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             ]
         },
         {
-            label:'View',
-            icon:'pi pi-fw pi-user',
+            label: "Editor",
+            icon: "pi pi-fw pi-pencil",
             items: [
-                {
-                    label: "Explorer",
-                    icon:'pi pi-fw pi-user',
-                    items: [
-                        getViewOptionItemExplorerFile(),
-                        getViewOptionItemExplorerDataClumps(),
-                    ]
-                },
-                {
-                    label: "Editor",
-                    icon:'pi pi-fw pi-user',
-                    items: [
-                        getViewOptionItemEditorHighlightFieldAndParameters(),
-                    ]
-                },
-                {
-                    label: "Result",
-                    icon:'pi pi-fw pi-user',
-                    items: [
-                        getViewOptionItemDataClumpsDict(),
-                        getViewOptionItemFileAst(),
-                        getViewOptionItemDataClumpsGraph(),
-                        {
-                            label:'Speed evaluation (TODO)',
-                            disabled: true,
-                            icon:'pi pi-fw pi-clock',
-                        },
-                        {
-                            label:'Chart (Most Data Clumps) (TODO)',
-                            disabled: true,
-                            icon:'pi pi-fw pi-chart-bar',
-                        },
-                    ]
-                }
+                getViewOptionItemEditorHighlightFieldAndParameters(),
             ]
         },
         {

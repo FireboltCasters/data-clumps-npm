@@ -8,7 +8,7 @@ import {
     useSynchedModalState,
     useSynchedOpenedFiles,
     useSynchedViewOptions,
-    ViewOptionValues
+    ViewOptionValues, ViewPanelValues
 } from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
@@ -27,6 +27,7 @@ import {SoftwareProject} from "../../api/src";
 import {DetectorOptions} from "../../api/src/ignoreCoverage/Detector";
 import {ParserOptions} from "../../api/src";
 import DecorationHelper from "../helper/DecorationHelper";
+import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
 
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
@@ -85,17 +86,6 @@ export const Demo : FunctionComponent = (props) => {
         return parserOptions;
     }
 
-    function renderExplorer(){
-
-        let explorerFileActive = viewOptions.leftPanel === ViewOptionValues.explorerFile;
-
-        if(explorerFileActive){
-            return(
-                <WebIdeFileExplorer loadSoftwareProject={loadSoftwareProject} />
-            )
-        }
-    }
-
     async function generateAstCallback(message, index, total): Promise<void> {
         let content = `${index}/${total}: ${message}`;
         let isEveryHundreds = index % 100 === 0;
@@ -118,24 +108,14 @@ export const Demo : FunctionComponent = (props) => {
         if(ProjectHolder.project){
             setDataClumpsDict({});
             let project: SoftwareProject = ProjectHolder.project;
-            //console.log("onStartDetection");
-            //console.log("project");
-            //console.log(project);
-            let files = project.getFilePaths();
-            //console.log("files");
-            //console.log(files);
 
             modalOptions.content = "Detecting Data Clumps..."
             modalOptions.visible = true;
             setModalOptions(modalOptions)
-            //console.log("project.detectDataClumps();");
-            //console.log(project)
             let options = new DetectorOptions({
 
             });
             let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps(options)
-            //console.log("dataClumpsContext");
-            //console.log(dataClumpsContext);
             setDataClumpsDict(dataClumpsContext);
 
             let decorations = await getEditorDecorations();
@@ -171,13 +151,9 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function getEditorDecorations(){
-        //console.log("getEditorDecorations")
         let decorationFieldAndParametersActive = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
         if(decorationFieldAndParametersActive){
-            //console.log("getEditorDecorations: decorationFieldAndParametersActive")
             let ast = getActiveFileAstDict();
-            //console.log("getEditorDecorations: ast")
-            //console.log(ast)
             // @ts-ignore
             return DecorationHelper.getDecorationForFieldsAndParameters(ast);
         }
@@ -188,13 +164,8 @@ export const Demo : FunctionComponent = (props) => {
     async function onChangeCode(newCode: string | undefined){
         if(activeFileKey && ProjectHolder.project){
             setDataClumpsDict(undefined)
-            //console.log("onChangeCode");
-            //console.log("activeFileKey")
             let project: SoftwareProject = ProjectHolder.project;
-            //console.log(activeFileKey);
             let activeProjectFile: MyFile = project.getFile(activeFileKey);
-            //console.log("activeProjectFile");
-            //console.log(activeProjectFile);
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
                 let parserOptions = getParserOptions();
@@ -272,14 +243,10 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function getActiveFileAstDict(){
-        //console.log("getActiveFileAst")
         let project: SoftwareProject = ProjectHolder.project;
-        //console.log("activeFileKey")
-        //console.log(activeFileKey)
         let activeProjectFile: MyFile = project.getFile(activeFileKey);
         let ast = activeProjectFile?.ast;
         if(!ast){
-            //console.log("ast is undefined");
             return {};
         }
         return ast;
@@ -303,23 +270,45 @@ export const Demo : FunctionComponent = (props) => {
         return <WebIdeCodeEditorActiveFilePath />
     }
 
-    function renderRightPanel(){
+    function renderPanel(panel: string){
         let content: any = null;
-        if(viewOptions.rightPanel === ViewOptionValues.dataClumpsDictionary){
+
+        let selectedViewOption = viewOptions[panel];
+
+        let explorerFileActive = selectedViewOption === ViewOptionValues.explorerFile;
+        if(explorerFileActive){
+            content = <WebIdeFileExplorer loadSoftwareProject={loadSoftwareProject} />
+        }
+        let editorActive = selectedViewOption === ViewOptionValues.fileContent;
+        if(editorActive){
+            content = (
+                <>
+                    {renderOpenedFiles()}
+                    {renderActiveFilePath()}
+                    {renderCodeEditor()}
+                </>
+            )
+        }
+
+        if(selectedViewOption === ViewOptionValues.dataClumpsDictionary){
             content = renderDataClumpsDict();
         }
-        if(viewOptions.rightPanel === ViewOptionValues.dataClumpsGraph){
+        if(selectedViewOption === ViewOptionValues.dataClumpsGraph){
             content = renderDataClumpsGraph();
         }
-        if(viewOptions.rightPanel === ViewOptionValues.fileAst){
+        if(selectedViewOption === ViewOptionValues.fileAst){
             content = renderFileAst();
         }
 
         return(
-            <div style={{backgroundColor: "transparent", height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
-                <div>{"Result"}</div>
-                {content}
-            </div>
+            <>
+                <div style={{backgroundColor: 'transparent'}}>
+                    <WebIdeCodeActionBarViews panel={panel} />
+                </div>
+                <div style={{backgroundColor: 'transparent', flex: '1'}}>
+                    {content}
+                </div>
+            </>
         )
     }
 
@@ -330,20 +319,14 @@ export const Demo : FunctionComponent = (props) => {
                 panelInitialSizes={[20, 50, 30]}
             >
                 <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
-                    <div style={{backgroundColor: 'transparent'}}>
-                        {"Explorer"}
-                    </div>
-                    <div style={{backgroundColor: 'transparent', flex: '1'}}>
-                        {renderExplorer()}
-                    </div>
+                    {renderPanel(ViewPanelValues.leftPanel)}
                 </div>
-
-                <div style={{backgroundColor: "transparent", height: "100%"}}>
-                    {renderOpenedFiles()}
-                    {renderActiveFilePath()}
-                    {renderCodeEditor()}
+                <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
+                    {renderPanel(ViewPanelValues.middlePanel)}
                 </div>
-                {renderRightPanel()}
+                <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
+                    {renderPanel(ViewPanelValues.rightPanel)}
+                </div>
             </WebIdeLayout>
             <WebIdeModalProgress onAbort={onAbort} />
             <WebIdeFileExplorerDropZoneModal loadSoftwareProject={loadSoftwareProject} />
