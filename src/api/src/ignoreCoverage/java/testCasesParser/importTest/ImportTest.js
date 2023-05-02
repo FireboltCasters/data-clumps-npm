@@ -28,5 +28,6 @@ public class Hero {
 export const ImportTest = new TestCaseBaseClassForParser(
     'ImportTest',
     [FileA, FileB, FileC],
+    [FileA.getFileExtension()],
     []
 );

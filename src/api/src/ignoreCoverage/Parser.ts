@@ -27,65 +27,147 @@ export class Parser {
     }
 
   public static async parseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions, abortController?: MyAbortController, progressCallback?: any) {
-      //console.log("Parser.parseSoftwareProject")
       let timer = new Timer();
         timer.start();
 
-    let parserOptions = options || new ParserOptions(false);
-    let filePaths = softwareProject.getFilePaths();
-    //console.log("Parser.parseSoftwareProject filePaths")
-    //console.log(filePaths)
-    let index = 0;
-    let amountOfFiles = filePaths.length;
-
-    for (let filePath of filePaths) {
-        //console.log("Parser.parseSoftwareProject filePath")
-        //console.log(filePath)
-        if(abortController){
-            //console.log(abortController);
-            //console.log("--- abortController.getStatus()? "+abortController.isAbort());
-            if(abortController.isAbort()){
-                //console.log("+++++++ stop parsing because of abortController");
-                break;
-            }
-        }
-        let file = softwareProject.getFile(filePath);
-        await Parser.parseFile(file, parserOptions, index, amountOfFiles, progressCallback);
-        index++;
-    }
+    await Parser.preParseSoftwareProject(softwareProject, options, abortController, progressCallback);
+    await Parser.postParseSoftwareProject(softwareProject, options, abortController, progressCallback);
 
     timer.stop();
     timer.printElapsedTime("Parser.parseSoftwareProject");
   }
 
-  public static async parseFile(file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<Dictionary<ClassOrInterfaceTypeContext> | null> {
+  private static async preParseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions, abortController?: MyAbortController, progressCallback?: any) {
+      let timer = new Timer();
+      timer.start();
+
+      let parserOptions = options || new ParserOptions(false);
+      let filePaths = softwareProject.getFilePaths();
+      let index = 0;
+      let amountOfFiles = filePaths.length;
+
+      // STEP 1: we need to pre parse all files before we can parse the files that reference other files
+      if(abortController && !abortController.isAbort()){
+          for (let filePath of filePaths) {
+              if(abortController && abortController.isAbort()){
+                  break;
+              }
+              let file = softwareProject.getFile(filePath);
+              await Parser.preParseFile(softwareProject, file, parserOptions, index, amountOfFiles, progressCallback);
+              index++;
+          }
+      }
+
+      timer.stop();
+      timer.printElapsedTime("Parser.parseSoftwareProject");
+  }
+
+
+    private static async postParseSoftwareProject(softwareProject: SoftwareProject, options?: ParserOptions, abortController?: MyAbortController, progressCallback?: any) {
+        let timer = new Timer();
+        timer.start();
+
+        let parserOptions = options || new ParserOptions(false);
+        let filePaths = softwareProject.getFilePaths();
+        let index = 0;
+        let amountOfFiles = filePaths.length;
+
+        // STEP 2: we need to parse all files that reference other files
+        if(abortController && !abortController.isAbort()){
+            for (let filePath of filePaths) {
+                if(abortController && abortController.isAbort()){
+                        break;
+                }
+                let file = softwareProject.getFile(filePath);
+                await Parser.postParseFile(softwareProject, file, parserOptions, index, amountOfFiles, progressCallback);
+                index++;
+            }
+        }
+
+        timer.stop();
+        timer.printElapsedTime("Parser.parseSoftwareProject");
+    }
+
+    /**
+     * We parse a single file with only the information we can find in this file.
+     * After that we parse the file again with the information we have from all other files.
+     * @param file
+     * @param options
+     * @param index
+     * @param amountOfFiles
+     * @param progressCallback
+     * @private
+     */
+  private static async preParseFile(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<Dictionary<ClassOrInterfaceTypeContext> | null> {
         //console.log("Parser.parseFile")
         //console.log(JSON.stringify(file.ast))
-        file.ast = {}; // reset ast
         let filePath = file.path;
-        let fileExtension = Parser.getFileExtension(filePath);
+        file.ast = {};
         if(progressCallback){
-           await progressCallback("Parsing file: "+filePath, index, amountOfFiles);
+           await progressCallback("Pre Parsing file: "+filePath, index, amountOfFiles);
         }
-        switch (fileExtension) {
-            // TODO own parser for each language as plugin
-            case 'java':
-              try{
-                  let parser = new JavaLanguageSupport().getParser();
-                  let result = parser.parse(file, options.includePositions);
-                  if(result){
-                      file.ast = result;
-                  }
-                  return result;
-              } catch (e) {
-                console.log(e);
-              }
-              break;
-            default:
-                break;
+
+        let parser = Parser.getFileSpecificParser(softwareProject, file, options);
+        if(parser){
+            let result = parser.preParse(file, options.includePositions);
+            if(result){
+                file.ast = result;
+            }
+            return result;
         }
         return null;
   }
+
+  private static getFileSpecificParser(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions){
+      let fileExtension = file.getFileExtension()
+      let extensionToBeChecked = softwareProject.fileExtensionsToBeChecked;
+      if(fileExtension){
+          if(extensionToBeChecked && extensionToBeChecked[fileExtension]){
+              switch (fileExtension) {
+                  // TODO own parser for each language as plugin
+                  case 'java':
+                      try{
+                          return new JavaLanguageSupport().getParser();
+                      } catch (e) {
+                          console.log(e);
+                      }
+                      break;
+                  default:
+                      break;
+              }
+              return null;
+          }
+      }
+
+  }
+
+    /**
+     * After a file is pre parsed we can parse the file again with the information we have from all other files.
+     * @param file
+     * @param options
+     * @param index
+     * @param amountOfFiles
+     * @param progressCallback
+     */
+  public static async postParseFile(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<any> {
+        let filePath = file.path;
+        file.ast = {};
+        if(progressCallback){
+            await progressCallback("Post Parsing file: "+filePath, index, amountOfFiles);
+        }
+
+        let parser = Parser.getFileSpecificParser(softwareProject, file, options);
+        if(parser){
+            let result = parser.postParse(softwareProject, file, options.includePositions);
+            if(result){
+                file.ast = result;
+            }
+            return result;
+        }
+        return null;
+  }
+
+
 
   private static getFileExtension(filePath: string) {
     if(!filePath) return null;

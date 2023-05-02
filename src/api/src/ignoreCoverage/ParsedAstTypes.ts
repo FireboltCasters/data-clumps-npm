@@ -100,6 +100,17 @@ export class MyFile{
         this.key = path;
         this.ast = {};
     }
+
+    public getFileExtension(){
+        return MyFile.getFileExtension(this.path);
+    }
+
+    public static getFileExtension(filePath: string) {
+        if(!filePath) return null;
+        if(filePath.indexOf('.') === -1) return null;
+        let fileExtension = filePath.split('.').pop();
+        return fileExtension;
+    }
 }
 
 export class ClassOrInterfaceTypeContext extends AstElementTypeContext{

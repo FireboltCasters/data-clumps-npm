@@ -4,8 +4,8 @@ import {MyFile, ParameterTypeContext, ParameterTypeContextUtils} from "./ParsedA
 export class TestCaseBaseClassForParser extends TestCaseBaseClass{
     //public dataClumps: ParameterTypeContext[];
 
-    public constructor(name, files: MyFile[], parsedResults){
-        super(name, files, JSON.stringify(parsedResults));
+    public constructor(name, files: MyFile[], extensionsToBeChecked: string[], parsedResults){
+        super(name, files, extensionsToBeChecked, JSON.stringify(parsedResults));
         //this.dataClumps = dataClumps;
     }
 

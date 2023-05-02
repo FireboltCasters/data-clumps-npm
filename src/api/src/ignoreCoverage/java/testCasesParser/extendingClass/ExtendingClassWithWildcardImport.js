@@ -24,5 +24,6 @@ public class Robin extends Batman {
 export const ExtendingClassWithWildcardImport = new TestCaseBaseClassForParser(
     'ExtendingClassWithWildcardImport',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

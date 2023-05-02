@@ -23,5 +23,6 @@ public class Hero {
 export const ImportTestInnerClass = new TestCaseBaseClassForParser(
     'ImportTestInnerClass',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

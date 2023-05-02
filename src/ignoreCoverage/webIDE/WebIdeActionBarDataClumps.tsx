@@ -266,9 +266,14 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             ]
         },
         {
-            label:'All right reserved 2023 (C) Nils Baumgartner',
+            label:'All right reserved 2023 (C)',
             icon: <div style={{marginRight: "8px"}}>{"§"}</div>,
             items:[
+                {
+                    label: "Nils Baumgartner",
+                    icon: "pi pi-fw pi-user",
+                    url: "https://nilsbaumgartner.de"
+                },
                 {
                     label:'GitHub project',
                     icon:'pi pi-fw pi-github',

@@ -19,5 +19,6 @@ public class Fields2 {
 export const SimpleFields = new TestCaseBaseClassForDataClumps(
     'SimpleFields',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

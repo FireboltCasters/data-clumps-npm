@@ -6,7 +6,7 @@ function testAllLanguages() {
       let identifier = language.getIdentifier();
       let testCasesDataClumps = language.getPositiveTestCasesDataClumps();
       for(let testCase of testCasesDataClumps) {
-        let softwareProject = new SoftwareProject();
+        let softwareProject = new SoftwareProject(language.getFileExtensions());
         softwareProject.addFiles(testCase.getFiles());
         softwareProject.generateAstForFiles();
         let detectedDataClumps = softwareProject.detectDataClumps();

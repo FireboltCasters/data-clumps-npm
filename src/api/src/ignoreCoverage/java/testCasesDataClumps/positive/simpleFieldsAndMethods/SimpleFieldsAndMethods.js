@@ -35,5 +35,6 @@ public class SmellyMethods {
 export const SimpleFieldsAndMethods = new TestCaseBaseClassForDataClumps(
     'SimpleFieldsAndMethods',
     [FileA, FileB, FileC],
+    [FileA.getFileExtension()],
     []
 );

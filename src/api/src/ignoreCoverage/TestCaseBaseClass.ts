@@ -7,10 +7,12 @@ export class TestCaseBaseClass {
     public files: MyFile[];
     public expectedResult: any;
     public description: string;
+    public extensionsToBeChecked: string[];
 
-    public constructor(name, files: MyFile[], expectedResult, description?: string) {
+    public constructor(name, files: MyFile[], extensionsToBeChecked: string[], expectedResult, description?: string) {
         this.name = name;
         this.files = files;
+        this.extensionsToBeChecked = extensionsToBeChecked;
         this.expectedResult = expectedResult;
         this.description = "";
     }
@@ -20,7 +22,7 @@ export class TestCaseBaseClass {
     }
 
     public getSoftwareProject(): SoftwareProject {
-        let project = new SoftwareProject()
+        let project = new SoftwareProject(this.extensionsToBeChecked)
         project.addFiles(this.files)
         return project;
     }

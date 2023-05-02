@@ -120,7 +120,7 @@ export const WebIdeProjectImportGithubModal : FunctionComponent<WebIdeFileExplor
                 const response = await getAllFilesFromRepo(octokit, owner, repo, githubBranch);
                 //console.log(response)
 
-                const newProject = new SoftwareProject();
+                const newProject = new SoftwareProject(["java"]);
 
                 let projectFileKeys = Object.keys(response);
                 for(let i = 0; i < projectFileKeys.length; i++){

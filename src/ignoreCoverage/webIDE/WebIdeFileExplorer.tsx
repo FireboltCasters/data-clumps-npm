@@ -161,14 +161,23 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
 
     if(loading){
         return (
-            <div>
-                <h1>{"Loading"}</h1>
+            <div style={{width: "100%", display: "flex", height: "100%", alignItems: "center", justifyContent: "center"}}>
+                <div style={{display: "inline-block", alignItems: "center", justifyContent: "center"}}>
+                    <h1>
+                        <div style={{alignItems: "center", justifyContent: "center", display: "flex", flexDirection: "column"}}>
+                            <div>{"Loading"}</div>
+                            <i className={"pi pi-spin pi-spinner"} style={{fontSize: "40px", display: "inline-block"}} />
+                        </div>
+                    </h1>
+                </div>
             </div>
         )
     }
 
     let content: any = null;
-    content = <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
+    if(tree){
+        content = <FileTree key={tree} tree={tree} itemRenderer={itemRenderer} onItemClick={toggleExpanded} />
+    }
 
     return(
         <div style={{height: "100%", width: "100%", backgroundColor: "transparent"}}>

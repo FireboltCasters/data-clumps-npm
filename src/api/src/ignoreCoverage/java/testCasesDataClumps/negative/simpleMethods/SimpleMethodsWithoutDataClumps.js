@@ -15,5 +15,6 @@ public class Fields2 {
 export const SimpleMethodsWithoutDataClumps = new TestCaseBaseClassForDataClumps(
     'SimpleMethodsWithoutDataClumps',
     [FileA, FileB],
+    [FileA.getFileExtension()],
 []
 );

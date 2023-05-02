@@ -20,5 +20,6 @@ public class Main {
 export const NestedInnerClassesExplicitType = new TestCaseBaseClassForParser(
     'NestedInnerClassesExplicitType',
     [FileA],
+    [FileA.getFileExtension()],
     []
 );

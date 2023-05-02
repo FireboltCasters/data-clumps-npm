@@ -15,5 +15,6 @@ public class Fields2 {
 export const ParametersWithModifiers = new TestCaseBaseClassForDataClumps(
     'ParametersWithModifiers',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

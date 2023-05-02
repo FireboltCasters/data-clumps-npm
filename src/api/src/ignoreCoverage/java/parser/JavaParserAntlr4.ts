@@ -8,6 +8,7 @@ import {ClassOrInterfaceTypeContext, MyFile} from "./../../ParsedAstTypes";
 import {LanguageParserInterface} from "../../LanguageParserInterface";
 import {Dictionary} from "../../UtilTypes";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
+import {SoftwareProject} from "../../SoftwareProject";
 
 //TODO add support for generics
 
@@ -198,7 +199,11 @@ class InterfaceExtractor extends BaseExtractor{
 // class which implements LanguageParserInterface
 
 export class JavaParserAntlr4 implements LanguageParserInterface {
-    parse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
+    postParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
+        return this.preParse(file, includePosition);
+    }
+
+    preParse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext> {
         let code = file.content;
         const chars = new antlr4.InputStream(code)
         const lexer = new JavaLexer(chars);

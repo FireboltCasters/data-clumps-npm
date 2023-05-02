@@ -15,5 +15,6 @@ public class Main {
 export const ImportTestInnerClass = new TestCaseBaseClassForParser(
     'ImportTestInnerClass',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

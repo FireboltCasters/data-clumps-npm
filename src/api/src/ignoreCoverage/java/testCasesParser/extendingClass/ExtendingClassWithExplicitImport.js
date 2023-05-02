@@ -23,5 +23,6 @@ public class Robin extends Batman {
 export const ExtendingClassWithExplicitImport = new TestCaseBaseClassForParser(
     'ExtendingClassWithExplicitImport',
     [FileA, FileB],
+    [FileA.getFileExtension()],
     []
 );

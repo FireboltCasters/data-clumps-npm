@@ -32,7 +32,7 @@ import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
 export class ProjectHolder{
-    public static project: SoftwareProject = new SoftwareProject();
+    public static project: SoftwareProject = new SoftwareProject(["java"]);
 }
 
 export const Demo : FunctionComponent = (props) => {
@@ -169,7 +169,7 @@ export const Demo : FunctionComponent = (props) => {
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
                 let parserOptions = getParserOptions();
-                await project.generateAstForFile(activeProjectFile, parserOptions, generateAstCallback);
+                await project.generateAstForFiles(parserOptions, generateAstCallback, abortController);
                 ProjectHolder.project = project;
                 modalOptions.visible = false;
                 modalOptions.content = "";

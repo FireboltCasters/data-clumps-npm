@@ -26,9 +26,14 @@ export class MyAbortController {
 export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
+  public fileExtensionsToBeChecked: Dictionary<string> = {};
 
-  constructor() {
+  constructor(fileExtensionsToBeChecked: string[]) {
     this.filesToParseDict = {};
+    this.fileExtensionsToBeChecked = {};
+    for (let fileExtension of fileExtensionsToBeChecked) {
+        this.fileExtensionsToBeChecked[fileExtension] = fileExtension;
+    }
   }
 
   public addFileContent(path: string, fileContent: string) {
@@ -64,12 +69,6 @@ export class SoftwareProject {
   public async generateAstForFiles(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
     parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
     await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
-  }
-
-  public async generateAstForFile(file: MyFile, parserOptions?: ParserOptions, progressCallback?: any) {
-    //console.log("SoftwareProject.generateAstForFile")
-    parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
-    await Parser.parseFile(file, parserOptions, 0, 1, progressCallback)
   }
 
   public getAstAsString(): string {

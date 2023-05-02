@@ -39,7 +39,7 @@ export const WebIdeFileExplorerDropZone : FunctionComponent<WebIdeFileExplorerDr
     async function handleLoadFiles(files){
         const items = files;
 
-        const newProject = new SoftwareProject();
+        const newProject = new SoftwareProject(["java"]);
 
         for (let i = 0; i < items.length; i++) {
             const item = items[i].webkitGetAsEntry();
