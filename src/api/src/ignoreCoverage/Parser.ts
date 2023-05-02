@@ -3,6 +3,7 @@ import {SoftwareProject, MyAbortController} from "./SoftwareProject";
 import {ClassOrInterfaceTypeContext, MyFile} from "./ParsedAstTypes";
 import {Dictionary} from "./UtilTypes";
 import {Timer} from "./Timer";
+import {SoftwareProjectDicts} from "./Detector";
 
 export class ParserOptions {
     public includePositions: boolean = false;
@@ -72,6 +73,8 @@ export class Parser {
         let index = 0;
         let amountOfFiles = filePaths.length;
 
+        let softwareProjectDicts = softwareProject.getSoftwareProjectDicts();
+
         // STEP 2: we need to parse all files that reference other files
         if(abortController && !abortController.isAbort()){
             for (let filePath of filePaths) {
@@ -79,7 +82,7 @@ export class Parser {
                         break;
                 }
                 let file = softwareProject.getFile(filePath);
-                await Parser.postParseFile(softwareProject, file, parserOptions, index, amountOfFiles, progressCallback);
+                await Parser.postParseFile(softwareProject, softwareProjectDicts, file, parserOptions, index, amountOfFiles, progressCallback);
                 index++;
             }
         }
@@ -143,24 +146,28 @@ export class Parser {
 
     /**
      * After a file is pre parsed we can parse the file again with the information we have from all other files.
+     * @param softwareProject
+     * @param softwareProjectDicts
      * @param file
      * @param options
      * @param index
      * @param amountOfFiles
      * @param progressCallback
      */
-  public static async postParseFile(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<any> {
+  public static async postParseFile(softwareProject: SoftwareProject, softwareProjectDicts: SoftwareProjectDicts, file: MyFile, options: ParserOptions, index, amountOfFiles, progressCallback?: any): Promise<any> {
         let filePath = file.path;
-        file.ast = {};
         if(progressCallback){
             await progressCallback("Post Parsing file: "+filePath, index, amountOfFiles);
         }
 
         let parser = Parser.getFileSpecificParser(softwareProject, file, options);
         if(parser){
-            let result = parser.postParse(softwareProject, file, options.includePositions);
+            let result = parser.postParse(softwareProject, softwareProjectDicts, file, options.includePositions);
             if(result){
+                file.ast = {};
                 file.ast = result;
+            } else {
+                file.ast = {};
             }
             return result;
         }

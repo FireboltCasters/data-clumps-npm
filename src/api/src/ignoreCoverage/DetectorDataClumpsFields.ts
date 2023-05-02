@@ -66,7 +66,7 @@ export class DetectorDataClumpsFields {
      * DataclumpsInspection.java line 405
      */
     private generateMemberFieldParametersRelatedToForClass(currentClass: ClassOrInterfaceTypeContext, classesDict: Dictionary<ClassOrInterfaceTypeContext>, dataClumpsFieldParameters: Dictionary<DataClumpTypeContext>, softwareProjectDicts: SoftwareProjectDicts){
-        let memberFieldParameters = this.getMemberParametersFromClass(currentClass);
+        let memberFieldParameters = this.getMemberParametersFromClass(currentClass, softwareProjectDicts);
         let amountOfMemberFields = memberFieldParameters.length;
         if(amountOfMemberFields < this.options.sharedFieldParametersMinimum){
             return;
@@ -95,8 +95,8 @@ export class DetectorDataClumpsFields {
             }
         }
 
-        let currentClassParameters = this.getMemberParametersFromClass(currentClass);
-        let otherClassParameters = this.getMemberParametersFromClass(otherClass);
+        let currentClassParameters = this.getMemberParametersFromClass(currentClass, softwareProjectDicts);
+        let otherClassParameters = this.getMemberParametersFromClass(otherClass, softwareProjectDicts);
         let commonFieldParameterPairKeys = DetectorUtils.getCommonParameterPairKeys(currentClassParameters, otherClassParameters);
         //TODO get linked parameters: currentClassParameter --> otherClassParameter
 
@@ -127,7 +127,7 @@ export class DetectorDataClumpsFields {
         dataClumpsFieldParameters[dataClumpContext.key] = dataClumpContext;
     }
 
-    private getMemberParametersFromClass(currentClass: ClassOrInterfaceTypeContext): MemberFieldParameterTypeContext[]{
+    private getMemberParametersFromClass(currentClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts): MemberFieldParameterTypeContext[]{
         let classParameters: MemberFieldParameterTypeContext[] = [];
         let fieldParameters = currentClass.fields;
         let fieldParameterKeys = Object.keys(fieldParameters);
@@ -139,11 +139,14 @@ export class DetectorDataClumpsFields {
         // A class can inherit all members from its superclass
         // An interface can inherit all members from its superinterfaces
         if(this.options.subclassInheritsAllMembersFromSuperclass){
-            let superclassesDict = currentClass.extends
-            let superclassKeys = Object.keys(superclassesDict);
-            for (let superclassKey of superclassKeys) {
-                let superclass = superclassesDict[superclassKey];
-                let superclassParameters = this.getMemberParametersFromClass(superclass);
+            let superclassesDict = currentClass.extends // {Batman: 'Batman.java/class/Batman'}
+            let superclassNames = Object.keys(superclassesDict);
+            for (let superclassName of superclassNames) {
+                // superclassName = 'Batman'
+                let superClassKey = superclassesDict[superclassName];
+                // superClassKey = 'Batman.java/class/Batman'
+                let superclass = softwareProjectDicts.dictClassOrInterface[superClassKey];
+                let superclassParameters = this.getMemberParametersFromClass(superclass, softwareProjectDicts);
                 classParameters = classParameters.concat(superclassParameters);
             }
         }

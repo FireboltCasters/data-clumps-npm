@@ -1,6 +1,5 @@
 import JavaParser from "./../../java/util/JavaParser";
 import {antlr4} from "./../../util/MyAntlr4";
-import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 export class JavaParserHelper {
 
@@ -10,6 +9,12 @@ export class JavaParserHelper {
 
     static getChildrenByType(ctx, type){
         let children = [];
+        if(ctx===null){
+            return children;
+        }
+        if(ctx?.children===null){
+            return children;
+        }
         for(let i = 0; i < ctx.children.length; i++){
             let child = ctx.children[i];
             let childType = JavaParserHelper.getCtxType(child);
@@ -21,7 +26,7 @@ export class JavaParserHelper {
         return children
     }
 
-    static getChildByType(ctx, type){
+    static getChildByType(ctx, type): null | any {
         let children = JavaParserHelper.getChildrenByType(ctx, type);
         if(children.length===0){
             return null;

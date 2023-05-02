@@ -1,11 +1,14 @@
 import {TestCaseBaseClassForParser} from "../../TestCaseBaseClassForParser";
-import {ExtendingClass} from "./extendingClass/ExtendingClass";
-import {ExtendingClassWithExplicitImport} from "./extendingClass/ExtendingClassWithExplicitImport";
-import {ExtendingClassWithWildcardImport} from "./extendingClass/ExtendingClassWithWildcardImport";
+import {ExtendingClass} from "./extends/ExtendingClass";
+import {ExtendingClassWithExplicitImport} from "./extends/ExtendingClassWithExplicitImport";
+import {ExtendingClassWithWildcardImport} from "./extends/ExtendingClassWithWildcardImport";
 import {ImportTest} from "./importTest/ImportTest";
 import {ImportTestInnerClass} from "./importTest/ImportTestInnerClass";
 import {NestedInnerClasses} from "./nestedClasses/NestedInnerClasses";
 import {NestedInnerClassesExplicitType} from "./nestedClasses/NestedInnerClassesExplicitType";
+import {ImplementsExtreme} from "./implements/ImplementsExtreme";
+import {ClassImplementsInterface} from "./implements/ClassImplementsInterfaces";
+import {InterfaceExtendsInterfaces} from "./extends/InterfaceExtendsInterfaces";
 
 export class JavaTestCasesParser {
     static ExtendingClass: TestCaseBaseClassForParser = ExtendingClass;
@@ -15,4 +18,7 @@ export class JavaTestCasesParser {
     static ImportTestInnerClass: TestCaseBaseClassForParser = ImportTestInnerClass;
     static NestedInnerClasses: TestCaseBaseClassForParser = NestedInnerClasses;
     static NestedInnerClassesExplicitType: TestCaseBaseClassForParser = NestedInnerClassesExplicitType;
+    static ImplementsExtreme: TestCaseBaseClassForParser = ImplementsExtreme;
+    static ClassImplementsInterface: TestCaseBaseClassForParser = ClassImplementsInterface;
+    static InterfaceExtendsInterfaces: TestCaseBaseClassForParser = InterfaceExtendsInterfaces;
 }

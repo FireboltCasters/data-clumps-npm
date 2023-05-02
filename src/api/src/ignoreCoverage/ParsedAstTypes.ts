@@ -105,6 +105,10 @@ export class MyFile{
         return MyFile.getFileExtension(this.path);
     }
 
+    public getFolderName(){
+        return this.path.split("/").slice(0, -1).join("/")+"/";
+    }
+
     public static getFileExtension(filePath: string) {
         if(!filePath) return null;
         if(filePath.indexOf('.') === -1) return null;
@@ -119,8 +123,9 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public methods: Dictionary<MethodTypeContext>;
     public fileKey: string;
 
-    public implements: Dictionary<ClassOrInterfaceTypeContext>;
-    public extends: Dictionary<ClassOrInterfaceTypeContext>; // Languages that support multiple inheritance include: C++, Common Lisp
+    public definedInClassOrInterfaceTypeKey: string | undefined;
+    public implements: Dictionary<string>;
+    public extends: Dictionary<string>; // Languages that support multiple inheritance include: C++, Common Lisp
 
     //dict of classes with name as key
     public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;

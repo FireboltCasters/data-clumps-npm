@@ -55,6 +55,19 @@ export class SoftwareProject {
     return Object.keys(this.getFilesDict());
   }
 
+  public getFileKeysOfFilesInPath(path: string) {
+    let fileKeysInPath: string[] = [];
+    let filePaths = this.getFilePaths();
+    for (let filePath of filePaths) {
+      let file = this.getFile(filePath);
+        let folderName = file.getFolderName();
+        if (folderName === path) {
+          fileKeysInPath.push(file.key);
+        }
+    }
+    return fileKeysInPath;
+  }
+
   public getFile(path: string) {
     return this.filesToParseDict[path];
   }

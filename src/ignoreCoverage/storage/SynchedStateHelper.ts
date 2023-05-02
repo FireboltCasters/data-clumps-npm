@@ -81,10 +81,10 @@ export type ViewOptions = {
 export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) => {}] {
     const [viewOptions, setViewOptions] = useSynchedJSONState(SynchedStates.viewOptions)
     let useViewOptions = viewOptions || {
-        [ViewPanelValues.rightPanel]: ViewOptionValues.dataClumpsDictionary,
+        [ViewPanelValues.leftPanel]: ViewOptionValues.explorerFile,
         [ViewPanelValues.middlePanel]: ViewOptionValues.fileContent,
         editor: ViewOptionValues.decorationFieldAndParameters,
-        [ViewPanelValues.leftPanel]: ViewOptionValues.explorerFile
+        [ViewPanelValues.rightPanel]: ViewOptionValues.fileAst
     };
     return [
         useViewOptions,
