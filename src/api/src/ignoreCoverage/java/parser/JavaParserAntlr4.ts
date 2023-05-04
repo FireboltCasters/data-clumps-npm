@@ -212,7 +212,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             // 6. Get the methods with their parameters
             // 7. Get the fields
             // 8. Get the inner classes and interfaces
-            // 9. Call recursively to this function for each inner class or interface
+            // 9. Call recursively to this function from step 4 for each inner class or interface
 
         }
 
