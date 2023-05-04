@@ -1,11 +1,17 @@
-import {ClassOrInterfaceTypeContext, MyFile} from "./ParsedAstTypes";
-import {Dictionary} from "./UtilTypes";
+import {MyFile} from "./ParsedAstTypes";
 import {SoftwareProject} from "./SoftwareProject";
-import {SoftwareProjectDicts} from "./Detector";
 
 export interface LanguageParserInterface {
-    preParse(file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext>
-    postParse(softwareProject: SoftwareProject, softwareProjectDicts: SoftwareProjectDicts, file: MyFile, includePosition: boolean): Dictionary<ClassOrInterfaceTypeContext>
+    preParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean)
+
+    /**
+     * If post parsing is needed, this method is called after all
+     * @param softwareProject
+     * @param softwareProjectDicts
+     * @param file
+     * @param includePosition
+     */
+    postParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean)
 }
 
 

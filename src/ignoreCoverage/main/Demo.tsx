@@ -169,7 +169,7 @@ export const Demo : FunctionComponent = (props) => {
             if(activeProjectFile){
                 activeProjectFile.content = newCode || "";
                 let parserOptions = getParserOptions();
-                await project.generateAstForFiles(parserOptions, generateAstCallback, abortController);
+                await project.parseSoftwareProject(parserOptions, generateAstCallback, abortController);
                 ProjectHolder.project = project;
                 modalOptions.visible = false;
                 modalOptions.content = "";
@@ -192,7 +192,7 @@ export const Demo : FunctionComponent = (props) => {
         setModalOptions(modalOptions);
         //console.log("generateAstForFiles")
         let parserOptions = getParserOptions();
-        await newProject.generateAstForFiles(parserOptions, generateAstCallback, abortController);
+        await newProject.parseSoftwareProject(parserOptions, generateAstCallback, abortController);
         ProjectHolder.project = newProject;
         //console.log("getTreeFromSoftwareProject")
         setTree(getTreeFromSoftwareProject(newProject));
@@ -224,6 +224,56 @@ export const Demo : FunctionComponent = (props) => {
 
         return(
             <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} activeFileKey={activeFileKey} dataClumpsDict={dataClumpsDict} softwareProjectDicts={softwareProjectDicts} />
+        )
+    }
+
+    function renderExplorerDataClumps(){
+        let defaultValue = "";
+        let resultDict = {};
+        if(dataClumpsDict && JSON.stringify(dataClumpsDict) !== "{}"){
+            let data_clumps = dataClumpsDict?.data_clumps || {};
+            let data_clumps_keys = Object.keys(data_clumps);
+            for(let key of data_clumps_keys){
+                let dataClump = data_clumps[key];
+                let file_path = dataClump.file_path
+                let amountFound = resultDict[file_path] || 0;
+                amountFound++;
+                resultDict[file_path] = amountFound;
+            }
+            defaultValue = JSON.stringify(resultDict, null, 2);
+        }
+
+        return(
+            <WebIdeCodeEditor
+                key={JSON.stringify(dataClumpsDict)}
+                defaultValue={defaultValue}
+                options={{ readOnly: true }}
+            />
+        )
+    }
+
+    function renderClassOrInterfaceDictionary(){
+        let defaultValue = "";
+        let softwareProjectDicts = ProjectHolder.project.getSoftwareProjectDicts()
+        let classOrInterfaceDict = softwareProjectDicts.dictClassOrInterface;
+        if(classOrInterfaceDict && JSON.stringify(classOrInterfaceDict) !== "{}"){
+            let resultDict = {};
+            for(let key in classOrInterfaceDict){
+                let classOrInterface = classOrInterfaceDict[key];
+                resultDict[classOrInterface.key] = classOrInterface.name
+//                let foundList = resultDict[classOrInterface.name] || [];
+//                foundList.push(classOrInterface.key);
+//                resultDict[classOrInterface.name] = foundList;
+            }
+            defaultValue = JSON.stringify(resultDict, null, 2);
+        }
+
+        return(
+            <WebIdeCodeEditor
+                key={defaultValue}
+                defaultValue={defaultValue}
+                options={{ readOnly: true }}
+            />
         )
     }
 
@@ -290,6 +340,9 @@ export const Demo : FunctionComponent = (props) => {
             )
         }
 
+        if(selectedViewOption === ViewOptionValues.explorerDataClumps){
+            content = renderExplorerDataClumps();
+        }
         if(selectedViewOption === ViewOptionValues.dataClumpsDictionary){
             content = renderDataClumpsDict();
         }
@@ -298,6 +351,9 @@ export const Demo : FunctionComponent = (props) => {
         }
         if(selectedViewOption === ViewOptionValues.fileAst){
             content = renderFileAst();
+        }
+        if(selectedViewOption === ViewOptionValues.classOrInterfaceDictionary){
+            content = renderClassOrInterfaceDictionary();
         }
 
         return(

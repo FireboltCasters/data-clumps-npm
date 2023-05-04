@@ -1,4 +1,5 @@
 import {Dictionary} from "./UtilTypes";
+import {SoftwareProjectDicts} from "./Detector";
 
 export class AstElementTypeContext {
     public name: string;
@@ -105,7 +106,7 @@ export class MyFile{
         return MyFile.getFileExtension(this.path);
     }
 
-    public getFolderName(){
+    public getPathToFolder(){
         return this.path.split("/").slice(0, -1).join("/")+"/";
     }
 
@@ -123,7 +124,6 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public methods: Dictionary<MethodTypeContext>;
     public fileKey: string;
 
-    public definedInClassOrInterfaceTypeKey: string | undefined;
     public implements: Dictionary<string>;
     public extends: Dictionary<string>; // Languages that support multiple inheritance include: C++, Common Lisp
 
@@ -152,8 +152,62 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
      * TODO: implement this
      * PsiUtils.java line 362
      */
-    public hasCommonHierarchyWith(otherClass: ClassOrInterfaceTypeContext){
+    public hasCommonHierarchyWith(otherClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+        // TODO: do wen need PsiUtils.java line 360
+
+        // PsiUtils.java line 363
+        let thisHierarchy = this.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
+        let otherHierarchy = otherClass.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
+
+        // PsiUtils.java line 371
+        for(let thisOrParents of thisHierarchy){
+            for(let otherOrParents of otherHierarchy){
+                if(thisOrParents.key === otherOrParents.key){
+                    return true;
+                }
+            }
+        }
+
         return false;
+    }
+
+    public getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts: SoftwareProjectDicts){
+        let thisHierarchy: ClassOrInterfaceTypeContext[] = [this]
+
+        let thisSuperClassesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "extends", {})
+        let thisSuperClassesKeys = Object.keys(thisSuperClassesDict)
+        for(let i = 0; i < thisSuperClassesKeys.length; i++){
+            let superClassKey = thisSuperClassesKeys[i];
+            let superClass = thisSuperClassesDict[superClassKey];
+            thisHierarchy.push(superClass);
+        }
+
+        let thisImplementedInterfacesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "implements", {})
+        let thisImplementedInterfacesKeys = Object.keys(thisImplementedInterfacesDict)
+        for(let i = 0; i < thisImplementedInterfacesKeys.length; i++){
+            let implementedInterfaceKey = thisImplementedInterfacesKeys[i];
+            let implementedInterface = thisImplementedInterfacesDict[implementedInterfaceKey];
+            thisHierarchy.push(implementedInterface);
+        }
+
+        return thisHierarchy;
+    }
+
+    public getSuperClassesOrInterfacesDict(softwareProjectDicts: SoftwareProjectDicts, extendsOrInterfacesFieldKey: string, passedSuperClasses: Dictionary<ClassOrInterfaceTypeContext>){
+        let currentClass = this;
+        let extendsDict = currentClass[extendsOrInterfacesFieldKey];
+        let extendsKeys = Object.keys(extendsDict);
+
+        for(let i = 0; i < extendsKeys.length; i++){
+            let extendsKey = extendsKeys[i];
+            let extendsClassOrInterfaceKey = extendsDict[extendsKey];
+            let superClass = softwareProjectDicts.dictClassOrInterface[extendsClassOrInterfaceKey]
+            if(!!passedSuperClasses && !passedSuperClasses[superClass.key]){
+                passedSuperClasses[superClass.key] = superClass;
+                superClass.getSuperClassesOrInterfacesDict(softwareProjectDicts, extendsOrInterfacesFieldKey, passedSuperClasses);
+            }
+        }
+        return passedSuperClasses;
     }
 }
 

@@ -8,7 +8,7 @@ function testAllLanguages() {
       for(let testCase of testCasesDataClumps) {
         let softwareProject = new SoftwareProject(language.getFileExtensions());
         softwareProject.addFiles(testCase.getFiles());
-        softwareProject.generateAstForFiles();
+        softwareProject.parseSoftwareProject();
         let detectedDataClumps = softwareProject.detectDataClumps();
         let expectedDataClumps = testCase.getExpectedDataClumps();
       }

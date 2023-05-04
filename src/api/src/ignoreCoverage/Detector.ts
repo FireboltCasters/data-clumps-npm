@@ -1,14 +1,6 @@
-import {MyAbortController, SoftwareProject} from "./SoftwareProject";
+import {MyAbortController, SoftwareProject, SoftwareProjectDicts} from "./SoftwareProject";
 import {DetectorDataClumpsMethods, DetectorOptionsDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields, DetectorOptionsDataClumpsFields} from "./DetectorDataClumpsFields";
-import {
-    ClassOrInterfaceTypeContext,
-    MemberFieldParameterTypeContext, MemberFieldTypeContext,
-    MethodParameterTypeContext,
-    MethodTypeContext,
-    MyFile
-} from "./ParsedAstTypes";
-import {Dictionary} from "./UtilTypes";
 import {DataClumpsTypeContext} from "./DataClumpTypes";
 import {Timer} from "./Timer";
 
@@ -19,77 +11,6 @@ export class DetectorOptions {
     public constructor(options: any | DetectorOptionsDataClumpsMethods | DetectorOptionsDataClumpsFields){
         this.optionsDataClumpsMethod = new DetectorOptionsDataClumpsMethods(options);
         this.optionsDataClumpsField = new DetectorOptionsDataClumpsFields(options);
-    }
-}
-
-export class SoftwareProjectDicts {
-    public dictFile: Dictionary<MyFile> = {};
-    public dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
-    public dictMemberFieldParameters: Dictionary<MemberFieldParameterTypeContext> = {};
-    public dictMethod: Dictionary<MethodTypeContext> = {};
-    public dictMethodParameters: Dictionary<MethodParameterTypeContext> = {};
-
-    private fillClassOrInterfaceDicts(classOrInterface: ClassOrInterfaceTypeContext) {
-        // Fill dictClassOrInterface
-        this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
-
-        // Fill inner defined classes
-        let innerClassOrInterfacesDictForClassOrInterface = classOrInterface.innerDefinedInterfaces;
-        let innerClassOrInterfaceKeys = Object.keys(innerClassOrInterfacesDictForClassOrInterface);
-        for (let innerClassOrInterfaceKey of innerClassOrInterfaceKeys) {
-            let innerClassOrInterface = innerClassOrInterfacesDictForClassOrInterface[innerClassOrInterfaceKey];
-            this.fillClassOrInterfaceDicts(innerClassOrInterface);
-        }
-    }
-
-    public constructor(project: SoftwareProject) {
-        this.dictFile = project.getFilesDict();
-        //console.log("dictFile: ")
-        //console.log(this.dictFile);
-
-        this.dictClassOrInterface = {};
-        this.dictMemberFieldParameters = {};
-        this.dictMethod = {};
-        this.dictMethodParameters = {};
-
-        let fileKeys = Object.keys(this.dictFile);
-        for (let fileKey of fileKeys) {
-            let file = this.dictFile[fileKey];
-            let classOrInterfacesDictForFile = file.ast;
-            let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
-            for (let classOrInterfaceKey of classOrInterfaceKeys) {
-                let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
-
-                this.fillClassOrInterfaceDicts(classOrInterface);
-
-                // Fill memberFieldParameters
-                let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;
-
-                let memberFieldParameterKeys = Object.keys(memberFieldParametersDictForClassOrInterface);
-                for (let memberFieldParameterKey of memberFieldParameterKeys) {
-                    let memberFieldParameter = memberFieldParametersDictForClassOrInterface[memberFieldParameterKey];
-                    this.dictMemberFieldParameters[memberFieldParameter.key] = memberFieldParameter;
-                }
-
-                // Fill methods
-                let methodsDictForClassOrInterface = classOrInterface.methods;
-                let methodKeys = Object.keys(methodsDictForClassOrInterface);
-                for (let methodKey of methodKeys) {
-                    let method = methodsDictForClassOrInterface[methodKey];
-
-                    // Fill dictMethod
-                    this.dictMethod[method.key] = method;
-
-                    // Fill methodParameters
-                    let methodParametersDictForMethod = method.parameters;
-                    let methodParameterKeys = Object.keys(methodParametersDictForMethod);
-                    for (let methodParameterKey of methodParameterKeys) {
-                        let methodParameter = methodParametersDictForMethod[methodParameterKey];
-                        this.dictMethodParameters[methodParameter.key] = methodParameter;
-                    }
-                }
-            }
-        }
     }
 }
 

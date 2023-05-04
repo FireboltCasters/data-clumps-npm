@@ -52,14 +52,14 @@ export class DetectorUtils {
     {
         let currentParameters: Dictionary<DataClumpsParameterFromContext> = {};
 
-        let commonFieldParamterKeysAsKey = "";
+        let commonFieldParameterKeysAsKey = "";
 
         for(let commonFieldParameterPairKey of commonFieldParameterPairKeys){
 
             let currentFieldParameterKey = commonFieldParameterPairKey.parameterKey;
             for(let currentClassParameter of currentClassParameters){
                 if(currentClassParameter.key === currentFieldParameterKey){
-                    commonFieldParamterKeysAsKey += currentClassParameter.name;
+                    commonFieldParameterKeysAsKey += currentClassParameter.name;
 
                     let related_to_context: any | DataClumpsParameterTypeRelatedToContext = null;
 
@@ -78,7 +78,7 @@ export class DetectorUtils {
                             let otherClassFile = softwareProjectDicts.dictFile[otherClassFileKey]
 
                             let related_to_context_found: DataClumpsParameterTypeRelatedToContext = {
-                                key: otherClassFile.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+                                key: otherClassFile.key+"-"+otherClass.key+"-"+commonFieldParameterKeysAsKey, // typically the file path + class name + method name + parameter names
                                 file_path: otherClassFile.path,
                                 class_name: otherClass.name,
                                 method_name: otherMethod?.name,
@@ -100,7 +100,7 @@ export class DetectorUtils {
 
 
         }
-        return [currentParameters, commonFieldParamterKeysAsKey];
+        return [currentParameters, commonFieldParameterKeysAsKey];
     }
 
     public static printDictKeys(dict: Dictionary<any>){

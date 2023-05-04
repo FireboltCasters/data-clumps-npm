@@ -10,7 +10,7 @@ import {MyAbortController} from "./SoftwareProject";
 export class DetectorOptionsDataClumpsFields {
     public sharedFieldParametersMinimum: number = 3;
     public sharedFieldParametersCheckIfHaveCommonHierarchy: boolean = false;
-    public subclassInheritsAllMembersFromSuperclass: boolean = true;
+    public subclassInheritsAllMembersFromSuperclass: boolean = false;
 
     public constructor(options: any | DetectorOptionsDataClumpsFields){
         let keys = Object.keys(options || {});
@@ -37,21 +37,15 @@ export class DetectorDataClumpsFields {
 
     public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<Dictionary<DataClumpTypeContext> | null>{
         let classesDict = DetectorUtils.getClassesDict(softwareProjectDicts);
-        //console.log("detecting data clumps fields")
-        //console.log(classesDict);
 
         let dataClumpsFieldParameters: Dictionary<DataClumpTypeContext> = {};
         let classKeys = Object.keys(classesDict);
-        //console.log("Generating member field parameters related to for all classes")
-        //console.log("Amount of classes: " + classKeys.length)
         let amountOfClasses = classKeys.length;
-        //console.log(classKeys)
         let index = 0;
         for (let classKey of classKeys) {
             if(this.progressCallback){
                 await this.progressCallback("Field Detector: "+classKey, index, amountOfClasses);
             }
-            //console.log("Generating member field parameters related to for class: " + classKey)
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
             this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict, dataClumpsFieldParameters, softwareProjectDicts);
             if(this.abortController && this.abortController.isAbort()){
@@ -86,7 +80,7 @@ export class DetectorDataClumpsFields {
             return; // skip the same class // DataclumpsInspection.java line 411
         }
 
-        let hasCommonHierarchy = currentClass.hasCommonHierarchyWith(otherClass);
+        let hasCommonHierarchy = currentClass.hasCommonHierarchyWith(otherClass, softwareProjectDicts);
         if(hasCommonHierarchy){ // if the classes have a common hierarchy
             let checkIfHaveCommonHierarchy = this.options.sharedFieldParametersCheckIfHaveCommonHierarchy;
             if(!checkIfHaveCommonHierarchy){ // and we don't want to check them if they have a common hierarchy
@@ -103,11 +97,6 @@ export class DetectorDataClumpsFields {
         let amountOfCommonFieldParameters = commonFieldParameterPairKeys.length;
         if(amountOfCommonFieldParameters < this.options.sharedFieldParametersMinimum){
             return; // DataclumpsInspection.java line 410
-        }
-
-        //console.log("- Found common field parameters between classes: " + currentClassKey + " and " + otherClassKey)
-        for(let commonFieldParameterKey of commonFieldParameterPairKeys){
-            //console.log("  - " + commonFieldParameterKey)
         }
 
         let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters, softwareProjectDicts, otherClass, null);
@@ -129,6 +118,7 @@ export class DetectorDataClumpsFields {
 
     private getMemberParametersFromClass(currentClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts): MemberFieldParameterTypeContext[]{
         let classParameters: MemberFieldParameterTypeContext[] = [];
+
         let fieldParameters = currentClass.fields;
         let fieldParameterKeys = Object.keys(fieldParameters);
         for (let fieldKey of fieldParameterKeys) {

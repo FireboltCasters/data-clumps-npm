@@ -7,6 +7,7 @@ import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPosit
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
 import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
 import {SimpleFieldsAndMethods} from "./simpleFieldsAndMethods/SimpleFieldsAndMethods";
+import {ArgoUMLExample} from "../unkown/ArgoUMLExample";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
@@ -19,4 +20,5 @@ export class Positive {
     public static SimpleFields: TestCaseBaseClassForDataClumps = SimpleFields;
     public static ParametersWithModifiers: TestCaseBaseClassForDataClumps = ParametersWithModifiers;
     public static SimpleFieldsAndMethods: TestCaseBaseClassForDataClumps = SimpleFieldsAndMethods;
+    public static ArgoUMLExample: TestCaseBaseClassForDataClumps = ArgoUMLExample;
 }
