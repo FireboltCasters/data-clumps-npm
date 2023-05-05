@@ -87,8 +87,8 @@ export class BaseParser {
         // copy the current visible classes and interfaces
         this.currentVisibleClassAndInterfaces = {...currentVisibleClassAndInterfaces};
         this.currentVisibleVariables = {...currentVisibleVariables};
-        console.log("currentVisibleClassAndInterfaces")
-        console.log(JSON.stringify(currentVisibleClassAndInterfaces, null, 2))
+        //console.log("currentVisibleClassAndInterfaces")
+        //console.log(JSON.stringify(currentVisibleClassAndInterfaces, null, 2))
 
         this.ownCtx = ctx;
         this.type = type;
@@ -141,7 +141,7 @@ export class BaseParser {
     }
 
     private parseInnerDefinedClassedAndInterfacesInMemberDeclaration(memberDeclarationCtx: any) {
-        console.log("parseInnerDefinedClassedAndInterfacesInMemberDeclaration");
+        //console.log("parseInnerDefinedClassedAndInterfacesInMemberDeclaration");
 
         let innerPackageName = this.packageName + "." + this.classOrInterface.name;
         let copyOfCurrentVisibleClassAndInterfaces = {...this.currentVisibleClassAndInterfaces};
@@ -272,7 +272,7 @@ class ClassParser extends BaseParser{
         super.parse();
 
         let extendsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
-        console.log("extendsRawNames", extendsRawNames)
+        //console.log("extendsRawNames", extendsRawNames)
         this.saveRawExtendsNames(extendsRawNames);
         let implementsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
         this.saveRawImplementsNames(implementsRawNames);
@@ -287,8 +287,8 @@ class ClassParser extends BaseParser{
 
         this.extractFieldsAndMethodsFromClassMemeberDeclarations(memberDeclarations);
 
-        console.log("currentVisibleClassAndInterfaces");
-        console.log(this.currentVisibleClassAndInterfaces);
+        //console.log("currentVisibleClassAndInterfaces");
+        //console.log(this.currentVisibleClassAndInterfaces);
     }
 
 
@@ -315,10 +315,12 @@ class ClassParser extends BaseParser{
     }
 
     extractMethodsFromMember(memberDeclarationCtx){
+        let copyOfCurrentVisibleClassAndInterfaces = Object.assign({}, this.currentVisibleClassAndInterfaces);
+
         let methodDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "methodDeclaration");
         if(methodDeclaration!==null){
             // @ts-ignore
-            let methodListener = new JavaParserMethodExtractor(this.classOrInterface, methodDeclaration, methodDeclaration.parentCtx.parentCtx, this.options.includePositions);
+            let methodListener = new JavaParserMethodExtractor(this.classOrInterface, copyOfCurrentVisibleClassAndInterfaces, methodDeclaration, methodDeclaration.parentCtx.parentCtx, this.options.includePositions);
             let method = methodListener.output;
             let key = method.key;
             this.classOrInterface.methods[key] = method;
@@ -350,8 +352,8 @@ class InterfaceParser extends BaseParser{
 
         this.extractInterfaceMethodsFromInterfaceMemberDeclarations(memberDeclarations);
 
-        console.log("currentVisibleClassAndInterfaces");
-        console.log(this.currentVisibleClassAndInterfaces);
+        //console.log("currentVisibleClassAndInterfaces");
+        //console.log(this.currentVisibleClassAndInterfaces);
     }
 
     extractInterfaceMethodsFromInterfaceMemberDeclarations(interfaceMemberDeclarationsCtx: any[]){
@@ -362,8 +364,11 @@ class InterfaceParser extends BaseParser{
     }
 
     extractInterfaceMethodsFromMember(interfaceMemberDeclarationCtx){
+        let copyOfCurrentVisibleClassAndInterfaces = Object.assign({}, this.currentVisibleClassAndInterfaces);
+
         let interfaceMethodDeclaration = JavaParserHelper.getChildByType(interfaceMemberDeclarationCtx, "interfaceMethodDeclaration");
         if(interfaceMethodDeclaration!==null){
+            //JavaAntlr4CstPrinter.print(interfaceMethodDeclaration, "interfaceMethodDeclaration");
             /**
              "children": [
              {
@@ -382,7 +387,7 @@ class InterfaceParser extends BaseParser{
             let interfaceCommonBodyDeclaration = JavaParserHelper.getChildByType(interfaceMethodDeclaration, "interfaceCommonBodyDeclaration");
             if(interfaceCommonBodyDeclaration!==null){
                 // @ts-ignore
-                let methodListener = new JavaParserMethodExtractor(this.classOrInterface, interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx, this.options.includePositions);
+                let methodListener = new JavaParserMethodExtractor(this.classOrInterface, copyOfCurrentVisibleClassAndInterfaces, interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx, this.options.includePositions);
                 let method = methodListener.output;
                 let key = method.key
                 this.classOrInterface.methods[key] = method;

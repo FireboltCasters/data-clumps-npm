@@ -100,7 +100,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         let samePackageClassesAndInterfaces = {};
 
         let filesInSamePackage = softwareProject.getFilesInFolder(folderPath);
-        console.log("Files in same package: " + filesInSamePackage.length)
+        //console.log("Files in same package: " + filesInSamePackage.length)
 
         for (let fileInSamePackage of filesInSamePackage) {
             let classOrInterfaceCst = JavaParserAntlr4.getTopFileClassOrInterfaceCst(fileInSamePackage);
@@ -239,14 +239,14 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
 
             // 4. Get the class or interface body
             if(!!classCst){
-                console.log("Found class at the top of the file: "+file.path)
+                //console.log("Found class at the top of the file: "+file.path)
                 let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 classExtractor.parse();
                 this.saveClassOrInterfaceToFile(classExtractor, file);
             }
 
             if(!!interfaceCst){
-                console.log("Found interface at the top of the file: "+file.path)
+                //console.log("Found interface at the top of the file: "+file.path)
                 let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 interfaceExtractor.parse();
                 this.saveClassOrInterfaceToFile(interfaceExtractor, file);
@@ -288,7 +288,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         }
 
  */
-        console.log("++++++++++++++++++++++");
+        //console.log("++++++++++++++++++++++");
 
     }
 
