@@ -1,6 +1,20 @@
 import {MyFile} from "./ParsedAstTypes";
 import {SoftwareProject} from "./SoftwareProject";
 
+export class TestCaseBaseClassGroup {
+
+    public name: string;
+    public testCases: TestCaseBaseClass[];
+    public subGroups: TestCaseBaseClassGroup[];
+
+    public constructor(name: string, testCases: TestCaseBaseClass[], subGroups: TestCaseBaseClassGroup[]) {
+        this.name = name;
+        this.testCases = testCases;
+        this.subGroups = subGroups;
+    }
+
+
+}
 
 export class TestCaseBaseClass {
     public name: string;

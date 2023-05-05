@@ -1,16 +1,15 @@
 import {JavaParserAntlr4} from "./parser/JavaParserAntlr4";
-import {JavaDataClumpsTestCases} from "./testCasesDataClumps";
 import * as TestCasesParserJava from "./testCasesParser";
-import {LanguageSupportInterface} from "../LanguageSupportInterface";
-import {TestCaseBaseClassForDataClumps} from "../TestCaseBaseClassForDataClumps";
-import {TestCaseBaseClass} from "../TestCaseBaseClass";
 import {JavaTestCasesParser} from "./testCasesParser";
+import {LanguageSupportInterface} from "../LanguageSupportInterface";
+import {TestCaseBaseClassGroup} from "../TestCaseBaseClass";
 
-export {JavaDataClumpsTestCases};
+import {Positive} from "./testCasesDataClumps/positive"
+import {Negative} from "./testCasesDataClumps/negative"
+
 export {TestCasesParserJava};
 
 export class JavaLanguageSupport implements LanguageSupportInterface {
-    static testCasesDataClumps = JavaDataClumpsTestCases;
 
     public getIdentifier(): string {
         return "Java";
@@ -24,26 +23,26 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
         return new JavaParserAntlr4();
     }
 
-    public getPositiveTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
-        let testCases: TestCaseBaseClassForDataClumps[] = [];
-        let keys = Object.keys(JavaDataClumpsTestCases.Positive);
+    public getPositiveTestCasesGroupsDataClumps(): TestCaseBaseClassGroup[] {
+        let testCases: TestCaseBaseClassGroup[] = [];
+        let keys = Object.keys(Positive);
         for (let key of keys) {
-            testCases.push(JavaDataClumpsTestCases.Positive[key]);
+            testCases.push(Positive[key]);
         }
         return testCases;
     }
 
-    public getNegativeTestCasesDataClumps(): TestCaseBaseClassForDataClumps[] {
-        let testCases: TestCaseBaseClassForDataClumps[] = [];
-        let keys = Object.keys(JavaDataClumpsTestCases.Negative);
+    public getNegativeTestCasesCasesDataClumps(): TestCaseBaseClassGroup[] {
+        let testCases: TestCaseBaseClassGroup[] = [];
+        let keys = Object.keys(Negative);
         for (let key of keys) {
-            testCases.push(JavaDataClumpsTestCases.Negative[key]);
+            testCases.push(Negative[key]);
         }
         return testCases;
     }
 
-    public getTestCasesParser(): TestCaseBaseClass[] {
-        let testCases: TestCaseBaseClass[] = [];
+    public getTestCasesGroupsParser(): TestCaseBaseClassGroup[] {
+        let testCases: TestCaseBaseClassGroup[] = [];
         let keys = Object.keys(JavaTestCasesParser);
         for (let key of keys) {
             testCases.push(JavaTestCasesParser[key]);

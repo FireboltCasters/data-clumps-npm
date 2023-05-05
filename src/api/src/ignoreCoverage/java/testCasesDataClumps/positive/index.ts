@@ -6,8 +6,7 @@ import {Polymorphism} from "./polymorphism/Polymorphism";
 import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPositiveSameClass";
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
 import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
-import {SimpleFieldsAndMethods} from "./simpleFieldsAndMethods/SimpleFieldsAndMethods";
-import {ArgoUMLExample} from "../unkown/ArgoUMLExample";
+import {TestCaseBaseClassGroup} from "../../../TestCaseBaseClass";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
@@ -16,9 +15,18 @@ export {InnerInterfacePositive};
 export {Polymorphism};
 export {SimpleMethodsPositiveSameClass};
 
-export class Positive {
-    public static SimpleFields: TestCaseBaseClassForDataClumps = SimpleFields;
-    public static ParametersWithModifiers: TestCaseBaseClassForDataClumps = ParametersWithModifiers;
-    public static SimpleFieldsAndMethods: TestCaseBaseClassForDataClumps = SimpleFieldsAndMethods;
-    public static ArgoUMLExample: TestCaseBaseClassForDataClumps = ArgoUMLExample;
+export class Positive extends TestCaseBaseClassForDataClumps {
+
+    static simple : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Simple",
+        [
+            SimpleFields,
+            SimpleMethodsWithDataClumps,
+    ], []);
+
+    static withModifiers : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "With Modifiers",
+        [
+            ParametersWithModifiers,
+    ], []);
 }

@@ -8,9 +8,11 @@ import {
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
     public classOrInterface: ClassOrInterfaceTypeContext;
+    public currentVisibleClassOrInterface: any;
     public includePosition: boolean;
-    constructor(classOrInterface: ClassOrInterfaceTypeContext, ctx, includePosition: boolean) {
+    constructor(classOrInterface: ClassOrInterfaceTypeContext, currentVisibleClassOrInterface: any, ctx, includePosition: boolean) {
         this.includePosition = includePosition;
+        this.currentVisibleClassOrInterface = currentVisibleClassOrInterface;
         this.classOrInterface = classOrInterface;
         let field = this.enterFieldDeclaration(ctx);
         this.field = field;
@@ -50,6 +52,10 @@ export class JavaParserFieldExtractor {
         let modifiers = JavaParserHelper.getModifiers(ctx.parentCtx.parentCtx);
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
         let type = this.custom_getFieldType(typeType);
+        if(!!type && this.currentVisibleClassOrInterface[type]){
+            type = this.currentVisibleClassOrInterface[type];
+        }
+
         let position: any = undefined;
         if(this.includePosition){
             position = JavaParserHelper.custom_getPosition(ctx);

@@ -11,18 +11,55 @@ import {InterfaceExtendsInterfaces} from "./extends/InterfaceExtendsInterfaces";
 import {ClassInPackage} from "./package/ClassInPackage";
 import {ClassWithPackage} from "./package/ClassWithPackage";
 import {ImportWithWildcardTest} from "./importTest/ImportWithWildcardTest";
+import {TestCaseBaseClassGroup} from "../../TestCaseBaseClass";
 
-export class JavaTestCasesParser {
-    static ExtendingClass: TestCaseBaseClassForParser = ExtendingClass;
-    static ExtendingClassWithExplicitImport: TestCaseBaseClassForParser = ExtendingClassWithExplicitImport;
-    static ExtendingClassWithWildcardImport: TestCaseBaseClassForParser = ExtendingClassWithWildcardImport;
-    static ImportTest: TestCaseBaseClassForParser = ImportTest;
-    static ImportWithWildcardTest: TestCaseBaseClassForParser = ImportWithWildcardTest;
-    static ImportTestInnerClass: TestCaseBaseClassForParser = ImportTestInnerClass;
-    static NestedInnerClasses: TestCaseBaseClassForParser = NestedInnerClasses;
-    static NestedInnerClassesExplicitType: TestCaseBaseClassForParser = NestedInnerClassesExplicitType;
-    static ClassImplementsInterface: TestCaseBaseClassForParser = ClassImplementsInterface;
-    static InterfaceExtendsInterfaces: TestCaseBaseClassForParser = InterfaceExtendsInterfaces;
-    static ClassInPackage: TestCaseBaseClassForParser = ClassInPackage;
-    static ClassWithPackage: TestCaseBaseClassForParser = ClassWithPackage;
+export class JavaTestCasesParser extends TestCaseBaseClassGroup {
+
+    static extendTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Extends",
+        [
+            ExtendingClass,
+            ExtendingClassWithExplicitImport,
+            ExtendingClassWithWildcardImport,
+            InterfaceExtendsInterfaces
+        ],
+    []
+    );
+
+    static importTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Imports",
+        [
+            ImportTest,
+            ImportTestInnerClass,
+            ImportWithWildcardTest
+        ],
+        []
+    );
+
+    static nestedClassesTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Nested Classes",
+        [
+            NestedInnerClasses,
+            NestedInnerClassesExplicitType
+        ],
+        []
+    );
+
+    static implementsTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Implements",
+        [
+            ClassImplementsInterface
+        ],
+        []
+    );
+
+    static classInPackageTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Package",
+        [
+            ClassInPackage,
+            ClassWithPackage
+        ],
+        []
+    );
+
 }

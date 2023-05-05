@@ -7,7 +7,7 @@ import {SoftwareProject} from "../../SoftwareProject";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 import {antlr4} from "../../util/MyAntlr4";
 import {ParserOptions} from "../../Parser";
-import {ClassParser, InterfaceParser} from "./JavaParserBaseExtractor";
+import {BaseParser, ClassParser, InterfaceParser} from "./JavaParserBaseExtractor";
 
 //TODO add support for generics
 
@@ -188,6 +188,12 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         return importDeclarationClassesAndInterfaces;
     }
 
+    private saveClassOrInterfaceToFile(parser: BaseParser, file: MyFile) {
+        let classOrInterface = parser.classOrInterface;
+        let key = classOrInterface.key;
+        file.ast[key] = classOrInterface;
+    }
+
     preParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions) {
         console.log("Parsing file: " + file.path)
 
@@ -234,14 +240,16 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             // 4. Get the class or interface body
             if(!!classCst){
                 console.log("Found class at the top of the file: "+file.path)
-                let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, false);
+                let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 classExtractor.parse();
+                this.saveClassOrInterfaceToFile(classExtractor, file);
             }
 
             if(!!interfaceCst){
                 console.log("Found interface at the top of the file: "+file.path)
-                let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, false);
+                let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 interfaceExtractor.parse();
+                this.saveClassOrInterfaceToFile(interfaceExtractor, file);
             }
 
         }

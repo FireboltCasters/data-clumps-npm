@@ -1,4 +1,5 @@
 import {MyFile} from '../../../../ParsedAstTypes';
+import {TestCaseBaseClassForDataClumps} from "../../../../TestCaseBaseClassForDataClumps";
 
 const FileA = new MyFile('Fields1.java', `
 public class Fields1 {
@@ -12,4 +13,9 @@ public class Fields2 {
 `);
 
 
-export const SimpleMethodsWithDataClumps = [FileA, FileB]
+export const SimpleMethodsWithDataClumps = new TestCaseBaseClassForDataClumps(
+    'SimpleMethodsWithDataClumps',
+    [FileA, FileB],
+    [FileA.getFileExtension()],
+    []
+);
