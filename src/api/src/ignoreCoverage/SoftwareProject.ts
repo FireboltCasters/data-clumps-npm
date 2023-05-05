@@ -1,6 +1,12 @@
 import {Parser, ParserOptions} from "./Parser";
-import {MyFile} from "./ParsedAstTypes";
-import {Detector, SoftwareProjectDicts} from "./Detector";
+import {
+  ClassOrInterfaceTypeContext,
+  MemberFieldParameterTypeContext,
+  MethodParameterTypeContext,
+  MethodTypeContext,
+  MyFile
+} from "./ParsedAstTypes";
+import {Detector} from "./Detector";
 import {DataClumpsTypeContext} from "./DataClumpTypes";
 import {Dictionary} from "./UtilTypes";
 
@@ -23,14 +29,33 @@ export class MyAbortController {
 
 }
 
+
+export class SoftwareProjectDicts {
+  public dictFile: Dictionary<MyFile> = {};
+  public dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
+  public dictMemberFieldParameters: Dictionary<MemberFieldParameterTypeContext> = {};
+  public dictMethod: Dictionary<MethodTypeContext> = {};
+  public dictMethodParameters: Dictionary<MethodParameterTypeContext> = {};
+
+  public constructor() {
+    this.dictFile = {};
+    this.dictClassOrInterface = {};
+    this.dictMemberFieldParameters = {};
+    this.dictMethod = {};
+    this.dictMethodParameters = {};
+  }
+}
+
 export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
   public fileExtensionsToBeChecked: Dictionary<string> = {};
+  public softwareProjectDicts: SoftwareProjectDicts;
 
   constructor(fileExtensionsToBeChecked: string[]) {
     this.filesToParseDict = {};
     this.fileExtensionsToBeChecked = {};
+    this.softwareProjectDicts = new SoftwareProjectDicts();
     for (let fileExtension of fileExtensionsToBeChecked) {
         this.fileExtensionsToBeChecked[fileExtension] = fileExtension;
     }
@@ -55,21 +80,21 @@ export class SoftwareProject {
     return Object.keys(this.getFilesDict());
   }
 
-  public getFileKeysOfFilesInPath(path: string) {
-    let fileKeysInPath: string[] = [];
-    let filePaths = this.getFilePaths();
-    for (let filePath of filePaths) {
-      let file = this.getFile(filePath);
-        let folderName = file.getFolderName();
-        if (folderName === path) {
-          fileKeysInPath.push(file.key);
-        }
-    }
-    return fileKeysInPath;
-  }
-
   public getFile(path: string) {
     return this.filesToParseDict[path];
+  }
+
+  public getFilesInFolder(folderPath: string) {
+    let filesInFolder: MyFile[] = [];
+    let fileKeys = this.getFilePaths();
+    for (let fileKey of fileKeys) {
+      let file = this.getFile(fileKey);
+      let pathToFolder = file.getPathToFolder();
+      if (pathToFolder === folderPath) {
+        filesInFolder.push(file);
+      }
+    }
+    return filesInFolder;
   }
 
   private getDefaultParserOptionsIfUndefined(parserOptions?: ParserOptions){
@@ -79,8 +104,9 @@ export class SoftwareProject {
     return new ParserOptions({});
   }
 
-  public async generateAstForFiles(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
+  public async parseSoftwareProject(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
     parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
+    this.softwareProjectDicts = new SoftwareProjectDicts();
     await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
   }
 
@@ -103,8 +129,7 @@ export class SoftwareProject {
   }
 
   public getSoftwareProjectDicts(){
-    let softwareProjectDicts: SoftwareProjectDicts = new SoftwareProjectDicts(this);
-    return softwareProjectDicts;
+    return this.softwareProjectDicts;
   }
 
   public async detectDataClumps(detectorOptions?, progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {

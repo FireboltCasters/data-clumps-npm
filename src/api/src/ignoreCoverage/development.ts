@@ -5,13 +5,14 @@ async function main() {
     console.log("Development started");
 
     console.log("Creating software project");
-    let softwareProject = JavaLanguageSupport.testCasesDataClumps.Positive.ParametersWithModifiers.getSoftwareProject()
-    console.log("Adding files to software project");
+    let javaLanguageSupport = new JavaLanguageSupport();
+//    let softwareProject:  = javaLanguageSupport.
+//    console.log("Adding files to software project");
 //    softwareProject.addFiles(JavaLanguageSupport.testCasesDataClumps.Positive.SimpleFields);
     console.log("Parsing files to AST")
-    await softwareProject.generateAstForFiles();
+//    await softwareProject.parseSoftwareProject();
     console.log("Finished parsing files to AST")
-    console.log(softwareProject.getAstAsString());
+//    console.log(softwareProject.getAstAsString());
 
     //console.log("Detecting data clumps");
     //await softwareProject.detectDataClumps();

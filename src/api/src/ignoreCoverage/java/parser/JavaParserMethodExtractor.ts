@@ -7,10 +7,12 @@ import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 export class JavaParserMethodExtractor {
     public output: MethodTypeContext;
     public classOrInterface: ClassOrInterfaceTypeContext;
+    public currentVisibleClassOrInterface: any;
     public includePosition: boolean;
-    constructor(classOrInterface: ClassOrInterfaceTypeContext, ctx, modifierCtx, includePosition: boolean) {
+    constructor(classOrInterface: ClassOrInterfaceTypeContext, currentVisibleClassOrInterface: any, ctx, modifierCtx, includePosition: boolean) {
         this.includePosition = includePosition;
         this.classOrInterface = classOrInterface;
+        this.currentVisibleClassOrInterface = currentVisibleClassOrInterface;
         this.output = this.enterMethodDeclaration(ctx, modifierCtx);
     }
 
@@ -39,6 +41,9 @@ export class JavaParserMethodExtractor {
          */
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
         let type = this.custom_getFormalParameterType(typeType);
+        if(!!type && this.currentVisibleClassOrInterface[type]){
+            type = this.currentVisibleClassOrInterface[type];
+        }
 
         let modifiers = JavaParserHelper.getModifiers(ctx);
 

@@ -1,9 +1,8 @@
 import {DetectorUtils} from "./DetectorUtils";
-import {SoftwareProjectDicts} from "./Detector";
 import {Dictionary} from "./UtilTypes";
 import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
 import {MethodTypeContext} from "./ParsedAstTypes";
-import {MyAbortController} from "./SoftwareProject";
+import {MyAbortController, SoftwareProjectDicts} from "./SoftwareProject";
 
 export class DetectorOptionsDataClumpsMethods {
     public sharedMethodParametersMinimum: number = 3;

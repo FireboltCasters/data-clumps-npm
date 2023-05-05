@@ -11,6 +11,7 @@ import {SynchedStates} from "../storage/SynchedStates";
 import ProjectImportExportHelper from "../helper/ProjectImportExportHelper";
 import DownloadHelper from "../helper/DownloadHelper";
 import {ProjectHolder} from "../main/Demo";
+import {TestCaseBaseClassGroup} from "../../api/src/ignoreCoverage/TestCaseBaseClass";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarDataClumpsProps {
@@ -59,6 +60,46 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         return testCasesItems;
     }
 
+
+    function getTestCaseGroupsMenuItems(testCaseGroups: TestCaseBaseClassGroup[]){
+        let testCasesItems: any[] = [];
+        for(let testCaseGroup of testCaseGroups){
+            let testCasesItemsOfGroup: any[] = [];
+
+            let subGroups = testCaseGroup.subGroups;
+            if(!!subGroups){
+                let subGroupsItems = getTestCaseGroupsMenuItems(subGroups);
+                testCasesItemsOfGroup.push(...subGroupsItems);
+            }
+
+            let testCases = testCaseGroup.testCases
+            for(let testCase of testCases){
+                let testCaseProject = testCase.getSoftwareProject()
+                let testCaseName = testCase.getName();
+                let testCaseItem = {
+                    label: testCaseName,
+                    icon:'pi pi-fw',
+                    command: async () => {
+                        //console.log("load test case", testCaseName)
+                        //console.log("testCaseProject")
+                        //console.log(testCaseProject)
+                        await props.loadSoftwareProject(testCaseProject)
+                    }
+                }
+                testCasesItemsOfGroup.push(testCaseItem);
+            }
+
+            let testCaseItem = {
+                label: testCaseGroup.name,
+                icon:'pi pi-fw',
+                items: testCasesItemsOfGroup
+            }
+
+            testCasesItems.push(testCaseItem);
+        }
+        return testCasesItems;
+    }
+
     function renderTestCasesMenuItems(){
         let languages = Languages.getLanguages();
         let items: any[] = [];
@@ -68,18 +109,18 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
 
 
 
-            let positiveTestCases = language.getPositiveTestCasesDataClumps();
+            let positiveTestCases = language.getPositiveTestCasesGroupsDataClumps();
             let testCasePositiveItem = {
                 label: "Positives",
                 icon:'pi pi-fw',
-                items: getTestCaseMenuItems(positiveTestCases)
+                items: getTestCaseGroupsMenuItems(positiveTestCases)
             }
 
-            let negativeTestCases = language.getNegativeTestCasesDataClumps();
+            let negativeTestCases = language.getNegativeTestCasesCasesDataClumps();
             let testCaseNegativeItem = {
                 label: "Negatives",
                 icon:'pi pi-fw',
-                items: getTestCaseMenuItems(negativeTestCases)
+                items: getTestCaseGroupsMenuItems(negativeTestCases)
             }
 
             let testCasesDataClumps = {
@@ -91,11 +132,11 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 ]
             }
 
-            let parserTestCases = language.getTestCasesParser();
+            let parserTestCasesGroups = language.getTestCasesGroupsParser();
             let testCasesParser = {
                 label: "Parser",
                 icon:'pi pi-fw',
-                items: getTestCaseMenuItems(parserTestCases)
+                items: getTestCaseGroupsMenuItems(parserTestCasesGroups)
             }
 
             items.push({

@@ -2,6 +2,8 @@ import {TestCaseBaseClassForParser} from "../../../TestCaseBaseClassForParser";
 import {MyFile} from "../../../ParsedAstTypes";
 
 const FileA = new MyFile('hero/main/cool/Batman.java', `
+package hero.main.cool;
+
 public class Batman {
    public int a;
    public int b;
@@ -9,8 +11,10 @@ public class Batman {
 }`);
 
 const FileB = new MyFile('hero/sidekick/Robin.java',`
+package hero.sidekick;
+
 import java.lang.Math; // import package with comment
-import hero.main.*; // import package with wildcard
+import hero.main.cool.*; // import package with wildcard
 
 public class Robin extends Batman {
    public int d;

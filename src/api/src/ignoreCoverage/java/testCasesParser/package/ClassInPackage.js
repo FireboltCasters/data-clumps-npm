@@ -1,8 +1,8 @@
 import {TestCaseBaseClassForParser} from "../../../TestCaseBaseClassForParser";
 import {MyFile} from "../../../ParsedAstTypes";
 
-const FileA = new MyFile('javaParserTest/Main.java', `
-package javaParserTest;
+const FileA = new MyFile('javaParserTest/sub/Main.java', `
+package javaParserTest.sub;
 
 public class Main {
   InnerHero h; // InnerHero is on top level
@@ -19,8 +19,8 @@ public class Main {
 }
 `);
 
-export const NestedInnerClasses = new TestCaseBaseClassForParser(
-    'NestedInnerClasses',
+export const ClassInPackage = new TestCaseBaseClassForParser(
+    'ClassInPackage',
     [FileA],
     [FileA.getFileExtension()],
     []

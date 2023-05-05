@@ -1,27 +1,32 @@
-import {JavaParserHelper} from "./JavaParserHelper";
 import {ClassOrInterfaceTypeContext, MyFile} from "./../../ParsedAstTypes";
+import {ParserOptions} from "../../Parser";
+import {JavaParserAntlr4} from "./JavaParserAntlr4";
+import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
+import {JavaParserHelper} from "./JavaParserHelper";
 import {JavaParserFieldExtractor} from "./JavaParserFieldExtractor";
 import {JavaParserMethodExtractor} from "./JavaParserMethodExtractor";
-import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 //TODO add support for generics
 
-export class BaseExtractor{
-    public classOrInterface: ClassOrInterfaceTypeContext;
-    public includePosition: boolean;
+export class BaseParser {
+    public currentVisibleClassAndInterfaces: any;
+    public currentVisibleVariables: any;
     public file: MyFile;
+    public packageName: string | null;
+    public ownCtx: any;
+    public type: string;
+    public options: ParserOptions;
+    public classOrInterface: ClassOrInterfaceTypeContext;
+    public parentClassOrInterface: ClassOrInterfaceTypeContext | null;
 
-    static searchExtendsKey = "searchExtends";
-    static searchImplementsKey = "searchImplements";
-
-    static classGetNameForExtendedClassOrImplementedInterfaces(ctx, extendsOrImplementsKeyword){
+    static classGetNameForExtendedClassOrImplementedInterfaces(ctx, extendsOrImplementsKeyword) {
         let extendsOrImplementsRawNames: any[] = [];
         let extendsOrImplementsIndexes = JavaParserHelper.getChildIndexesByName(ctx, extendsOrImplementsKeyword);
-        if(extendsOrImplementsKeyword === "extends"){
+        if (extendsOrImplementsKeyword === "extends") {
             let extendsIndexes = extendsOrImplementsIndexes;
-            for(let extendsIndex of extendsIndexes){ // will be only one since extends is unique in Java
-                let extendsTypeType = ctx.children[extendsIndex+1];
-                if(!!extendsTypeType){
+            for (let extendsIndex of extendsIndexes) { // will be only one since extends is unique in Java
+                let extendsTypeType = ctx.children[extendsIndex + 1];
+                if (!!extendsTypeType) {
                     let extendsClassOrInterfaceType = JavaParserHelper.getChildByType(extendsTypeType, "classOrInterfaceType");
                     let extendsTypeIdentifier = JavaParserHelper.getChildByType(extendsClassOrInterfaceType, "typeIdentifier");
                     // @ts-ignore
@@ -30,13 +35,13 @@ export class BaseExtractor{
                     extendsOrImplementsRawNames.push(extendsName);
                 }
             }
-        } else if(extendsOrImplementsKeyword === "implements"){
+        } else if (extendsOrImplementsKeyword === "implements") {
             let implementsIndexes = extendsOrImplementsIndexes;
-            for(let implementsIndex of implementsIndexes){
-                let implementsTypeType = ctx.children[implementsIndex+1];
-                if(!!implementsTypeType){
+            for (let implementsIndex of implementsIndexes) {
+                let implementsTypeType = ctx.children[implementsIndex + 1];
+                if (!!implementsTypeType) {
                     let implementsInterfaceTypeTypes = JavaParserHelper.getChildrenByType(implementsTypeType, "typeType");
-                    for(let implementsInterfaceTypeType of implementsInterfaceTypeTypes){
+                    for (let implementsInterfaceTypeType of implementsInterfaceTypeTypes) {
                         let implementsInterfaceType = JavaParserHelper.getChildByType(implementsInterfaceTypeType, "classOrInterfaceType");
                         let implementsTypeIdentifier = JavaParserHelper.getChildByType(implementsInterfaceType, "typeIdentifier");
                         // @ts-ignore
@@ -50,16 +55,16 @@ export class BaseExtractor{
         return extendsOrImplementsRawNames;
     }
 
-    static interfaceGetNameForExtendedClassOrImplementedInterfaces(ctx, extendsOrImplementsKeyword){
+    static interfaceGetNameForExtendedClassOrImplementedInterfaces(ctx, extendsOrImplementsKeyword) {
         let extendsOrImplementsRawNames: any[] = [];
         let extendsOrImplementsIndexes = JavaParserHelper.getChildIndexesByName(ctx, extendsOrImplementsKeyword);
-        if(extendsOrImplementsKeyword === "extends"){
+        if (extendsOrImplementsKeyword === "extends") {
             let extendsIndexes = extendsOrImplementsIndexes;
-            for(let extendsIndex of extendsIndexes){
-                let extendsTypeType = ctx.children[extendsIndex+1];
-                if(!!extendsTypeType){
+            for (let extendsIndex of extendsIndexes) {
+                let extendsTypeType = ctx.children[extendsIndex + 1];
+                if (!!extendsTypeType) {
                     let extendsInterfaceTypeTypes = JavaParserHelper.getChildrenByType(extendsTypeType, "typeType");
-                    for(let extendsInterfaceTypeType of extendsInterfaceTypeTypes){
+                    for (let extendsInterfaceTypeType of extendsInterfaceTypeTypes) {
                         let extendsInterfaceType = JavaParserHelper.getChildByType(extendsInterfaceTypeType, "classOrInterfaceType");
                         let extendsTypeIdentifier = JavaParserHelper.getChildByType(extendsInterfaceType, "typeIdentifier");
                         // @ts-ignore
@@ -69,117 +74,237 @@ export class BaseExtractor{
                     }
                 }
             }
-        } else if(extendsOrImplementsKeyword === "implements"){
+        } else if (extendsOrImplementsKeyword === "implements") {
             // An interface cannot implement another interface
         }
         return extendsOrImplementsRawNames;
     }
 
-    constructor(file: MyFile, ctx, type, includePosition= false, innerClassOrInterface = false, parent?: ClassOrInterfaceTypeContext) {
-        this.includePosition = includePosition;
+    constructor(file: MyFile, type: string, packageName: string | null, ctx, currentVisibleClassAndInterfaces: any, currentVisibleVariables: any, options: ParserOptions, parentClassOrInterface: ClassOrInterfaceTypeContext | null) {
         this.file = file;
+        this.packageName = packageName;
+        this.options = options;
+        // copy the current visible classes and interfaces
+        this.currentVisibleClassAndInterfaces = {...currentVisibleClassAndInterfaces};
+        this.currentVisibleVariables = {...currentVisibleVariables};
+        console.log("currentVisibleClassAndInterfaces")
+        console.log(JSON.stringify(currentVisibleClassAndInterfaces, null, 2))
 
-        //JavaAntlr4CstPrinter.print(ctx, file.path);
+        this.ownCtx = ctx;
+        this.type = type;
 
+        // 5. Get the class or interface name
+        let ownQualifiedName = JavaParserAntlr4.getQualifiedNameOfClassOrInterface(this.ownCtx, this.packageName);
+        let classOrInterfaceName = JavaParserAntlr4.getNameOfClassOrInterface(this.ownCtx) as string; // we can assume that our file has a class or interface
 
-        let identifier = JavaParserHelper.getChildByType(ctx, "identifier");
-        // @ts-ignore
-        let className = identifier.getText();
-        let key = className;
-        if(parent){
-            key = parent.name + "." + className;
-        }
+        // There are maybe already defined classes or interfaces with the same name in the same package or imported
+        // Therefore we set our own to the current visible classes and interfaces
+        this.currentVisibleClassAndInterfaces[classOrInterfaceName] = ownQualifiedName;
 
-        this.classOrInterface = new ClassOrInterfaceTypeContext(key, className, type, file);
-        this.classOrInterface.definedInClassOrInterfaceTypeKey = parent?.key; // save the key of the class or interface that defined this class or interface
+        this.classOrInterface = new ClassOrInterfaceTypeContext(ownQualifiedName, classOrInterfaceName, this.type, this.file);
+        this.parentClassOrInterface = parentClassOrInterface;
+        this.classOrInterface.definedInClassOrInterfaceTypeKey = this.parentClassOrInterface?.key; // save the key of the class or interface that defined this class or interface
+    }
 
-        let extendsRawNames = [];
-        let implementsRawNames = [];
-        if(type==="class"){
-            // @ts-ignore
-            extendsRawNames = BaseExtractor.classGetNameForExtendedClassOrImplementedInterfaces(ctx, "extends");
-            // @ts-ignore
-            this.classOrInterface[BaseExtractor.searchExtendsKey] = extendsRawNames;
-            // TODO handle wildcard imports
-
-            // @ts-ignore
-            implementsRawNames = BaseExtractor.classGetNameForExtendedClassOrImplementedInterfaces(ctx, "implements");
-            // @ts-ignore
-            this.classOrInterface[BaseExtractor.searchImplementsKey] = implementsRawNames;
-            // TODO handle wildcard imports
-        } else if(type==="interface"){
-            // @ts-ignore
-            extendsRawNames = BaseExtractor.interfaceGetNameForExtendedClassOrImplementedInterfaces(ctx, "extends");
-            // @ts-ignore
-            this.classOrInterface[BaseExtractor.searchExtendsKey] = extendsRawNames;
-            // TODO handle wildcard imports
-
-            // @ts-ignore
-            implementsRawNames = BaseExtractor.interfaceGetNameForExtendedClassOrImplementedInterfaces(ctx, "implements");
-            // @ts-ignore
-            this.classOrInterface[BaseExtractor.searchImplementsKey] = implementsRawNames;
-        }
+    public parse() {
 
 
+        // 6. Get the inner classes and interfaces into the current visible classes and interfaces
+        // They will override the classes and interfaces in the same package and the import declarations
+        // 7. Get the methods with their parameters
+            // parse the method body with variables and method calls and so on with the specific qualified name of the class or interface
+        // 8. Get the fields
+            // 8.1 parse the field initializers with variables and method calls and so on with the specific qualified name of the class or interface
+        // create visibility dictionary for fields since they might be overridden by inner classes or interfaces or methods
+        // 9. Call recursively to this function from step 4 for each inner class or interface
+
+        let innerClassOrInterface = !!this.parentClassOrInterface
 
         let modifiers = [];
-        if(!innerClassOrInterface){
-            modifiers = JavaParserHelper.getModifiers(ctx.parentCtx);
+        if (!innerClassOrInterface) {
+            modifiers = JavaParserHelper.getModifiers(this.ownCtx.parentCtx);
         }
-        if(innerClassOrInterface){
-            modifiers = JavaParserHelper.getModifiers(ctx.parentCtx.parentCtx);
+        if (innerClassOrInterface) {
+            modifiers = JavaParserHelper.getModifiers(this.ownCtx.parentCtx.parentCtx);
         }
         this.classOrInterface.modifiers = modifiers;
 
-        if(this.includePosition){
-            this.classOrInterface.position = JavaParserHelper.custom_getPosition(ctx.parentCtx);
+        if (this.options.includePositions) {
+            this.classOrInterface.position = JavaParserHelper.custom_getPosition(this.ownCtx.parentCtx);
         }
     }
 
-    extractClassOrInterfaceFromMember(memberDeclarationCtx){
+    protected parseInnerDefinedClassedAndInterfacesInMemberDeclarations(memberDeclarationsCtx: any[]) {
+        for(let memberDeclarationCtx of memberDeclarationsCtx){
+            this.parseInnerDefinedClassedAndInterfacesInMemberDeclaration(memberDeclarationCtx);
+        }
+    }
+
+    private parseInnerDefinedClassedAndInterfacesInMemberDeclaration(memberDeclarationCtx: any) {
+        console.log("parseInnerDefinedClassedAndInterfacesInMemberDeclaration");
+
+        let innerPackageName = this.packageName + "." + this.classOrInterface.name;
+        let copyOfCurrentVisibleClassAndInterfaces = {...this.currentVisibleClassAndInterfaces};
+        let copyOfCurrentVisibleVariables = {...this.currentVisibleVariables};
+
         let interfaceDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "interfaceDeclaration");
         if(interfaceDeclaration!==null){
-            let interfaceExtractor = new InterfaceExtractor(this.file, interfaceDeclaration, this.includePosition, true, this.classOrInterface);
-            let innerInterfaceOutput = interfaceExtractor.classOrInterface;
+            let interfaceParser = new InterfaceParser(
+                this.file,
+                innerPackageName,
+                interfaceDeclaration,
+                copyOfCurrentVisibleClassAndInterfaces,
+                copyOfCurrentVisibleVariables,
+                this.options, this.classOrInterface
+            );
+            interfaceParser.parse();
+            let innerInterfaceOutput = interfaceParser.classOrInterface;
             let key = innerInterfaceOutput.key;
             this.classOrInterface.innerDefinedInterfaces[key] = innerInterfaceOutput;
         }
         let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
         if(classDeclaration!==null){
-            let classListener = new ClassExtractor(this.file, classDeclaration, this.includePosition, true, this.classOrInterface);
-            let innerClassOutput = classListener.classOrInterface;
+            let classParser = new ClassParser(
+                this.file,
+                innerPackageName,
+                classDeclaration,
+                copyOfCurrentVisibleClassAndInterfaces,
+                copyOfCurrentVisibleVariables,
+                this.options, this.classOrInterface
+            );
+            classParser.parse();
+            let innerClassOutput = classParser.classOrInterface;
             let key = innerClassOutput.key;
             this.classOrInterface.innerDefinedClasses[key] = innerClassOutput;
         }
     }
-}
 
-
-class ClassExtractor extends BaseExtractor{
-    constructor(file: MyFile, ctx, includePosition= false, innerClass = false, parent?: ClassOrInterfaceTypeContext) {
-        super(file, ctx, "class", includePosition, innerClass, parent);
-
-        let classBody = JavaParserHelper.getChildByType(ctx, "classBody");
-        this.extractFromClassBody(classBody);
-    }
-
-    extractFromClassBody(ctx){
-        let classBodyDeclarations = JavaParserHelper.getChildrenByType(ctx, "classBodyDeclaration");
-        for(let i = 0; i < classBodyDeclarations.length; i++){
-            let classBodyDeclaration = classBodyDeclarations[i];
-            let memberDeclaration = JavaParserHelper.getChildByType(classBodyDeclaration, "memberDeclaration");
-            if(memberDeclaration!==null){
-                this.extractFieldsFromMember(memberDeclaration);
-                this.extractMethodsFromMember(memberDeclaration);
-                super.extractClassOrInterfaceFromMember(memberDeclaration);
+    protected saveRawExtendsNames(extendsRawNames: string[]){
+        for(let extendsRawName of extendsRawNames){
+            // extendsRawName could be a fully qualified name or a simple name
+            // for example: extendsRawName = "java.util.ArrayList" or extendsRawName = "ArrayList"
+            // we should look into our currentVisibleClassAndInterfaces to find the name
+            // let get the simple names of currentVisibleClassAndInterfaces
+            let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+            for(let simpleName of simpleNames){
+                if(simpleName === extendsRawName){
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
+                    break; // we found the name, no need to continue
+                } else { // maybe the extendsRawName is a fully qualified name
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    if(fullyQualifiedName === extendsRawName){ // the extendsRawName is a fully qualified name
+                        this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
+                        break; // we found the name, no need to continue
+                    }
+                }
             }
         }
     }
 
+    protected saveRawImplementsNames(implementsRawNames: string[]){
+        for(let implementsRawName of implementsRawNames){
+            // implementsRawName could be a fully qualified name or a simple name
+            // for example: implementsRawName = "java.util.ArrayList" or implementsRawName = "ArrayList"
+            // we should look into our currentVisibleClassAndInterfaces to find the name
+            // let get the simple names of currentVisibleClassAndInterfaces
+            let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+            for(let simpleName of simpleNames){
+                if(simpleName === implementsRawName){
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
+                    break; // we found the name, no need to continue
+                } else { // maybe the implementsRawName is a fully qualified name
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    if(fullyQualifiedName === implementsRawName){ // the implementsRawName is a fully qualified name
+                        this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
+                        break; // we found the name, no need to continue
+                    }
+                }
+            }
+        }
+    }
+
+    protected setCurrentVisibleClassAndInterfacesForInnerClassesAndInterfaces(memberDeclarationsCtx: any[]){
+        let innerPackageName = this.packageName + "." + this.classOrInterface.name;
+        for(let memberDeclarationCtx of memberDeclarationsCtx){
+            let interfaceDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "interfaceDeclaration");
+            if(interfaceDeclaration!==null){
+                let interfaceName = JavaParserAntlr4.getNameOfClassOrInterface(interfaceDeclaration) as string; // we can assume that our file has a class or interface
+                let interfaceQualifiedName = JavaParserAntlr4.getQualifiedNameOfClassOrInterface(interfaceDeclaration, innerPackageName);
+                this.currentVisibleClassAndInterfaces[interfaceName] = interfaceQualifiedName;
+            }
+            let classDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "classDeclaration");
+            if(classDeclaration!==null){
+                let className = JavaParserAntlr4.getNameOfClassOrInterface(classDeclaration) as string; // we can assume that our file has a class or interface
+                let classQualifiedName = JavaParserAntlr4.getQualifiedNameOfClassOrInterface(classDeclaration, innerPackageName);
+                this.currentVisibleClassAndInterfaces[className] = classQualifiedName;
+            }
+        }
+    }
+
+    protected getMemberDeclarations(ctx, ...childTypes){
+        let memberDeclarations: any[] = [];
+        let childType = childTypes[0];
+        let childDeclarations = JavaParserHelper.getChildrenByType(ctx, childType);
+        for(let childDeclaration of childDeclarations){
+            let remainingChildTypes = childTypes.slice(1);
+            if(remainingChildTypes.length===0){
+                memberDeclarations.push(childDeclaration);
+            } else {
+                let childMemberDeclarations = this.getMemberDeclarations(childDeclaration, ...remainingChildTypes);
+                memberDeclarations = memberDeclarations.concat(childMemberDeclarations);
+            }
+        }
+        return memberDeclarations;
+    }
+
+
+}
+
+
+class ClassParser extends BaseParser{
+    constructor(file: MyFile, packageName: string | null, ctx: any, currentVisibleClassAndInterfaces: any, currentVisibleVariables: any, options: ParserOptions, parentClassOrInterface: ClassOrInterfaceTypeContext | null) {
+        super(file, "class", packageName, ctx, currentVisibleClassAndInterfaces, currentVisibleVariables, options, parentClassOrInterface);
+    }
+
+    public parse() {
+        super.parse();
+
+        let extendsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
+        console.log("extendsRawNames", extendsRawNames)
+        this.saveRawExtendsNames(extendsRawNames);
+        let implementsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
+        this.saveRawImplementsNames(implementsRawNames);
+
+        //let memberDeclarations = this.getMemberDeclarations(classBodyCtx);
+        let memberDeclarations = super.getMemberDeclarations(this.ownCtx, "classBody", "classBodyDeclaration", "memberDeclaration");
+
+        // since inner classes may extend sibling classes, we need to update currentVisibleClassAndInterfaces
+        super.setCurrentVisibleClassAndInterfacesForInnerClassesAndInterfaces(memberDeclarations);
+
+        super.parseInnerDefinedClassedAndInterfacesInMemberDeclarations(memberDeclarations);
+
+        this.extractFieldsAndMethodsFromClassMemeberDeclarations(memberDeclarations);
+
+        console.log("currentVisibleClassAndInterfaces");
+        console.log(this.currentVisibleClassAndInterfaces);
+    }
+
+
+    extractFieldsAndMethodsFromClassMemeberDeclarations(classMemberDeclarationsCtx: any[]){
+        for(let memberDeclaration of classMemberDeclarationsCtx){
+            this.extractFieldsFromMember(memberDeclaration);
+            this.extractMethodsFromMember(memberDeclaration);
+        }
+    }
+
     extractFieldsFromMember(memberDeclarationCtx){
+        let copyOfCurrentVisibleClassAndInterfaces = Object.assign({}, this.currentVisibleClassAndInterfaces);
+
         let fieldDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "fieldDeclaration");
         if(fieldDeclaration!==null){
-            let fieldListener = new JavaParserFieldExtractor(this.classOrInterface, fieldDeclaration, this.includePosition);
+            let fieldListener = new JavaParserFieldExtractor(this.classOrInterface, copyOfCurrentVisibleClassAndInterfaces, fieldDeclaration, this.options.includePositions);
             let memberFieldTypeContext = fieldListener.field;
             let memberParameterTypes = memberFieldTypeContext.parameters;
             for(let i=0; i< memberParameterTypes.length; i++){
@@ -193,37 +318,46 @@ class ClassExtractor extends BaseExtractor{
         let methodDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "methodDeclaration");
         if(methodDeclaration!==null){
             // @ts-ignore
-            let methodListener = new JavaParserMethodExtractor(this.classOrInterface, methodDeclaration, methodDeclaration.parentCtx.parentCtx, this.includePosition);
+            let methodListener = new JavaParserMethodExtractor(this.classOrInterface, methodDeclaration, methodDeclaration.parentCtx.parentCtx, this.options.includePositions);
             let method = methodListener.output;
             let key = method.key;
             this.classOrInterface.methods[key] = method;
         }
     }
+
 }
 
 
-class InterfaceExtractor extends BaseExtractor{
-    constructor(file: MyFile, ctx, includePosition= false, innerInterface = false, parent?: ClassOrInterfaceTypeContext) {
-        super(file, ctx, "interface", includePosition, innerInterface, parent);
-
-        let interfaceBody = JavaParserHelper.getChildByType(ctx, "interfaceBody");
-        this.extractFromInterfaceBody(interfaceBody);
-
+class InterfaceParser extends BaseParser{
+    constructor(file: MyFile, packageName: string | null, ctx, currentVisibleClassAndInterfaces: any, currentVisibleVariables: any, options: ParserOptions, parentClassOrInterface: ClassOrInterfaceTypeContext | null) {
+        super(file, "interface", packageName, ctx, currentVisibleClassAndInterfaces, currentVisibleVariables,  options, parentClassOrInterface);
     }
 
-    extractFromInterfaceBody(ctx){
-        let interfaceBodyDeclarations = JavaParserHelper.getChildrenByType(ctx, "interfaceBodyDeclaration");
-        for(let i = 0; i < interfaceBodyDeclarations.length; i++){
-            let interfaceBodyDeclaration = interfaceBodyDeclarations[i];
-            let interfaceMemberDeclaration = JavaParserHelper.getChildByType(interfaceBodyDeclaration, "interfaceMemberDeclaration");
-            if(interfaceMemberDeclaration!==null){
+    public parse() {
+        super.parse();
 
-                // there are no fields in interfaces
-                //let fieldDeclaration = JavaParserHelper.getChildByType(interfaceMemberDeclaration, "fieldDeclaration");
+        let extendsRawNames = InterfaceParser.interfaceGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
+        this.saveRawExtendsNames(extendsRawNames);
+        let implementsRawNames = InterfaceParser.interfaceGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
+        this.saveRawImplementsNames(implementsRawNames);
 
-                this.extractInterfaceMethodsFromMember(interfaceMemberDeclaration);
-                super.extractClassOrInterfaceFromMember(interfaceMemberDeclaration);
-            }
+        let memberDeclarations = super.getMemberDeclarations(this.ownCtx, "interfaceBody", "interfaceBodyDeclaration", "interfaceMemberDeclaration");
+
+        // since inner classes may extend sibling classes, we need to update currentVisibleClassAndInterfaces
+        super.setCurrentVisibleClassAndInterfacesForInnerClassesAndInterfaces(memberDeclarations);
+
+        super.parseInnerDefinedClassedAndInterfacesInMemberDeclarations(memberDeclarations);
+
+        this.extractInterfaceMethodsFromInterfaceMemberDeclarations(memberDeclarations);
+
+        console.log("currentVisibleClassAndInterfaces");
+        console.log(this.currentVisibleClassAndInterfaces);
+    }
+
+    extractInterfaceMethodsFromInterfaceMemberDeclarations(interfaceMemberDeclarationsCtx: any[]){
+        for(let i = 0; i < interfaceMemberDeclarationsCtx.length; i++){
+            let interfaceMemberDeclarationCtx = interfaceMemberDeclarationsCtx[i];
+            this.extractInterfaceMethodsFromMember(interfaceMemberDeclarationCtx);
         }
     }
 
@@ -248,14 +382,15 @@ class InterfaceExtractor extends BaseExtractor{
             let interfaceCommonBodyDeclaration = JavaParserHelper.getChildByType(interfaceMethodDeclaration, "interfaceCommonBodyDeclaration");
             if(interfaceCommonBodyDeclaration!==null){
                 // @ts-ignore
-                let methodListener = new JavaParserMethodExtractor(this.classOrInterface, interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx, this.includePosition);
+                let methodListener = new JavaParserMethodExtractor(this.classOrInterface, interfaceCommonBodyDeclaration, interfaceCommonBodyDeclaration.parentCtx.parentCtx.parentCtx, this.options.includePositions);
                 let method = methodListener.output;
                 let key = method.key
                 this.classOrInterface.methods[key] = method;
             }
         }
     }
+
 }
 
 
-export {ClassExtractor, InterfaceExtractor}
+export {ClassParser, InterfaceParser}

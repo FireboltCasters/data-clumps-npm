@@ -2,6 +2,8 @@ import {TestCaseBaseClassForParser} from "../../../TestCaseBaseClassForParser";
 import {MyFile} from "../../../ParsedAstTypes";
 
 const FileA = new MyFile('Batman.java', `
+// this is a class without package
+
 public class Batman {
    public int a;
    public int b;
@@ -9,6 +11,8 @@ public class Batman {
 }`);
 
 const FileB = new MyFile('Robin.java',`
+// this is a class without package and extends Batman in the same folder
+
 public class Robin extends Batman {
    public int d;
 }`);

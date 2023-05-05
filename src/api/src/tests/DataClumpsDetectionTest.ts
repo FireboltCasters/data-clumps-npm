@@ -1,16 +1,17 @@
 import {Languages, SoftwareProject} from "../index";
+import {TestCaseBaseClassGroup} from "../ignoreCoverage/TestCaseBaseClass";
 
 function testAllLanguages() {
     let languages = Languages.getLanguages();
     for (let language of languages) {
       let identifier = language.getIdentifier();
-      let testCasesDataClumps = language.getPositiveTestCasesDataClumps();
-      for(let testCase of testCasesDataClumps) {
-        let softwareProject = new SoftwareProject(language.getFileExtensions());
-        softwareProject.addFiles(testCase.getFiles());
-        softwareProject.generateAstForFiles();
-        let detectedDataClumps = softwareProject.detectDataClumps();
-        let expectedDataClumps = testCase.getExpectedDataClumps();
+      let testCasesGroupsDataClumps: TestCaseBaseClassGroup[] = language.getPositiveTestCasesGroupsDataClumps();
+      for(let testCaseGroup of testCasesGroupsDataClumps) {
+          let testCases = testCaseGroup.testCases
+          for(let testCase of testCases) {
+              let softwareProject = testCase.getSoftwareProject()
+              // TODO: perform test
+          }
       }
     }
     test('Example test', async () => {
