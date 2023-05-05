@@ -1,19 +1,18 @@
 import React, {FunctionComponent, useState} from 'react';
-import {Menubar} from 'primereact/menubar';
 import Graph from "react-graph-vis";
 import {
     DataClumpsParameterFromContext,
     DataClumpsTypeContext,
     DataClumpTypeContext
 } from "../../api/src/ignoreCoverage/DataClumpTypes";
-import {ProjectHolder} from "../main/Demo";
-import {SoftwareProjectDicts} from "../../api/src/ignoreCoverage/Detector";
 import {
-    ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext, MemberFieldTypeContext,
+    ClassOrInterfaceTypeContext,
+    MemberFieldParameterTypeContext,
     MethodTypeContext,
     MyFile,
     ParameterTypeContext
 } from "../../api/src/ignoreCoverage/ParsedAstTypes";
+import {SoftwareProjectDicts} from "../../api/src/";
 
 // @ts-ignore
 export interface DataClumpsGraphProps {

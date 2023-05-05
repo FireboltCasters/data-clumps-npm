@@ -1,8 +1,9 @@
 import {MyFile} from "./ParsedAstTypes";
 import {SoftwareProject} from "./SoftwareProject";
+import {ParserOptions} from "./Parser";
 
 export interface LanguageParserInterface {
-    preParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean)
+    preParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions)
 
     /**
      * If post parsing is needed, this method is called after all
@@ -11,7 +12,7 @@ export interface LanguageParserInterface {
      * @param file
      * @param includePosition
      */
-    postParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean)
+    postParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions)
 }
 
 

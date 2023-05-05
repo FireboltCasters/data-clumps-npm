@@ -1,5 +1,4 @@
-import {SoftwareProject} from "./SoftwareProject";
-import {SoftwareProjectDicts} from "./Detector";
+import {SoftwareProject, SoftwareProjectDicts} from "./SoftwareProject";
 import {Dictionary} from "./UtilTypes";
 import {
     DataClumpsParameterFromContext,

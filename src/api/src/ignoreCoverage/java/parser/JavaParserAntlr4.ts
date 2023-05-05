@@ -6,6 +6,8 @@ import {LanguageParserInterface} from "../../LanguageParserInterface";
 import {SoftwareProject} from "../../SoftwareProject";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 import {antlr4} from "../../util/MyAntlr4";
+import {ParserOptions} from "../../Parser";
+import {ClassParser, InterfaceParser} from "./JavaParserBaseExtractor";
 
 //TODO add support for generics
 
@@ -38,18 +40,35 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         return null;
     }
 
+    static getTopFileClassCst(cst: any): any {
+        let typeDeclaration = JavaParserHelper.getChildByType(cst, "typeDeclaration");
+        if(!!typeDeclaration) {
+            let classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "classDeclaration");
+            if (!!classOrInterfaceCst) {
+                return classOrInterfaceCst;
+            }
+        }
+    }
+
+    static getTopFileInterfaceCst(cst: any): any {
+        let typeDeclaration = JavaParserHelper.getChildByType(cst, "typeDeclaration");
+        if(!!typeDeclaration) {
+            let classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "interfaceDeclaration");
+            if (!!classOrInterfaceCst) {
+                return classOrInterfaceCst;
+            }
+        }
+    }
+
     static getTopFileClassOrInterfaceCst(file: MyFile): any {
         let cst = JavaParserAntlr4.getCst(file);
-        let typeDeclaration = JavaParserHelper.getChildByType(cst, "typeDeclaration");
-        if(!!typeDeclaration){
-            let classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "classDeclaration");
-            if(!!classOrInterfaceCst){
-                return classOrInterfaceCst;
-            }
-            classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "interfaceDeclaration");
-            if(!!classOrInterfaceCst){
-                return classOrInterfaceCst;
-            }
+        let classCst = JavaParserAntlr4.getTopFileClassCst(cst);
+        if (!!classCst) {
+            return classCst;
+        }
+        let interfaceCst = JavaParserAntlr4.getTopFileInterfaceCst(cst);
+        if (!!interfaceCst) {
+            return interfaceCst;
         }
     }
 
@@ -68,7 +87,9 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
     }
 
     static getNameOfClassOrInterface(cst: any): string | null {
+  //      console.log("- Getting name of class or interface")
         let classOrInterfaceName = JavaParserHelper.getChildByType(cst, "identifier");
+//        JavaAntlr4CstPrinter.print(classOrInterfaceName, "class or interface name")
         if (!!classOrInterfaceName) {
             return classOrInterfaceName.getText();
         }
@@ -167,20 +188,23 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         return importDeclarationClassesAndInterfaces;
     }
 
-    preParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean) {
+    preParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions) {
         console.log("Parsing file: " + file.path)
+
+        file.ast = {};
 
         const cst = JavaParserAntlr4.getCst(file);
 
         // To parse a java file we need to:
 
-        // 1. Get the package name
+        // 1. Get the package name and the class or interface name of the file
         let ownPackageName = JavaParserAntlr4.getPackageDeclaration(cst);
 
-        let ownCst = JavaParserAntlr4.getTopFileClassOrInterfaceCst(file);
-        if(!!ownCst){ // if our file has a class or interface
-            let ownQualifiedName = JavaParserAntlr4.getQualifiedNameOfClassOrInterface(ownCst, ownPackageName);
+        let classCst = JavaParserAntlr4.getTopFileClassCst(cst);
+        let interfaceCst = JavaParserAntlr4.getTopFileInterfaceCst(cst);
 
+
+        if(!!classCst || !!interfaceCst){ // if our file has a class or interface
             // create a dictionary with the classes and interfaces with their qualified names
             // key = class or interface name, value = qualified name of the class or interface
             // qualified name = package name + class or interface name
@@ -204,15 +228,17 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
             currentVisibleClassesAndInterfacesInSamePackage = {...currentVisibleClassesAndInterfacesInSamePackage, ...importDeclarationClassesAndInterfaces};
 
-            console.log("currentVisibleClassesAndInterfacesInSamePackage: ")
-            console.log(currentVisibleClassesAndInterfacesInSamePackage)
 
-            // 4. Get the class or interface name
-            // 5. Get the class or interface body
-            // 6. Get the methods with their parameters
-            // 7. Get the fields
-            // 8. Get the inner classes and interfaces
-            // 9. Call recursively to this function from step 4 for each inner class or interface
+            // 4. Get the class or interface body
+            if(!!classCst){
+                let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfacesInSamePackage, options, false);
+                classExtractor.parse();
+            }
+
+            if(!!interfaceCst){
+                let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfacesInSamePackage, options, false);
+                interfaceExtractor.parse();
+            }
 
         }
 
@@ -261,7 +287,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
      * @param file
      * @param includePosition
      */
-    postParse(softwareProject: SoftwareProject, file: MyFile, includePosition: boolean) {
+    postParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions) {
 
     }
 

@@ -110,7 +110,7 @@ export class Parser {
 
         let parser = Parser.getFileSpecificParser(softwareProject, file, options);
         if(parser){
-            await parser.preParse(softwareProject, file, options.includePositions);
+            await parser.preParse(softwareProject, file, options);
         }
         return null;
   }
@@ -156,7 +156,7 @@ export class Parser {
 
         let parser = Parser.getFileSpecificParser(softwareProject, file, options);
         if(parser){
-            await parser.postParse(softwareProject, file, options.includePositions);
+            await parser.postParse(softwareProject, file, options);
         }
         return null;
   }

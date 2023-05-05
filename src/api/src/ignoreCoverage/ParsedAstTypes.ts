@@ -1,5 +1,5 @@
 import {Dictionary} from "./UtilTypes";
-import {SoftwareProjectDicts} from "./Detector";
+import {SoftwareProjectDicts} from "./SoftwareProject";
 
 export class AstElementTypeContext {
     public name: string;
