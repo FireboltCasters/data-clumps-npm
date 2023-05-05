@@ -127,16 +127,14 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public implements: Dictionary<string>;
     public extends: Dictionary<string>; // Languages that support multiple inheritance include: C++, Common Lisp
 
+    public definedInClassOrInterfaceTypeKey: string | undefined; // key of the class or interface where this class or interface is defined
+
     //dict of classes with name as key
     public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;
     public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
-    public static getClassOrInterfaceAstKey(key, type, file: MyFile){
-        return file.key+"/"+type+"/"+key;
-    }
-
     public constructor(key, name, type, file: MyFile){
-        super(ClassOrInterfaceTypeContext.getClassOrInterfaceAstKey(key, type, file), name, type);
+        super(key, name, type);
         this.fileKey = file.key;
         this.name = name;
         this.modifiers = [];
