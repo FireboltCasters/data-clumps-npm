@@ -83,6 +83,9 @@ export class BaseParser {
         this.options = options;
         // copy the current visible classes and interfaces
         this.currentVisibleClassAndInterfaces = {...currentVisibleClassAndInterfaces};
+        console.log("currentVisibleClassAndInterfaces")
+        console.log(JSON.stringify(currentVisibleClassAndInterfaces, null, 2))
+
         this.ownCtx = ctx;
         this.type = type;
 
@@ -129,6 +132,52 @@ export class BaseParser {
         let key = classOrInterface.key;
         this.file.ast[key] = classOrInterface;
     }
+
+    protected saveRawExtendsNames(extendsRawNames: string[]){
+        for(let extendsRawName of extendsRawNames){
+            // extendsRawName could be a fully qualified name or a simple name
+            // for example: extendsRawName = "java.util.ArrayList" or extendsRawName = "ArrayList"
+            // we should look into our currentVisibleClassAndInterfaces to find the name
+            // let get the simple names of currentVisibleClassAndInterfaces
+            let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+            for(let simpleName of simpleNames){
+                if(simpleName === extendsRawName){
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
+                    break; // we found the name, no need to continue
+                } else { // maybe the extendsRawName is a fully qualified name
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    if(fullyQualifiedName === extendsRawName){ // the extendsRawName is a fully qualified name
+                        this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
+                        break; // we found the name, no need to continue
+                    }
+                }
+            }
+        }
+    }
+
+    protected saveRawImplementsNames(implementsRawNames: string[]){
+        for(let implementsRawName of implementsRawNames){
+            // implementsRawName could be a fully qualified name or a simple name
+            // for example: implementsRawName = "java.util.ArrayList" or implementsRawName = "ArrayList"
+            // we should look into our currentVisibleClassAndInterfaces to find the name
+            // let get the simple names of currentVisibleClassAndInterfaces
+            let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+            for(let simpleName of simpleNames){
+                if(simpleName === implementsRawName){
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
+                    break; // we found the name, no need to continue
+                } else { // maybe the implementsRawName is a fully qualified name
+                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
+                    if(fullyQualifiedName === implementsRawName){ // the implementsRawName is a fully qualified name
+                        this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
+                        break; // we found the name, no need to continue
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -141,7 +190,10 @@ class ClassParser extends BaseParser{
         super.parse();
 
         let extendsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
+        console.log("extendsRawNames", extendsRawNames)
+        this.saveRawExtendsNames(extendsRawNames);
         let implementsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
+        this.saveRawImplementsNames(implementsRawNames);
 
         this.saveClassOrInterfaceToFile();
     }
@@ -158,7 +210,9 @@ class InterfaceParser extends BaseParser{
         super.parse();
 
         let extendsRawNames = InterfaceParser.interfaceGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
+        this.saveRawExtendsNames(extendsRawNames);
         let implementsRawNames = InterfaceParser.interfaceGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
+        this.saveRawImplementsNames(implementsRawNames);
 
         this.saveClassOrInterfaceToFile();
     }

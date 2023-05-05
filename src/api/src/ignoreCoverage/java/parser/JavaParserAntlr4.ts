@@ -100,6 +100,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         let samePackageClassesAndInterfaces = {};
 
         let filesInSamePackage = softwareProject.getFilesInFolder(folderPath);
+        console.log("Files in same package: " + filesInSamePackage.length)
 
         for (let fileInSamePackage of filesInSamePackage) {
             let classOrInterfaceCst = JavaParserAntlr4.getTopFileClassOrInterfaceCst(fileInSamePackage);
@@ -178,7 +179,6 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
     static getPackageClassesAndInterfacesWithPackageFromImportDeclarations(softwareProject: SoftwareProject, importDeclarations: any): any {
         let importDeclarationClassesAndInterfaces = {};
         if(importDeclarations.length>0){
-            console.log("- Import declarations: ")
             for(let importDeclaration of importDeclarations){
                 let specificImportDeclarationClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackageFromImportDeclaration(softwareProject, importDeclaration);
                 // add or overwrite the classes and interfaces in the import declaration to importDeclarationClassesAndInterfaces

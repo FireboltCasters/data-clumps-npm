@@ -107,7 +107,11 @@ export class MyFile{
     }
 
     public getPathToFolder(){
-        return this.path.split("/").slice(0, -1).join("/")+"/";
+        let pathToFile = this.path.split("/").slice(0, -1).join("/");
+        if(pathToFile !== ""){
+            pathToFile += "/";
+        }
+        return pathToFile;
     }
 
     public static getFileExtension(filePath: string) {

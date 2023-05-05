@@ -2,6 +2,8 @@ import {TestCaseBaseClassForParser} from "../../../TestCaseBaseClassForParser";
 import {MyFile} from "../../../ParsedAstTypes";
 
 const FileA = new MyFile('hero/main/cool/Batman.java', `
+package hero.main.cool;
+
 public class Batman {
    public int a;
    public int b;
@@ -9,6 +11,8 @@ public class Batman {
 }`);
 
 const FileB = new MyFile('hero/sidekick/Robin.java',`
+package hero.sidekick;
+
 import hero.main.cool.Batman;
 
 public class Robin extends Batman {
