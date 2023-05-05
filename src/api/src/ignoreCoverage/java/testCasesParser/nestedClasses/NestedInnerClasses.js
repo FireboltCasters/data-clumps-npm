@@ -2,6 +2,8 @@ import {TestCaseBaseClassForParser} from "../../../TestCaseBaseClassForParser";
 import {MyFile} from "../../../ParsedAstTypes";
 
 const FileA = new MyFile('javaParserTest/Main.java', `
+package javaParserTest;
+
 public class Main {
   InnerHero h; // InnerHero is on top level
 

@@ -209,7 +209,9 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             // key = class or interface name, value = qualified name of the class or interface
             // qualified name = package name + class or interface name
             // We store the currently visible classes and interfaces in the same package
-            let currentVisibleClassesAndInterfacesInSamePackage = {};
+            let currentVisibleClassesAndInterfaces = {};
+
+            let currentVisibleVariables = {};
 
             // 2. By default all classes and interfaces in the same package are public
             // So we should check all the classes and interfaces in the same package
@@ -219,24 +221,26 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             let samePackageClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackage(softwareProject, ownPackageName);
 
             // copy the same package classes and interfaces to the current visible classes and interfaces
-            currentVisibleClassesAndInterfacesInSamePackage = {...samePackageClassesAndInterfaces};
+            currentVisibleClassesAndInterfaces = {...samePackageClassesAndInterfaces};
 
             // 3. Get the imports (explicit and wildcard)
             let importDeclarations = JavaParserHelper.getChildrenByType(cst, "importDeclaration");
             let importDeclarationClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackageFromImportDeclarations(softwareProject, importDeclarations);
 
             // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
-            currentVisibleClassesAndInterfacesInSamePackage = {...currentVisibleClassesAndInterfacesInSamePackage, ...importDeclarationClassesAndInterfaces};
+            currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...importDeclarationClassesAndInterfaces};
 
 
             // 4. Get the class or interface body
             if(!!classCst){
-                let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfacesInSamePackage, options, false);
+                console.log("Found class at the top of the file: "+file.path)
+                let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, false);
                 classExtractor.parse();
             }
 
             if(!!interfaceCst){
-                let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfacesInSamePackage, options, false);
+                console.log("Found interface at the top of the file: "+file.path)
+                let interfaceExtractor = new InterfaceParser(file, ownPackageName, interfaceCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, false);
                 interfaceExtractor.parse();
             }
 
