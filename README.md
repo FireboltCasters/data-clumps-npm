@@ -6,6 +6,10 @@
     <img src="https://github.com/FireboltCasters/data-clumps/raw/master/public/logo.png" alt="backup" style="height:100px;"/>
 </p>
 
+<h2 align="center">
+Cerberus Data Clumps Detection and Refactoring (CDCD-R)
+</h2>
+
 <h3 align="center">
 Let Cerberus Guard Your Code: Detect and Refactor Clumps with Ease
 </h3>
