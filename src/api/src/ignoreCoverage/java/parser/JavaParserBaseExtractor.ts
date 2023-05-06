@@ -23,15 +23,16 @@ export class BaseParser {
         let extendsOrImplementsRawNames: any[] = [];
         let extendsOrImplementsIndexes = JavaParserHelper.getChildIndexesByName(ctx, extendsOrImplementsKeyword);
         if (extendsOrImplementsKeyword === "extends") {
+            JavaAntlr4CstPrinter.print(ctx, "ctx");
             let extendsIndexes = extendsOrImplementsIndexes;
             for (let extendsIndex of extendsIndexes) { // will be only one since extends is unique in Java
                 let extendsTypeType = ctx.children[extendsIndex + 1];
+                JavaAntlr4CstPrinter.print(extendsTypeType, "extendsTypeIdentifierOnlyChild");
                 if (!!extendsTypeType) {
                     let extendsClassOrInterfaceType = JavaParserHelper.getChildByType(extendsTypeType, "classOrInterfaceType");
-                    let extendsTypeIdentifier = JavaParserHelper.getChildByType(extendsClassOrInterfaceType, "typeIdentifier");
-                    // @ts-ignore
-                    let extendsTypeIdentifierOnlyChild = extendsTypeIdentifier.children[0];
-                    let extendsName = extendsTypeIdentifierOnlyChild.getText();
+                    // We dont check further because we want to support qualified imports like: org.apache.commons.lang3.StringUtils
+                    //let extendsTypeIdentifier = JavaParserHelper.getChildByType(extendsClassOrInterfaceType, "typeIdentifier");
+                    let extendsName = extendsClassOrInterfaceType.getText();
                     extendsOrImplementsRawNames.push(extendsName);
                 }
             }
@@ -43,10 +44,11 @@ export class BaseParser {
                     let implementsInterfaceTypeTypes = JavaParserHelper.getChildrenByType(implementsTypeType, "typeType");
                     for (let implementsInterfaceTypeType of implementsInterfaceTypeTypes) {
                         let implementsInterfaceType = JavaParserHelper.getChildByType(implementsInterfaceTypeType, "classOrInterfaceType");
-                        let implementsTypeIdentifier = JavaParserHelper.getChildByType(implementsInterfaceType, "typeIdentifier");
+                        // We dont check further because we want to support qualified imports like: org.apache.commons.lang3.StringUtils
+                        //let implementsTypeIdentifier = JavaParserHelper.getChildByType(implementsInterfaceType, "typeIdentifier");
                         // @ts-ignore
-                        let implementsTypeIdentifierOnlyChild = implementsTypeIdentifier.children[0];
-                        let implementsName = implementsTypeIdentifierOnlyChild.getText();
+                        //let implementsTypeIdentifierOnlyChild = implementsTypeIdentifier.children[0];
+                        let implementsName = implementsInterfaceType.getText();
                         extendsOrImplementsRawNames.push(implementsName);
                     }
                 }
@@ -186,18 +188,20 @@ export class BaseParser {
             // we should look into our currentVisibleClassAndInterfaces to find the name
             // let get the simple names of currentVisibleClassAndInterfaces
             let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+
+            let foundInCurrentVisibleClassAndInterfaces = false;
             for(let simpleName of simpleNames){
                 if(simpleName === extendsRawName){
                     let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
                     this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
+                    foundInCurrentVisibleClassAndInterfaces = true;
                     break; // we found the name, no need to continue
-                } else { // maybe the extendsRawName is a fully qualified name
-                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
-                    if(fullyQualifiedName === extendsRawName){ // the extendsRawName is a fully qualified name
-                        this.classOrInterface.extends[fullyQualifiedName] = fullyQualifiedName;
-                        break; // we found the name, no need to continue
-                    }
                 }
+            }
+            if(!foundInCurrentVisibleClassAndInterfaces){
+                // the extendsRawName is not a simple name in the currentVisibleClassAndInterfaces
+                // therefore it is a fully qualified name
+                this.classOrInterface.extends[extendsRawName] = extendsRawName;
             }
         }
     }
@@ -209,18 +213,20 @@ export class BaseParser {
             // we should look into our currentVisibleClassAndInterfaces to find the name
             // let get the simple names of currentVisibleClassAndInterfaces
             let simpleNames = Object.keys(this.currentVisibleClassAndInterfaces);
+
+            let foundInCurrentVisibleClassAndInterfaces = false;
             for(let simpleName of simpleNames){
                 if(simpleName === implementsRawName){
                     let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
                     this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
+                    foundInCurrentVisibleClassAndInterfaces = true;
                     break; // we found the name, no need to continue
-                } else { // maybe the implementsRawName is a fully qualified name
-                    let fullyQualifiedName = this.currentVisibleClassAndInterfaces[simpleName];
-                    if(fullyQualifiedName === implementsRawName){ // the implementsRawName is a fully qualified name
-                        this.classOrInterface.implements[fullyQualifiedName] = fullyQualifiedName;
-                        break; // we found the name, no need to continue
-                    }
                 }
+            }
+            if(!foundInCurrentVisibleClassAndInterfaces){
+                // the implementsRawName is not a simple name in the currentVisibleClassAndInterfaces
+                // therefore it is a fully qualified name
+                this.classOrInterface.implements[implementsRawName] = implementsRawName;
             }
         }
     }
@@ -272,7 +278,7 @@ class ClassParser extends BaseParser{
         super.parse();
 
         let extendsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
-        //console.log("extendsRawNames", extendsRawNames)
+        console.log("extendsRawNames", extendsRawNames)
         this.saveRawExtendsNames(extendsRawNames);
         let implementsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
         this.saveRawImplementsNames(implementsRawNames);

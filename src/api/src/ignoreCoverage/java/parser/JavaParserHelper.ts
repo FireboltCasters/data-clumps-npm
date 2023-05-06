@@ -1,5 +1,6 @@
 import JavaParser from "./../../java/util/JavaParser";
 import {antlr4} from "./../../util/MyAntlr4";
+import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 export class JavaParserHelper {
 
@@ -67,24 +68,43 @@ export class JavaParserHelper {
         for(let i = 0; i < ctx.getChildCount(); i++){
             let child = ctx.getChild(i);
             let name = antlr4.tree.Trees.getNodeText(child, JavaParser.ruleNames);
-            if(name==="classOrInterfaceModifier"){
-                // get visibility
-                let modifier = child.children[0].getText();
+
+            if(name==="synchronized"){
+                // then we should allow this child
                 // @ts-ignore
-                modifiers.push(modifier);
+                modifiers.push(name);
+                continue; // get the next child
             }
-            if(name==="modifier"){ // for class fields
-                // get visibility
-                let childModifiers = JavaParserHelper.getModifiers(child);
-                // @ts-ignore
-                modifiers = modifiers.concat(childModifiers);
+
+            let annotationChild = JavaParserHelper.getChildByType(child, "annotation");
+            if(annotationChild!==null){
+                // then we should ignore this child
+                continue;
             }
-            if(name==="variableModifier"){ // for method parameters
-                // get visibility
-                let modifier = child.children[0].getText();
-                // @ts-ignore
-                modifiers.push(modifier);
+
+            if(!annotationChild){ // if it is not an annotation
+                if(name==="classOrInterfaceModifier"){
+
+                    // get visibility
+                    let modifier = child.children[0].getText();
+                    // @ts-ignore
+                    modifiers.push(modifier);
+                }
+                if(name==="modifier"){ // for class fields
+                    // get visibility
+                    let childModifiers = JavaParserHelper.getModifiers(child);
+                    // @ts-ignore
+                    modifiers = modifiers.concat(childModifiers);
+                }
+                if(name==="variableModifier"){ // for method parameters
+                    // get visibility
+                    let modifier = child.children[0].getText();
+                    // @ts-ignore
+                    modifiers.push(modifier);
+                }
             }
+
+
         }
         return modifiers;
     }

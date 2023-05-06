@@ -341,17 +341,21 @@ export class MethodTypeContext extends AstElementTypeContext{
     }
 
     public isInheriatedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
+        console.log("check isInheriatedFromParentClassOrInterface")
+        console.log("this: "+this.key)
         let isInheriated = false;
-        let classOrInterface = softwareProjectDicts.dictClassOrInterface[this.classOrInterfaceKey];
-        if(classOrInterface){
-            let superClassesOrInterfacesDict = classOrInterface.getSuperClassesAndInterfacesDict(softwareProjectDicts);
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[this.classOrInterfaceKey];
+        if(currentClassOrInterface){
+            let superClassesOrInterfacesDict = currentClassOrInterface.getSuperClassesAndInterfacesDict(softwareProjectDicts);
             let superClassesOrInterfacesKeys = Object.keys(superClassesOrInterfacesDict);
             for(let superClassOrInterfaceKey of superClassesOrInterfacesKeys){
+                console.log("superClassOrInterfaceKey: "+superClassOrInterfaceKey)
                 let superClassOrInterface = superClassesOrInterfacesDict[superClassOrInterfaceKey];
                 if(!!superClassOrInterface){
                     let superClassOrInterfaceMethodsDict = superClassOrInterface.methods;
                     let superClassOrInterfaceMethodsKeys = Object.keys(superClassOrInterfaceMethodsDict);
                     for(let superClassOrInterfaceMethodsKey of superClassOrInterfaceMethodsKeys){
+                        console.log("-- superClassOrInterfaceMethodsKey: "+superClassOrInterfaceMethodsKey)
                         let superClassOrInterfaceMethod = superClassOrInterfaceMethodsDict[superClassOrInterfaceMethodsKey];
                         if(superClassOrInterfaceMethod.hasSameSignatureAs(this)){
                             isInheriated = true;
@@ -361,6 +365,7 @@ export class MethodTypeContext extends AstElementTypeContext{
                 }
             }
         }
+        console.log("++++++++++++++")
         return isInheriated;
     }
 }

@@ -13,6 +13,9 @@ import {ClassWithPackage} from "./package/ClassWithPackage";
 import {ImportWithWildcardTest} from "./importTest/ImportWithWildcardTest";
 import {TestCaseBaseClassGroup} from "../../TestCaseBaseClass";
 import {SimpleEnum} from "./enums/SimpleEnum";
+import {ExtendingClassWithQualifiedName} from "./extends/ExtendingClassWithQualifiedName";
+import {ExtendsInterfaceWithQualifiedName} from "./extends/ExtendsInterfaceWithQualifiedName";
+import {ImplementsInterfaceWithQualifiedName} from "./implements/ImplementsInterfaceWithQualifiedName";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -22,7 +25,9 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
             ExtendingClass,
             ExtendingClassWithExplicitImport,
             ExtendingClassWithWildcardImport,
-            InterfaceExtendsInterfaces
+            InterfaceExtendsInterfaces,
+            ExtendingClassWithQualifiedName,
+            ExtendsInterfaceWithQualifiedName
         ],
     []
     );
@@ -49,7 +54,8 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
     static implementsTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
         "Implements",
         [
-            ClassImplementsInterface
+            ClassImplementsInterface,
+            ImplementsInterfaceWithQualifiedName
         ],
         []
     );

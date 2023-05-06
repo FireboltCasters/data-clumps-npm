@@ -135,6 +135,8 @@ export class DetectorDataClumpsMethods {
      * @private
      */
     private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
+        //console.log("Checking method parameters for data clumps for method " + method.key + " and method " + otherMethod.key)
+
         /**
          * TODO: DataclumpsInspection.java line 548
          * // avoid inherited methods if checkHierarchyInParametersInstances is off
@@ -144,6 +146,7 @@ export class DetectorDataClumpsMethods {
          */
         let isSameMethod = method.key === otherMethod.key;
         if(isSameMethod){ // avoid checking the same method
+            //console.log("Method " + method.key + " is the same as method " + otherMethod.key + ". Skipping this method.")
 //            console.log("Method " + method.key + " is the same as method " + otherMethod.key + ". Skipping this method.")
             return;
         }
@@ -157,7 +160,7 @@ export class DetectorDataClumpsMethods {
         let otherMethodParametersKeys = Object.keys(otherMethodParameters);
         let otherMethodParametersAmount = otherMethodParametersKeys.length;
         if(otherMethodParametersAmount < this.options.sharedMethodParametersMinimum){ // avoid checking methods with less than 3 parameters
-  //          console.log("Method " + otherMethod.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
+            //console.log("Method " + otherMethod.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
             return;
         }
 
@@ -166,6 +169,7 @@ export class DetectorDataClumpsMethods {
          * "These methods should not in a same inheritance hierarchy and with a same method signature."
          */
         let isDifferentClassOrInterface = otherClassOrInterface.key !== currentClassOrInterface.key;
+        //console.log("Method " + method.key + " is in a different class or interface than method " + otherMethod.key + ": " + isDifferentClassOrInterface)
         if(isDifferentClassOrInterface){ // if the classes are not the same
             // now we check if the methods are in the same inheritance hierarchy with the same method signature
 
@@ -173,8 +177,10 @@ export class DetectorDataClumpsMethods {
             // We can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
             /* "[...] with a same method signature." */
             if(method.hasSameSignatureAs(otherMethod)) { // if the methods have the same signature
+                //console.log("Method " + method.key + " has the same signature as method " + otherMethod.key + "")
                 // we already checked if our method is inherited, now we check if the other method is inherited
                 let otherMethodIsInherited = otherMethod.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
+                //console.log("Method " + otherMethod.key + " is inherited: " + otherMethodIsInherited)
                 if(otherMethodIsInherited) { // if the method is inherited
                     // then skip this method
                     return;
@@ -186,7 +192,7 @@ export class DetectorDataClumpsMethods {
 
         let amountCommonParameters = this.countCommonParametersBetweenMethods(method, otherMethod);
         if(amountCommonParameters < this.options.sharedMethodParametersMinimum) { // is not a data clump
-            //console.log("- No Data Clumps betweeen Method " + method.key + " and " + otherMethod.key)
+            //console.log("Method " + method.key + " and method " + otherMethod.key + " have less than " + this.options.sharedMethodParametersMinimum + " common parameters. Skipping this method.")
             return;
         } else {
             //console.log("- Found data clumps between method " + method.key + " and method " + otherMethod.key);
