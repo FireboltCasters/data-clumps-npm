@@ -30,14 +30,14 @@ export class Detector {
         this.abortController = abortController;
     }
 
-    public async detect(): Promise<DataClumpsTypeContext>{
+    public async detect(softwareProjectDicts: SoftwareProjectDicts): Promise<DataClumpsTypeContext>{
         this.timer.start();
         let dataClumpsTypeContext: DataClumpsTypeContext = {
             version: "0.0.1",
             data_clumps: {}
         };
 
-        let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
+//        let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
         //console.log("Detecting software project for data clumps");
         //console.log(softwareProjectDicts);
         let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options.optionsDataClumpsMethod, this.progressCallback, this.abortController);

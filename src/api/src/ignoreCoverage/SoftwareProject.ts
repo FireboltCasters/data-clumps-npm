@@ -37,12 +37,60 @@ export class SoftwareProjectDicts {
   public dictMethod: Dictionary<MethodTypeContext> = {};
   public dictMethodParameters: Dictionary<MethodParameterTypeContext> = {};
 
-  public constructor() {
+  public constructor(project: SoftwareProject) {
     this.dictFile = {};
     this.dictClassOrInterface = {};
     this.dictMemberFieldParameters = {};
     this.dictMethod = {};
     this.dictMethodParameters = {};
+
+    this.dictFile = project.getFilesDict();
+    //console.log("dictFile: ")
+    //console.log(this.dictFile);
+
+    this.dictClassOrInterface = {};
+    this.dictMemberFieldParameters = {};
+    this.dictMethod = {};
+    this.dictMethodParameters = {};
+
+    let fileKeys = Object.keys(this.dictFile);
+    for (let fileKey of fileKeys) {
+      let file = this.dictFile[fileKey];
+      let classOrInterfacesDictForFile = file.ast;
+      let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
+      for (let classOrInterfaceKey of classOrInterfaceKeys) {
+        let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
+
+        this.fillClassOrInterfaceDicts(classOrInterface);
+
+        // Fill memberFieldParameters
+        let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;
+
+        let memberFieldParameterKeys = Object.keys(memberFieldParametersDictForClassOrInterface);
+        for (let memberFieldParameterKey of memberFieldParameterKeys) {
+          let memberFieldParameter = memberFieldParametersDictForClassOrInterface[memberFieldParameterKey];
+          this.dictMemberFieldParameters[memberFieldParameter.key] = memberFieldParameter;
+        }
+
+        // Fill methods
+        let methodsDictForClassOrInterface = classOrInterface.methods;
+        let methodKeys = Object.keys(methodsDictForClassOrInterface);
+        for (let methodKey of methodKeys) {
+          let method = methodsDictForClassOrInterface[methodKey];
+
+          // Fill dictMethod
+          this.dictMethod[method.key] = method;
+
+          // Fill methodParameters
+          let methodParametersDictForMethod = method.parameters;
+          let methodParameterKeys = Object.keys(methodParametersDictForMethod);
+          for (let methodParameterKey of methodParameterKeys) {
+            let methodParameter = methodParametersDictForMethod[methodParameterKey];
+            this.dictMethodParameters[methodParameter.key] = methodParameter;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -50,12 +98,10 @@ export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
   public fileExtensionsToBeChecked: Dictionary<string> = {};
-  public softwareProjectDicts: SoftwareProjectDicts;
 
   constructor(fileExtensionsToBeChecked: string[]) {
     this.filesToParseDict = {};
     this.fileExtensionsToBeChecked = {};
-    this.softwareProjectDicts = new SoftwareProjectDicts();
     for (let fileExtension of fileExtensionsToBeChecked) {
         this.fileExtensionsToBeChecked[fileExtension] = fileExtension;
     }
@@ -106,7 +152,6 @@ export class SoftwareProject {
 
   public async parseSoftwareProject(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
     parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
-    this.softwareProjectDicts = new SoftwareProjectDicts();
     await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
   }
 
@@ -133,8 +178,9 @@ export class SoftwareProject {
   }
 
   public async detectDataClumps(detectorOptions?, progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {
+    let softwareProjectDicts = new SoftwareProjectDicts(this);
     let detector = new Detector(this, detectorOptions, progressCallback, abortController);
-    let dataClumps = await detector.detect();
+    let dataClumps = await detector.detect(softwareProjectDicts);
     return dataClumps;
   }
 
