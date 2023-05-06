@@ -6,6 +6,18 @@
     <img src="https://github.com/FireboltCasters/data-clumps/raw/master/public/logo.png" alt="backup" style="height:100px;"/>
 </p>
 
+<h2 align="center">
+Cerberus Data Clumps Detection and Refactoring (CDCD-R)
+</h2>
+
+<h3 align="center">
+Let Cerberus Guard Your Code: Detect and Refactor Clumps with Ease
+</h3>
+
+<h5 align="center">
+Alternative slogan: Get a Three-Headed View of Your Data: Cerberus Detects and Refactors Clumps
+</h5>
+
 <p align="center">
   <a href="https://badge.fury.io/js/data-clumps.svg"><img src="https://badge.fury.io/js/data-clumps.svg" alt="npm package" /></a>
   <a href="https://img.shields.io/github/license/FireboltCasters/data-clumps"><img src="https://img.shields.io/github/license/FireboltCasters/data-clumps" alt="MIT" /></a>

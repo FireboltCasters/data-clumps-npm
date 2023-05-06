@@ -329,7 +329,10 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         }
     ];
 
-    let logoUrl = "https://github.com/FireboltCasters/data-clumps/raw/master/public/logo.png"
+    let remoteLogoUrl = "https://github.com/FireboltCasters/data-clumps/raw/master/public/logo.png"
+    let localLogoUrl = "./logo.png"
+    let logoUrl = remoteLogoUrl;
+
     let startItem = (
         <div>
             <a href={"https://github.com/FireboltCasters/data-clumps"}>
