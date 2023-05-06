@@ -89,7 +89,9 @@ export const Demo : FunctionComponent = (props) => {
     async function generateAstCallback(message, index, total): Promise<void> {
         let content = `${index}/${total}: ${message}`;
         let isEveryHundreds = index % 100 === 0;
-        if(isEveryHundreds) {
+        let firstAndSecond = index === 0 || index === 1;
+        let lastAndPreLast = index === total - 1 || index === total - 2;
+        if(firstAndSecond || isEveryHundreds || lastAndPreLast) {
             modalOptions.content = content;
             modalOptions.visible = true;
             setModalOptions(modalOptions);
@@ -280,12 +282,26 @@ export const Demo : FunctionComponent = (props) => {
     function renderDataClumpsDict(){
         let defaultValue = "";
         if(dataClumpsDict && JSON.stringify(dataClumpsDict) !== "{}"){
-            defaultValue = JSON.stringify(dataClumpsDict, null, 2);
+            if(activeFileKey){
+                let data_clumps_to_show = {};
+                let data_clumps = dataClumpsDict?.data_clumps || {};
+                let data_clumps_keys = Object.keys(data_clumps);
+                for(let key of data_clumps_keys){
+                    let dataClump = data_clumps[key];
+                    let file_path = dataClump.file_path
+                    if(file_path === activeFileKey){
+                        data_clumps_to_show[key] = dataClump;
+                    }
+                }
+                defaultValue = JSON.stringify(data_clumps_to_show, null, 2);
+            } else {
+                defaultValue = JSON.stringify(dataClumpsDict, null, 2);
+            }
         }
 
         return(
             <WebIdeCodeEditor
-                key={JSON.stringify(dataClumpsDict)}
+                key={defaultValue}
                 defaultValue={defaultValue}
                 options={{ readOnly: true }}
             />

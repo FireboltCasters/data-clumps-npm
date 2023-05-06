@@ -151,37 +151,75 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     }
 
     /**
-     * TODO: implement this
+     * This means, that our or the other class is a subclass of the other
+     * It does not mean that they have a common hierarchy
+     * The function is called isSubclassOf if they are classes and isSubinterfaceOf if they are interfaces
+     * Together they are called isSubtypeOf
      * PsiUtils.java line 362
      */
-    public hasCommonHierarchyWith(otherClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts){
-        // TODO: do wen need PsiUtils.java line 360
+    public isSubtypeOf(otherClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+        // TODO: do we need PsiUtils.java line 360
+
+        console.log("isSubtypeOf")
+        console.log("this.key: "+this.key)
+        console.log("otherClass.key: "+otherClass.key)
 
         // PsiUtils.java line 363
         let thisHierarchy = this.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
         let otherHierarchy = otherClass.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
 
-        // PsiUtils.java line 371
-        for(let thisOrParents of thisHierarchy){
-            for(let otherOrParents of otherHierarchy){
-                if(thisOrParents.key === otherOrParents.key){
-                    return true;
-                }
+        console.log("thisHierarchy: ");
+        console.log(thisHierarchy);
+        console.log("otherHierarchy: ");
+        console.log(otherHierarchy);
+
+        // PsiUtils.java line 371 is not correct, because it checks if they have a common hierarchy
+
+        let areWeInOtherHierarchy = false;
+        for(let otherOrParents of otherHierarchy){
+            if(otherOrParents.key === this.key){
+                areWeInOtherHierarchy = true;
+                break;
             }
         }
 
-        return false;
+        let areTheyInOurHierarchy = false;
+        for(let thisOrParents of thisHierarchy){
+            if(thisOrParents.key === otherClass.key){
+                areTheyInOurHierarchy = true;
+                break;
+            }
+        }
+
+        let isSubtypeOf = areWeInOtherHierarchy || areTheyInOurHierarchy;
+
+        return isSubtypeOf;
     }
 
+
+
     public getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts: SoftwareProjectDicts){
-        let thisHierarchy: ClassOrInterfaceTypeContext[] = [this]
+        let superClassesAndInterfacesDict = this.getSuperClassesAndInterfacesDict(softwareProjectDicts);
+        let thisHierarchy: ClassOrInterfaceTypeContext[] = [this];
+        let superClassesAndInterfacesKeys = Object.keys(superClassesAndInterfacesDict);
+        for(let i = 0; i < superClassesAndInterfacesKeys.length; i++){
+            let superClassOrInterfaceKey = superClassesAndInterfacesKeys[i];
+            let superClassOrInterface = superClassesAndInterfacesDict[superClassOrInterfaceKey];
+            thisHierarchy = thisHierarchy.concat(superClassOrInterface.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts));
+        }
+
+        return thisHierarchy;
+    }
+
+    public getSuperClassesAndInterfacesDict(softwareProjectDicts: SoftwareProjectDicts){
+        let superClassesAndInterfaces: Dictionary<ClassOrInterfaceTypeContext> = {};
 
         let thisSuperClassesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "extends", {})
         let thisSuperClassesKeys = Object.keys(thisSuperClassesDict)
         for(let i = 0; i < thisSuperClassesKeys.length; i++){
             let superClassKey = thisSuperClassesKeys[i];
             let superClass = thisSuperClassesDict[superClassKey];
-            thisHierarchy.push(superClass);
+            superClassesAndInterfaces[superClassKey] = superClass;
         }
 
         let thisImplementedInterfacesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "implements", {})
@@ -189,10 +227,10 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         for(let i = 0; i < thisImplementedInterfacesKeys.length; i++){
             let implementedInterfaceKey = thisImplementedInterfacesKeys[i];
             let implementedInterface = thisImplementedInterfacesDict[implementedInterfaceKey];
-            thisHierarchy.push(implementedInterface);
+            superClassesAndInterfaces[implementedInterfaceKey] = implementedInterface;
         }
 
-        return thisHierarchy;
+        return superClassesAndInterfaces;
     }
 
     public getSuperClassesOrInterfacesDict(softwareProjectDicts: SoftwareProjectDicts, extendsOrInterfacesFieldKey: string, passedSuperClasses: Dictionary<ClassOrInterfaceTypeContext>){
@@ -203,10 +241,26 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         for(let i = 0; i < extendsKeys.length; i++){
             let extendsKey = extendsKeys[i];
             let extendsClassOrInterfaceKey = extendsDict[extendsKey];
-            let superClass = softwareProjectDicts.dictClassOrInterface[extendsClassOrInterfaceKey]
-            if(!!passedSuperClasses && !passedSuperClasses[superClass.key]){
-                passedSuperClasses[superClass.key] = superClass;
-                superClass.getSuperClassesOrInterfacesDict(softwareProjectDicts, extendsOrInterfacesFieldKey, passedSuperClasses);
+            let superClassOrInterface = softwareProjectDicts.dictClassOrInterface[extendsClassOrInterfaceKey]
+            if(!superClassOrInterface){
+                //console.log("ERROR: superClass not found for key: "+extendsClassOrInterfaceKey)
+                // javax.swing.JPanel // so standard bibs cant be found
+                // org.tigris.gef.undo.UndoableAction // and custom bibs cant be found
+                // TODO we should mark them as superclasses and interfaces so we can still use them for the hierarchy
+                let name = extendsClassOrInterfaceKey.split(".").pop();
+                passedSuperClasses[extendsClassOrInterfaceKey] = new ClassOrInterfaceTypeContext(extendsClassOrInterfaceKey, name, "unkown", new MyFile("", ""));
+            } else {
+                if(!!passedSuperClasses){
+                    if(!passedSuperClasses[superClassOrInterface.key]){
+                        // save the class or interface in the dict
+                        passedSuperClasses[superClassOrInterface.key] = superClassOrInterface;
+
+                        // get the superclasses of the superclass
+                        superClassOrInterface.getSuperClassesOrInterfacesDict(softwareProjectDicts, extendsOrInterfacesFieldKey, passedSuperClasses);
+                    } else {
+//                        console.log("ERROR: superClass already in passedSuperClasses: "+superClass.key);
+                    }
+                }
             }
         }
         return passedSuperClasses;
@@ -256,5 +310,57 @@ export class MethodTypeContext extends AstElementTypeContext{
         this.modifiers = [];
         this.parameters = [];
         this.classOrInterfaceKey = classOrInterface.key;
+    }
+
+    public getMethodSignature(){
+        let methodSignature = this.name+"(";
+        for(let i = 0; i < this.parameters.length; i++){
+            let parameter = this.parameters[i];
+            methodSignature += parameter.type;
+            if(i < this.parameters.length - 1){
+                methodSignature += ", ";
+            }
+        }
+        methodSignature += ")";
+        return methodSignature;
+    }
+
+    public hasSameSignatureAs(otherMethod: MethodTypeContext){
+        let hasSameSignature = true;
+
+        if(this.parameters.length !== otherMethod.parameters.length){
+            hasSameSignature = false;
+        } else {
+            let thisMethodSignature = this.getMethodSignature();
+            let otherMethodSignature = otherMethod.getMethodSignature();
+            if(thisMethodSignature !== otherMethodSignature){
+                hasSameSignature = false;
+            }
+        }
+        return hasSameSignature;
+    }
+
+    public isInheriatedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
+        let isInheriated = false;
+        let classOrInterface = softwareProjectDicts.dictClassOrInterface[this.classOrInterfaceKey];
+        if(classOrInterface){
+            let superClassesOrInterfacesDict = classOrInterface.getSuperClassesAndInterfacesDict(softwareProjectDicts);
+            let superClassesOrInterfacesKeys = Object.keys(superClassesOrInterfacesDict);
+            for(let superClassOrInterfaceKey of superClassesOrInterfacesKeys){
+                let superClassOrInterface = superClassesOrInterfacesDict[superClassOrInterfaceKey];
+                if(!!superClassOrInterface){
+                    let superClassOrInterfaceMethodsDict = superClassOrInterface.methods;
+                    let superClassOrInterfaceMethodsKeys = Object.keys(superClassOrInterfaceMethodsDict);
+                    for(let superClassOrInterfaceMethodsKey of superClassOrInterfaceMethodsKeys){
+                        let superClassOrInterfaceMethod = superClassOrInterfaceMethodsDict[superClassOrInterfaceMethodsKey];
+                        if(superClassOrInterfaceMethod.hasSameSignatureAs(this)){
+                            isInheriated = true;
+                            return isInheriated;
+                        }
+                    }
+                }
+            }
+        }
+        return isInheriated;
     }
 }

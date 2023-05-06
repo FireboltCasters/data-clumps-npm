@@ -2,6 +2,8 @@ import {SimpleMethodsWithoutDataClumps} from "./simpleMethods/SimpleMethodsWitho
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
 import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
 import {TestCaseBaseClassGroup} from "../../../TestCaseBaseClass";
+import {SerialVersionUID} from "./specialFields/SerialVersionUID";
+import {ChildrenWithMethods} from "./hierarchy/ChildrenWithMethods";
 
 export class Negative extends TestCaseBaseClassForDataClumps{
 
@@ -15,5 +17,17 @@ export class Negative extends TestCaseBaseClassForDataClumps{
         "Parameters With Modifiers",
         [
             ParametersWithModifiers,
+    ], []);
+
+    static hierarchy : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Hierarchy",
+        [
+            ChildrenWithMethods,
+    ], []);
+
+    static specialFields : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Special Fields",
+        [
+            SerialVersionUID,
     ], []);
 }

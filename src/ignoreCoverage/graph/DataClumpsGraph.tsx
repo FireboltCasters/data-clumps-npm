@@ -23,8 +23,6 @@ export interface DataClumpsGraphProps {
 
 export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props: DataClumpsGraphProps) => {
 
-
-
     function getInitialGraphFromDataClumpsDict(){
         //console.log("getInitialGraphFromDataClumpsDict");
 

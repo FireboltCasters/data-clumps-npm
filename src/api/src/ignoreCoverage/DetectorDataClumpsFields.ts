@@ -8,7 +8,7 @@ import {MyAbortController, SoftwareProjectDicts} from "./SoftwareProject";
 
 export class DetectorOptionsDataClumpsFields {
     public sharedFieldParametersMinimum: number = 3;
-    public sharedFieldParametersCheckIfHaveCommonHierarchy: boolean = false;
+    public sharedFieldParametersCheckIfAreSubtypes: boolean = false;
     public subclassInheritsAllMembersFromSuperclass: boolean = false;
 
     public constructor(options: any | DetectorOptionsDataClumpsFields){
@@ -79,14 +79,12 @@ export class DetectorDataClumpsFields {
             return; // skip the same class // DataclumpsInspection.java line 411
         }
 
-        let hasCommonHierarchy = currentClass.hasCommonHierarchyWith(otherClass, softwareProjectDicts);
-        if(hasCommonHierarchy){ // if the classes have a common hierarchy
-            let checkIfHaveCommonHierarchy = this.options.sharedFieldParametersCheckIfHaveCommonHierarchy;
-            if(!checkIfHaveCommonHierarchy){ // and we don't want to check them if they have a common hierarchy
-                // then skip this class pair
-                return; // DataclumpsInspection.java line 412
-            }
-        }
+        /**
+         * Fields declared in a superclass
+         * Are maybe new fields and not inherited fields
+         * Or are overridden fields
+         * In both cases, we need to check them
+         */
 
         let currentClassParameters = this.getMemberParametersFromClass(currentClass, softwareProjectDicts);
         let otherClassParameters = this.getMemberParametersFromClass(otherClass, softwareProjectDicts);
@@ -121,6 +119,11 @@ export class DetectorDataClumpsFields {
         let fieldParameters = currentClass.fields;
         let fieldParameterKeys = Object.keys(fieldParameters);
         for (let fieldKey of fieldParameterKeys) {
+            // TODO: we should exclude special fields like serialVersionUID
+            // and fields which must be unique like serialVersionID, serialPersistentFields
+            // TODO: what about loggers?
+
+
             let fieldParameter = fieldParameters[fieldKey];
             classParameters.push(fieldParameter);
         }

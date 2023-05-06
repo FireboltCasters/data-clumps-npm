@@ -92,12 +92,27 @@ export class SoftwareProjectDicts {
       }
     }
   }
+
+  private fillClassOrInterfaceDicts(classOrInterface: ClassOrInterfaceTypeContext) {
+    // Fill dictClassOrInterface
+    this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
+
+    // Fill inner defined classes
+    let innerClassOrInterfacesDictForClassOrInterface = classOrInterface.innerDefinedInterfaces;
+    let innerClassOrInterfaceKeys = Object.keys(innerClassOrInterfacesDictForClassOrInterface);
+    for (let innerClassOrInterfaceKey of innerClassOrInterfaceKeys) {
+      let innerClassOrInterface = innerClassOrInterfacesDictForClassOrInterface[innerClassOrInterfaceKey];
+      this.fillClassOrInterfaceDicts(innerClassOrInterface);
+    }
+  }
+
 }
 
 export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
   public fileExtensionsToBeChecked: Dictionary<string> = {};
+  public softwareProjectDicts: SoftwareProjectDicts = new SoftwareProjectDicts(this);
 
   constructor(fileExtensionsToBeChecked: string[]) {
     this.filesToParseDict = {};
@@ -178,9 +193,9 @@ export class SoftwareProject {
   }
 
   public async detectDataClumps(detectorOptions?, progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {
-    let softwareProjectDicts = new SoftwareProjectDicts(this);
+    this.softwareProjectDicts = new SoftwareProjectDicts(this);
     let detector = new Detector(this, detectorOptions, progressCallback, abortController);
-    let dataClumps = await detector.detect(softwareProjectDicts);
+    let dataClumps = await detector.detect();
     return dataClumps;
   }
 

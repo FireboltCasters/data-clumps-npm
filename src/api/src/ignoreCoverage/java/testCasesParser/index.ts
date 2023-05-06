@@ -12,6 +12,7 @@ import {ClassInPackage} from "./package/ClassInPackage";
 import {ClassWithPackage} from "./package/ClassWithPackage";
 import {ImportWithWildcardTest} from "./importTest/ImportWithWildcardTest";
 import {TestCaseBaseClassGroup} from "../../TestCaseBaseClass";
+import {SimpleEnum} from "./enums/SimpleEnum";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -58,6 +59,14 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
         [
             ClassInPackage,
             ClassWithPackage
+        ],
+        []
+    );
+
+    static enumTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Enums",
+        [
+            SimpleEnum
         ],
         []
     );

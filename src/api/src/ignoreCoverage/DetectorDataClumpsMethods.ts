@@ -62,16 +62,6 @@ export class DetectorDataClumpsMethods {
     private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
 
         let methodParameters = method.parameters;
-        let classOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
-
-        /**
-         * TODO: DataclumpsInspection.java line 376
-         * exclude methods inherited from parent class
-         * We cam't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
-         if (method.hasAnnotation("java.lang.Override")) {
-                    return;
-         }
-         */
 
         let methodParametersKeys = Object.keys(methodParameters);
         let amountOfMethodParameters = methodParametersKeys.length;
@@ -79,6 +69,19 @@ export class DetectorDataClumpsMethods {
             //console.log("Method " + method.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
             return;
         }
+
+        /* "These methods should not in a same inheritance hierarchy" */
+        /* "[...] we should exclude methods inherited from parent-classes. " */
+        // it is not enough to check if the classes are in the same hierarchy
+        // DataclumpsInspection.java line 376
+        // We can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
+        let thisMethodIsInherited = method.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
+        if(thisMethodIsInherited) { // if the method is inherited
+            // then skip this method
+            return;
+        }
+
+
         // we assume that all methods are not constructors
 
         this.checkParameterDataClumps(method, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
@@ -93,7 +96,6 @@ export class DetectorDataClumpsMethods {
      */
     private checkParameterDataClumps(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
         //console.log("Checking parameter data clumps for method " + method.key);
-        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
 
         /**
          * TODO: DataclumpsInspection.java line 493
@@ -104,20 +106,19 @@ export class DetectorDataClumpsMethods {
          */
 
         let classesOrInterfacesDict = softwareProjectDicts.dictClassOrInterface;
-        let classesOrInterfacesKeys = Object.keys(classesOrInterfacesDict);
-        for (let classOrInterfaceKey of classesOrInterfacesKeys) {
-            let classOrInterface = classesOrInterfacesDict[classOrInterfaceKey];
-            let isSameClassOrInterface = classOrInterface.key === currentClassOrInterface.key;
+        let otherClassesOrInterfacesKeys = Object.keys(classesOrInterfacesDict);
+        for (let classOrInterfaceKey of otherClassesOrInterfacesKeys) {
+            let otherClassOrInterface = classesOrInterfacesDict[classOrInterfaceKey];
 
-            let methods = classOrInterface.methods;
-            let methodsKeys = Object.keys(methods);
-            for (let methodKey of methodsKeys) {
-                let otherMethod = methods[methodKey];
+            let otherMethods = otherClassOrInterface.methods;
+            let otherMethodsKeys = Object.keys(otherMethods);
+            for (let otherMethodKey of otherMethodsKeys) {
+                let otherMethod = otherMethods[otherMethodKey];
                 // DataclumpsInspection.java line 511
                 if(this.abortController && this.abortController.isAbort()){
                     return;
                 }
-                let foundDataClumps = this.checkMethodParametersForDataClumps(method, otherMethod, isSameClassOrInterface, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
+                let foundDataClumps = this.checkMethodParametersForDataClumps(method, otherMethod, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
                 // TODO: DataclumpsInspection.java line 512
             }
         }
@@ -133,7 +134,7 @@ export class DetectorDataClumpsMethods {
      * @param isSameClassOrInterface
      * @private
      */
-    private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, isSameClassOrInterface: boolean, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
+    private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
         /**
          * TODO: DataclumpsInspection.java line 548
          * // avoid inherited methods if checkHierarchyInParametersInstances is off
@@ -146,6 +147,12 @@ export class DetectorDataClumpsMethods {
 //            console.log("Method " + method.key + " is the same as method " + otherMethod.key + ". Skipping this method.")
             return;
         }
+
+        let currentClassOrInterfaceKey = method.classOrInterfaceKey;
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
+        let otherClassOrInterfaceKey = otherMethod.classOrInterfaceKey;
+        let otherClassOrInterface = softwareProjectDicts.dictClassOrInterface[otherClassOrInterfaceKey];
+
         let otherMethodParameters = otherMethod.parameters;
         let otherMethodParametersKeys = Object.keys(otherMethodParameters);
         let otherMethodParametersAmount = otherMethodParametersKeys.length;
@@ -153,6 +160,30 @@ export class DetectorDataClumpsMethods {
   //          console.log("Method " + otherMethod.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
             return;
         }
+
+        /**
+         * From: "Improving the Precision of Fowler’s Definitions of Bad Smells"
+         * "These methods should not in a same inheritance hierarchy and with a same method signature."
+         */
+        let isDifferentClassOrInterface = otherClassOrInterface.key !== currentClassOrInterface.key;
+        if(isDifferentClassOrInterface){ // if the classes are not the same
+            // now we check if the methods are in the same inheritance hierarchy with the same method signature
+
+            // DataclumpsInspection.java line 376
+            // We can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
+            /* "[...] with a same method signature." */
+            if(method.hasSameSignatureAs(otherMethod)) { // if the methods have the same signature
+                // we already checked if our method is inherited, now we check if the other method is inherited
+                let otherMethodIsInherited = otherMethod.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
+                if(otherMethodIsInherited) { // if the method is inherited
+                    // then skip this method
+                    return;
+                }
+            }
+        }
+
+
+
         let amountCommonParameters = this.countCommonParametersBetweenMethods(method, otherMethod);
         if(amountCommonParameters < this.options.sharedMethodParametersMinimum) { // is not a data clump
             //console.log("- No Data Clumps betweeen Method " + method.key + " and " + otherMethod.key)

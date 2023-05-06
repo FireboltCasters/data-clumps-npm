@@ -7,6 +7,8 @@ import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPosit
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
 import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithModifiers";
 import {TestCaseBaseClassGroup} from "../../../TestCaseBaseClass";
+import {SiblingsWithFields} from "./hierarchy/SiblingsWithFields";
+import {SiblingsWithMethods} from "./hierarchy/SiblingsWithMethods";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
@@ -22,6 +24,13 @@ export class Positive extends TestCaseBaseClassForDataClumps {
         [
             SimpleFields,
             SimpleMethodsWithDataClumps,
+    ], []);
+
+    static hierarchy : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Hierarchy",
+        [
+            SiblingsWithFields,
+            SiblingsWithMethods
     ], []);
 
     static withModifiers : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
