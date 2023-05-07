@@ -30,6 +30,7 @@ function getTreeDictFromSoftwareProject(project: SoftwareProject): any{
     }
 
     let filePaths = project.getFilePaths();
+
     for(let path of filePaths){
         let pathParts = path.split("/");
         let currentDictTree = treeAsDict;
@@ -68,7 +69,30 @@ function getTreeDictFromSoftwareProject(project: SoftwareProject): any{
 function getTreeFromTreeDict(treeDict){
     let childrenKeys = Object.keys(treeDict.children);
     let children = [];
-    for(let key of childrenKeys){
+    let sortedChildKeysByName = childrenKeys.sort((a, b) => {
+        if(a < b){
+            return -1;
+        } else if(a > b){
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+    let sortedChildKeysByType = sortedChildKeysByName.sort((a, b) => {
+        let aType = treeDict.children[a].type;
+        let bType = treeDict.children[b].type;
+        let isADirectory = aType === "directory";
+        let isBDirectory = bType === "directory";
+        if(isADirectory && !isBDirectory){
+            return -1;
+        }
+        if(!isADirectory && isBDirectory){
+            return 1;
+        }
+        return 0;
+    });
+
+    for(let key of sortedChildKeysByType){
         let child = treeDict.children[key];
         // @ts-ignore
         children.push(child);
