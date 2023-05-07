@@ -4,6 +4,7 @@ import {
     MemberFieldParameterTypeContext,
     MemberFieldTypeContext
 } from "./../../ParsedAstTypes";
+import {JavaAntlr4CstPrinter} from "./../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
@@ -50,6 +51,7 @@ export class JavaParserFieldExtractor {
                               "node": "TypeTypeContext",
          */
         let modifiers = JavaParserHelper.getModifiers(ctx.parentCtx.parentCtx);
+
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
         let type = this.custom_getFieldType(typeType);
         if(!!type && this.currentVisibleClassOrInterface[type]){

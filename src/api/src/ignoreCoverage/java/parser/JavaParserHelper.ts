@@ -10,13 +10,14 @@ export class JavaParserHelper {
 
     static getChildrenByType(ctx, type){
         let children = [];
-        if(ctx===null){
+        if(!ctx){
             return children;
         }
-        if(ctx?.children===null){
+        if(!ctx?.children){
             return children;
         }
-        for(let i = 0; i < ctx.children.length; i++){
+        let amountOfChildren = ctx?.children?.length || 0;
+        for(let i = 0; i < amountOfChildren; i++){
             let child = ctx.children[i];
             let childType = JavaParserHelper.getCtxType(child);
             if(childType===type){
@@ -29,10 +30,10 @@ export class JavaParserHelper {
 
     static getChildByType(ctx, type): null | any {
         let children = JavaParserHelper.getChildrenByType(ctx, type);
-        if(children.length===0){
-            return null;
-        } else {
+        if(!!children && children.length>0){
             return children[0];
+        } else {
+            return null;
         }
     }
 
@@ -65,8 +66,9 @@ export class JavaParserHelper {
 
     static getModifiers(ctx){
         let modifiers = [];
-        for(let i = 0; i < ctx.getChildCount(); i++){
-            let child = ctx.getChild(i);
+        let amountOfChildren = !!ctx?.children ? ctx.children.length : 0;
+        for(let i = 0; i < amountOfChildren; i++){
+            let child = ctx.children[i];
             let name = antlr4.tree.Trees.getNodeText(child, JavaParser.ruleNames);
 
             if(name==="synchronized"){
