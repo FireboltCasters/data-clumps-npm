@@ -13,6 +13,7 @@ import {
     ParameterTypeContext
 } from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {SoftwareProjectDicts} from "../../api/src/";
+import {Button} from "primereact/button";
 
 // @ts-ignore
 export interface DataClumpsGraphProps {
@@ -22,6 +23,8 @@ export interface DataClumpsGraphProps {
 }
 
 export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props: DataClumpsGraphProps) => {
+
+    const [showLargeGraph, setShowLargeGraph] = useState(false);
 
     function getInitialGraphFromDataClumpsDict(){
         //console.log("getInitialGraphFromDataClumpsDict");
@@ -36,12 +39,6 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
         let fields_dict = {};
         let methods_dict = {};
         let parameters_dict = {};
-
-        let copyOfDataClumpsDict = JSON.parse(JSON.stringify(dataClumpsDict));
-        //console.log("dataClumpsDict", copyOfDataClumpsDict);
-
-        let copyOfSoftwareProjectDicts = JSON.parse(JSON.stringify(softwareProjectDicts));
-        //console.log("softwareProjectDicts", copyOfSoftwareProjectDicts);
 
         if(dataClumpsDict && softwareProjectDicts){
 
@@ -383,44 +380,10 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
                 console.log("Selected edges:");
                 console.log(edges);
                 alert("Selected node: " + nodes);
-            },
-            doubleClick: ({ pointer: { canvas } }) => {
-                createNode(canvas.x, canvas.y);
             }
         }
     })
     const { graph, events } = state;
-
-
-    function randomColor() {
-        const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-        const green = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-        const blue = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-        return `#${red}${green}${blue}`;
-    }
-
-    const createNode = (x, y) => {
-        const color = randomColor();
-        // @ts-ignore
-        setState(({ graph: { nodes, edges }, counter, ...rest }) => {
-            const id = counter + 1;
-            const from = Math.floor(Math.random() * (counter - 1)) + 1;
-            return {
-                graph: {
-                    nodes: [
-                        ...nodes,
-                        { id, label: `Node ${id}`, color, x, y }
-                    ],
-                    edges: [
-                        ...edges,
-                        { from, to: id }
-                    ]
-                },
-                counter: id,
-                ...rest
-            }
-        });
-    }
 
     function renderGraph(){
 
@@ -444,10 +407,41 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
         );
     }
 
+    let amountNodes = graph?.nodes?.length || 0;
+    let amountEdges = graph?.edges?.length || 0;
+
+    function renderSecureGraph(){
+        let largeGraph = amountNodes > 1000;
+        if(largeGraph && !showLargeGraph){
+            return(
+                <div style={{height: "100%", width: "100%", backgroundColor: "transparent"}}>
+                    <div style={{height: "100%", width: "100%", display: "flex", alignItems: "center", flexDirection: "column"}} >
+                        <div style={{display: "block"}}>
+                            <h1>Graph is very large</h1>
+                            <div>Nodes: {amountNodes}</div>
+                            <div>Edges: {amountEdges}</div>
+                            <h2>{"Select a specific file"}</h2>
+                        </div>
+                        <div style={{paddingTop: "30px", paddingBottom: "30px"}}>{"or"}</div>
+                        <Button
+                            className="p-button-danger"
+                            icon="pi pi-exclamation-triangle"
+                            label={"Show large graph"}
+                            onClick={() => {
+                                setShowLargeGraph(true);
+                            }}/>
+                    </div>
+                </div>
+            )
+        } else {
+            return renderGraph();
+        }
+    }
+
     return(
         <div style={{height: "100%", width: "100%", backgroundColor: "transparent"}}>
             <div style={{height: "100%", width: "100%"}} >
-                {renderGraph()}
+                {renderSecureGraph()}
             </div>
         </div>
     )
