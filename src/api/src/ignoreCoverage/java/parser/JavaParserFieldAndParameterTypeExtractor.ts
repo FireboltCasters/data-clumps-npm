@@ -58,9 +58,35 @@ export class JavaParserFieldAndParameterTypeExtractor {
                                         if (!!typeArgumentChildType) { // then its like "[", "]", "<" or ">"
                                             if (typeArgumentChildType === "typeArgument") {
                                                 //console.log("- typeArgumentChild is a typeArgument")
-                                                let typeTypeOfTypeArgumentChild = JavaParserHelper.getChildByType(typeArgumentChild, "typeType");
-                                                let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeTypeOfTypeArgumentChild, currentVisibleClassOrInterface);
-                                                typeArgumentsFinalType += typeTypeFinalType;
+                                                let childrenOfTypeArgumentChild = typeArgumentChild?.children || [];
+                                                let amountChildrenOfTypeArgumentChild = childrenOfTypeArgumentChild.length;
+                                                for (let i = 0; i < amountChildrenOfTypeArgumentChild; i++) {
+                                                    let childOfTypeArgumentChild = childrenOfTypeArgumentChild[i];
+                                                    let typeOfChildOfTypeArgumentChild = JavaParserFieldAndParameterTypeExtractor.getTypeOfChildArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface);
+                                                    // typeOfChildOfTypeArgumentChild might be: "String", "?", "super" or "extends"
+
+                                                    typeArgumentsFinalType += typeOfChildOfTypeArgumentChild;
+
+                                                    let nextChildOfTypeArgumentChild = childrenOfTypeArgumentChild[i + 1];
+                                                    if(!!nextChildOfTypeArgumentChild){
+                                                        let typeOfNextChildOfTypeArgumentChild = JavaParserFieldAndParameterTypeExtractor.getTypeOfChildArgumentChild(nextChildOfTypeArgumentChild, currentVisibleClassOrInterface);
+                                                        if(!!typeOfNextChildOfTypeArgumentChild){ // so we can check if we need to add a space
+                                                            if(typeOfChildOfTypeArgumentChild==="?" && typeOfNextChildOfTypeArgumentChild==="extends"){
+                                                                typeArgumentsFinalType += " ";
+                                                            }
+                                                            if(typeOfChildOfTypeArgumentChild==="?" && typeOfNextChildOfTypeArgumentChild==="super"){
+                                                                typeArgumentsFinalType += " ";
+                                                            }
+                                                            if(typeOfChildOfTypeArgumentChild==="extends"){
+                                                                typeArgumentsFinalType += " ";
+                                                            }
+                                                            if(typeOfChildOfTypeArgumentChild==="super"){
+                                                                typeArgumentsFinalType += " ";
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
                                             } else { // then it might be some text like "[", "]", "<" or ">"
                                                 //console.log("- typeArgumentChild is a symbol: " + typeArgumentChild)
                                                 typeArgumentsFinalType += typeArgumentChild;
@@ -87,6 +113,18 @@ export class JavaParserFieldAndParameterTypeExtractor {
 
         //console.log("custom_getFieldType returning finalType: " + finalType)
         return finalType;
+    }
+
+    private static getTypeOfChildArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface){
+        let typeTypeOfTypeArgumentChild = JavaParserHelper.getCtxType(childOfTypeArgumentChild);
+        console.log("- typeTypeOfTypeArgumentChild: " + typeTypeOfTypeArgumentChild)
+        if(!!typeTypeOfTypeArgumentChild && typeTypeOfTypeArgumentChild==="classOrInterfaceType") { // then it is a type like "String"
+            let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(childOfTypeArgumentChild, currentVisibleClassOrInterface);
+            return typeTypeFinalType;
+        } else { // then it might be something like "super" or "extends" or "?"
+            let rawText = childOfTypeArgumentChild?.getText?.() || "";
+           return rawText
+        }
     }
 
     private getExampleFieldOrParameterTypeCtx(){

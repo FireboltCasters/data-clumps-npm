@@ -24,6 +24,7 @@ import {ParametersWithHash} from "./parameters/ParametersWithHash";
 import {ParametersWithArray} from "./parameters/ParametersWithArray";
 import {FieldsMultipleInRow} from "./fields/FieldsMultipleInRow";
 import {FieldsMultipleInRowWithSpacesAndLinebreaks} from "./fields/FieldsMultipleInRowWithSpacesAndLinebreaks";
+import {FieldWithGeneric} from "./fields/FieldWithGeneric";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -34,7 +35,8 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
             FieldHashMap,
             FieldList,
             FieldsMultipleInRow,
-            FieldsMultipleInRowWithSpacesAndLinebreaks
+            FieldsMultipleInRowWithSpacesAndLinebreaks,
+            FieldWithGeneric
         ], []);
 
     static parameterTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(

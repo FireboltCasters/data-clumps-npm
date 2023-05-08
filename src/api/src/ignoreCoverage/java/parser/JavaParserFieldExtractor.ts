@@ -22,6 +22,8 @@ export class JavaParserFieldExtractor {
 
     private enterFieldDeclaration(ctx) {
         console.log("------------------")
+        JavaAntlr4CstPrinter.print(ctx, "FieldDeclarationContext")
+
         /**
          "type": "modifier",
          "node": "ModifierContext",
@@ -55,14 +57,9 @@ export class JavaParserFieldExtractor {
         let position: any = undefined;
         if(this.includePosition){
             position = JavaParserHelper.custom_getPosition(ctx);
-            console.log("position: ");
-            console.log(position)
         }
 
         let variableDeclarators = ctx.children[1]; // for example: int a, b, c;
-        console.log("variableDeclarators. ", JavaParserHelper.custom_getPosition(variableDeclarators));
-
-        let positionOfTypeWithParameters: any = JavaParserHelper.custom_getPosition(ctx);
 
         let parameters: MemberFieldParameterTypeContext[] = [];
         for(let i = 0; i < variableDeclarators.children.length; i++){ // loop through a, b, c
