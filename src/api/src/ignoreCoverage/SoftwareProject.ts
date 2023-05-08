@@ -60,37 +60,46 @@ export class SoftwareProjectDicts {
       let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
       for (let classOrInterfaceKey of classOrInterfaceKeys) {
         let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
-
-        this.fillClassOrInterfaceDicts(classOrInterface);
-
-        // Fill memberFieldParameters
-        let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;
-
-        let memberFieldParameterKeys = Object.keys(memberFieldParametersDictForClassOrInterface);
-        for (let memberFieldParameterKey of memberFieldParameterKeys) {
-          let memberFieldParameter = memberFieldParametersDictForClassOrInterface[memberFieldParameterKey];
-          this.dictMemberFieldParameters[memberFieldParameter.key] = memberFieldParameter;
-        }
-
-        // Fill methods
-        let methodsDictForClassOrInterface = classOrInterface.methods;
-        let methodKeys = Object.keys(methodsDictForClassOrInterface);
-        for (let methodKey of methodKeys) {
-          let method = methodsDictForClassOrInterface[methodKey];
-
-          // Fill dictMethod
-          this.dictMethod[method.key] = method;
-
-          // Fill methodParameters
-          let methodParametersDictForMethod = method.parameters;
-          let methodParameterKeys = Object.keys(methodParametersDictForMethod);
-          for (let methodParameterKey of methodParameterKeys) {
-            let methodParameter = methodParametersDictForMethod[methodParameterKey];
-            this.dictMethodParameters[methodParameter.key] = methodParameter;
-          }
-        }
+        this.handleClassOrInterface(classOrInterface);
       }
     }
+  }
+
+  private fillMethodsForClassOrInterface(classOrInterface: ClassOrInterfaceTypeContext) {
+    // Fill methods
+    let methodsDictForClassOrInterface = classOrInterface.methods;
+    let methodKeys = Object.keys(methodsDictForClassOrInterface);
+    for (let methodKey of methodKeys) {
+      let method = methodsDictForClassOrInterface[methodKey];
+
+      // Fill dictMethod
+      this.dictMethod[method.key] = method;
+
+      // Fill methodParameters
+      let methodParametersDictForMethod = method.parameters;
+      let methodParameterKeys = Object.keys(methodParametersDictForMethod);
+      for (let methodParameterKey of methodParameterKeys) {
+        let methodParameter = methodParametersDictForMethod[methodParameterKey];
+        this.dictMethodParameters[methodParameter.key] = methodParameter;
+      }
+    }
+  }
+
+  private fillMemberFieldsForClassOrInterface(classOrInterface: ClassOrInterfaceTypeContext) {
+    // Fill memberFieldParameters
+    let memberFieldParametersDictForClassOrInterface = classOrInterface.fields;
+
+    let memberFieldParameterKeys = Object.keys(memberFieldParametersDictForClassOrInterface);
+    for (let memberFieldParameterKey of memberFieldParameterKeys) {
+      let memberFieldParameter = memberFieldParametersDictForClassOrInterface[memberFieldParameterKey];
+      this.dictMemberFieldParameters[memberFieldParameter.key] = memberFieldParameter;
+    }
+  }
+
+  private handleClassOrInterface(classOrInterface: ClassOrInterfaceTypeContext) {
+    this.fillClassOrInterfaceDicts(classOrInterface);
+    this.fillMemberFieldsForClassOrInterface(classOrInterface);
+    this.fillMethodsForClassOrInterface(classOrInterface);
   }
 
   private fillClassOrInterfaceDicts(classOrInterface: ClassOrInterfaceTypeContext) {
@@ -98,11 +107,19 @@ export class SoftwareProjectDicts {
     this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
 
     // Fill inner defined classes
-    let innerClassOrInterfacesDictForClassOrInterface = classOrInterface.innerDefinedInterfaces;
-    let innerClassOrInterfaceKeys = Object.keys(innerClassOrInterfacesDictForClassOrInterface);
-    for (let innerClassOrInterfaceKey of innerClassOrInterfaceKeys) {
-      let innerClassOrInterface = innerClassOrInterfacesDictForClassOrInterface[innerClassOrInterfaceKey];
-      this.fillClassOrInterfaceDicts(innerClassOrInterface);
+    let innerDefinedClassesDict = classOrInterface.innerDefinedClasses;
+    let innerDefinedClassKeys = Object.keys(innerDefinedClassesDict);
+    for (let innerDefinedClassKey of innerDefinedClassKeys) {
+        let innerDefinedClass = innerDefinedClassesDict[innerDefinedClassKey];
+        this.handleClassOrInterface(innerDefinedClass);
+    }
+
+    // Fill inner defined interfaces
+    let innerDefinedInterfacesDict = classOrInterface.innerDefinedInterfaces;
+    let innerDefinedInterfaceKeys = Object.keys(innerDefinedInterfacesDict);
+    for (let innerDefinedInterfaceKey of innerDefinedInterfaceKeys) {
+      let innerDefinedInterface = innerDefinedInterfacesDict[innerDefinedInterfaceKey];
+      this.handleClassOrInterface(innerDefinedInterface);
     }
   }
 

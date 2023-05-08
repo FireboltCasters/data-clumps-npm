@@ -1,6 +1,7 @@
 import {JavaParserHelper} from "./JavaParserHelper";
 import {ClassOrInterfaceTypeContext, MethodParameterTypeContext, MethodTypeContext} from "./../../ParsedAstTypes";
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
+import {JavaParserFieldAndParameterTypeExtractor} from "./JavaParserFieldAndParameterTypeExtractor";
 
 //TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
 
@@ -17,6 +18,9 @@ export class JavaParserMethodExtractor {
     }
 
     custom_getFormalParameterType(ctx){
+        // TODO See JavaParserFieldExtractor.custom_getFieldType
+        JavaAntlr4CstPrinter.print(ctx, "custom_getFormalParameterType");
+
         return ctx.getText();
     }
 
@@ -40,7 +44,9 @@ export class JavaParserMethodExtractor {
                             "List"
          */
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
-        let type = this.custom_getFormalParameterType(typeType);
+        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, this.currentVisibleClassOrInterface);
+
+            this.custom_getFormalParameterType(typeType);
         if(!!type && this.currentVisibleClassOrInterface[type]){
             type = this.currentVisibleClassOrInterface[type];
         }

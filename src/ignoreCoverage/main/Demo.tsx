@@ -279,6 +279,31 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
+    function renderMethodsDictionary(){
+        let defaultValue = "";
+        let softwareProjectDicts = ProjectHolder.project.getSoftwareProjectDicts()
+        let dictToRender = softwareProjectDicts.dictMethod;
+        if(dictToRender && JSON.stringify(dictToRender) !== "{}"){
+            let resultDict = {};
+            for(let key in dictToRender){
+                let dictEntry = dictToRender[key];
+                resultDict[dictEntry.key] = dictEntry.name
+//                let foundList = resultDict[classOrInterface.name] || [];
+//                foundList.push(classOrInterface.key);
+//                resultDict[classOrInterface.name] = foundList;
+            }
+            defaultValue = JSON.stringify(resultDict, null, 2);
+        }
+
+        return(
+            <WebIdeCodeEditor
+                key={defaultValue}
+                defaultValue={defaultValue}
+                options={{ readOnly: true }}
+            />
+        )
+    }
+
     function renderDataClumpsDict(){
         let defaultValue = "";
         if(dataClumpsDict && JSON.stringify(dataClumpsDict) !== "{}"){
@@ -370,6 +395,9 @@ export const Demo : FunctionComponent = (props) => {
         }
         if(selectedViewOption === ViewOptionValues.classOrInterfaceDictionary){
             content = renderClassOrInterfaceDictionary();
+        }
+        if(selectedViewOption === ViewOptionValues.methodsDictionary){
+            content = renderMethodsDictionary();
         }
 
         return(

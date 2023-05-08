@@ -31,6 +31,7 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
         [ViewOptionValues.explorerFile]: "FileExplorer",
         [ViewOptionValues.explorerDataClumps]: "Data-Clumps Explorer",
         [ViewOptionValues.classOrInterfaceDictionary]: "Class/Interface Dictionary",
+        [ViewOptionValues.methodsDictionary]: "Methods Dictionary",
     }
 
     function getViewOptionItemDictClassOrInterface(){
@@ -41,6 +42,19 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
             icon: active ? 'pi pi-check': "pi",
             command: () => {
                 viewOptions[panel] = ViewOptionValues.classOrInterfaceDictionary
+                setViewOptions({...viewOptions})
+            }
+        }
+    }
+
+    function getViewOptionItemDictMethods(){
+        let active = selectedViewOption === ViewOptionValues.methodsDictionary
+
+        return {
+            label: dictLabel[ViewOptionValues.methodsDictionary],
+            icon: active ? 'pi pi-check': "pi",
+            command: () => {
+                viewOptions[panel] = ViewOptionValues.methodsDictionary
                 setViewOptions({...viewOptions})
             }
         }
@@ -154,6 +168,7 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
                         getViewOptionItemFileAst(),
                         getViewOptionItemDataClumpsGraph(),
                         getViewOptionItemDictClassOrInterface(),
+                        getViewOptionItemDictMethods(),
                         {
                             label:'Speed evaluation (TODO)',
                             disabled: true,

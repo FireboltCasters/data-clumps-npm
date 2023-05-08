@@ -5,8 +5,8 @@ import {Dictionary} from "../../api/src/ignoreCoverage/UtilTypes";
 export default class DecorationHelper extends Component {
 
     static getDecorationForFields(ast: Dictionary<ClassOrInterfaceTypeContext>){
-        //console.log("getDecorationForFields")
-        //console.log(ast)
+        console.log("getDecorationForFields")
+        console.log(ast)
         let decoration: any[] = [];
         if(!ast){
             return decoration;
@@ -24,6 +24,8 @@ export default class DecorationHelper extends Component {
                 let field = fields[fieldKey];
                 let position = field.position;
                 let hoverMessage = field.modifiers?.join(" ")+" "+field.type+" "+field.name;
+                console.log("position")
+                console.log(position)
 
                 let decorationForField = {
                     range: {

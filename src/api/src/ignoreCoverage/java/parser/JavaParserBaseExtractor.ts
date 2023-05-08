@@ -23,11 +23,11 @@ export class BaseParser {
         let extendsOrImplementsRawNames: any[] = [];
         let extendsOrImplementsIndexes = JavaParserHelper.getChildIndexesByName(ctx, extendsOrImplementsKeyword);
         if (extendsOrImplementsKeyword === "extends") {
-            JavaAntlr4CstPrinter.print(ctx, "ctx");
+            //JavaAntlr4CstPrinter.print(ctx, "ctx");
             let extendsIndexes = extendsOrImplementsIndexes;
             for (let extendsIndex of extendsIndexes) { // will be only one since extends is unique in Java
                 let extendsTypeType = ctx.children[extendsIndex + 1];
-                JavaAntlr4CstPrinter.print(extendsTypeType, "extendsTypeIdentifierOnlyChild");
+                //JavaAntlr4CstPrinter.print(extendsTypeType, "extendsTypeIdentifierOnlyChild");
                 if (!!extendsTypeType) {
                     let extendsClassOrInterfaceType = JavaParserHelper.getChildByType(extendsTypeType, "classOrInterfaceType");
                     // We dont check further because we want to support qualified imports like: org.apache.commons.lang3.StringUtils

@@ -1,7 +1,6 @@
 import {SimpleFields} from "./simpleFields/SimpleFields";
 import {SimpleMethodsWithDataClumps} from "./simpleMethods/SimpleMethodsWithDataClumps";
 import {AnonymousClass} from "./anonymousClass/AnonymousClass";
-import {InnerInterfacePositive} from "./innerInterfacePositive/InnerInterfacePositive";
 import {Polymorphism} from "./polymorphism/Polymorphism";
 import {SimpleMethodsPositiveSameClass} from "./simpleMethods/SimpleMethodsPositiveSameClass";
 import {TestCaseBaseClassForDataClumps} from "../../../TestCaseBaseClassForDataClumps";
@@ -9,15 +8,17 @@ import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithM
 import {TestCaseBaseClassGroup} from "../../../TestCaseBaseClass";
 import {SiblingsWithFields} from "./hierarchy/SiblingsWithFields";
 import {SiblingsWithMethods} from "./hierarchy/SiblingsWithMethods";
+import {InnerSmellyClasses} from "./innerInterfacePositive/InnerSmellyClasses";
 
 export {SimpleFields};
 export {SimpleMethodsWithDataClumps};
 export {AnonymousClass};
-export {InnerInterfacePositive};
 export {Polymorphism};
 export {SimpleMethodsPositiveSameClass};
 
 export class Positive extends TestCaseBaseClassForDataClumps {
+
+    // TODO Split between Field and Parameter Data Clumps
 
     static simple : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
         "Simple",
@@ -31,6 +32,12 @@ export class Positive extends TestCaseBaseClassForDataClumps {
         [
             SiblingsWithFields,
             SiblingsWithMethods
+    ], []);
+
+    static innerClassesAndInterfaces : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Inner Classes and Interfaces",
+        [
+            InnerSmellyClasses
     ], []);
 
     static withModifiers : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(

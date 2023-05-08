@@ -58,6 +58,7 @@ export function useSynchedModalState(storageKey): [value: ModalOptions, setValue
 export enum ViewOptionValues {
     dataClumpsDictionary = "dataClumpsDictionary",
     classOrInterfaceDictionary = "classOrInterfaceDictionary",
+    methodsDictionary = "methodsDictionary",
     dataClumpsGraph = "dataClumpsGraph",
     fileContent = "fileContent",
     explorerFile = "explorerFile",

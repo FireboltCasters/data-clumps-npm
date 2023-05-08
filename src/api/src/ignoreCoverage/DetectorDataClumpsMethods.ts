@@ -180,7 +180,6 @@ export class DetectorDataClumpsMethods {
                 //console.log("Method " + method.key + " has the same signature as method " + otherMethod.key + "")
                 // we already checked if our method is inherited, now we check if the other method is inherited
                 let otherMethodIsInherited = otherMethod.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
-                //console.log("Method " + otherMethod.key + " is inherited: " + otherMethodIsInherited)
                 if(otherMethodIsInherited) { // if the method is inherited
                     // then skip this method
                     return;
@@ -191,6 +190,7 @@ export class DetectorDataClumpsMethods {
 
 
         let amountCommonParameters = this.countCommonParametersBetweenMethods(method, otherMethod);
+        //console.log("Amount of common parameters: "+amountCommonParameters);
         if(amountCommonParameters < this.options.sharedMethodParametersMinimum) { // is not a data clump
             //console.log("Method " + method.key + " and method " + otherMethod.key + " have less than " + this.options.sharedMethodParametersMinimum + " common parameters. Skipping this method.")
             return;

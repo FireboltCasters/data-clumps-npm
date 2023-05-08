@@ -16,8 +16,34 @@ import {SimpleEnum} from "./enums/SimpleEnum";
 import {ExtendingClassWithQualifiedName} from "./extends/ExtendingClassWithQualifiedName";
 import {ExtendsInterfaceWithQualifiedName} from "./extends/ExtendsInterfaceWithQualifiedName";
 import {ImplementsInterfaceWithQualifiedName} from "./implements/ImplementsInterfaceWithQualifiedName";
+import {FieldArray} from "./fields/FieldArray";
+import {FieldHashMap} from "./fields/FieldHashMap";
+import {FieldList} from "./fields/FieldList";
+import {SimpleParameters} from "./parameters/SimpleParameters";
+import {ParametersWithHash} from "./parameters/ParametersWithHash";
+import {ParametersWithArray} from "./parameters/ParametersWithArray";
+import {FieldsMultipleInRow} from "./fields/FieldsMultipleInRow";
+import {FieldsMultipleInRowWithSpacesAndLinebreaks} from "./fields/FieldsMultipleInRowWithSpacesAndLinebreaks";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
+
+    static fieldsTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Fields",
+        [
+            FieldArray,
+            FieldHashMap,
+            FieldList,
+            FieldsMultipleInRow,
+            FieldsMultipleInRowWithSpacesAndLinebreaks
+        ], []);
+
+    static parameterTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Parameters",
+        [
+            SimpleParameters,
+            ParametersWithArray,
+            ParametersWithHash
+        ], []);
 
     static extendTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
         "Extends",

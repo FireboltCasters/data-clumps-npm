@@ -38,8 +38,8 @@ export class Detector {
         };
 
         let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
-        //console.log("Detecting software project for data clumps");
-        //console.log(softwareProjectDicts);
+        console.log("Detecting software project for data clumps");
+        console.log(softwareProjectDicts);
         let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options.optionsDataClumpsMethod, this.progressCallback, this.abortController);
         let commonMethodParameters = await detectorDataClumpsMethods.detect(softwareProjectDicts);
         if(!!commonMethodParameters){
