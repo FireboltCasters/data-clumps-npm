@@ -47,7 +47,14 @@ npm install data-clumps
 
 ## Roadmap
 
-- [x] Support TypeScript
+- [ ] Support Java
+    - [X] Integrated Antlr4
+    - [X] Converting of JavaCST to JavaAST
+    - [X] Creating Data Clumps AST
+    - [X] Find minimum of LCSD found files
+    - [ ] Investigate why more files than LCSD have been found
+    - [ ] Implement Java Refactor Interface
+- [ ] Support TypeScript
 - [ ] Support Java
 - [ ] Support JavaScript
 - [ ] Support Python
