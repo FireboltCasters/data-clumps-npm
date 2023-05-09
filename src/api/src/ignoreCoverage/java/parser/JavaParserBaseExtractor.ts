@@ -277,8 +277,9 @@ class ClassParser extends BaseParser{
     public parse() {
         super.parse();
 
+        //JavaAntlr4CstPrinter.print(this.ownCtx, "classDeclaration");
+
         let extendsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "extends");
-        console.log("extendsRawNames", extendsRawNames)
         this.saveRawExtendsNames(extendsRawNames);
         let implementsRawNames = ClassParser.classGetNameForExtendedClassOrImplementedInterfaces(this.ownCtx, "implements");
         this.saveRawImplementsNames(implementsRawNames);

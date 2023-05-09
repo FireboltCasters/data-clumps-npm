@@ -63,7 +63,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
                                                 for (let i = 0; i < amountChildrenOfTypeArgumentChild; i++) {
                                                     let childOfTypeArgumentChild = childrenOfTypeArgumentChild[i];
                                                     let typeOfChildOfTypeArgumentChild = JavaParserFieldAndParameterTypeExtractor.getTypeOfChildArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface);
-                                                    // typeOfChildOfTypeArgumentChild might be: "String", "?", "super" or "extends"
+                                                    // typeOfChildOfTypeArgumentChild might be: "String", "?", "&", "super" or "extends"
 
                                                     typeArgumentsFinalType += typeOfChildOfTypeArgumentChild;
 
@@ -81,6 +81,9 @@ export class JavaParserFieldAndParameterTypeExtractor {
                                                                 typeArgumentsFinalType += " ";
                                                             }
                                                             if(typeOfChildOfTypeArgumentChild==="super"){
+                                                                typeArgumentsFinalType += " ";
+                                                            }
+                                                            if(typeOfChildOfTypeArgumentChild==="&"){
                                                                 typeArgumentsFinalType += " ";
                                                             }
                                                         }
@@ -105,7 +108,8 @@ export class JavaParserFieldAndParameterTypeExtractor {
                     }
                 } else {
                     //console.log("- ctxChildType is not classOrInterfaceType: " + ctxChildType)
-                    finalType += ctxChild;
+                    let simpleType = ctxChild?.getText?.() || "";
+                    finalType += simpleType;
                 }
             }
         }
@@ -117,7 +121,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
 
     private static getTypeOfChildArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface){
         let typeTypeOfTypeArgumentChild = JavaParserHelper.getCtxType(childOfTypeArgumentChild);
-        console.log("- typeTypeOfTypeArgumentChild: " + typeTypeOfTypeArgumentChild)
+        //console.log("- typeTypeOfTypeArgumentChild: " + typeTypeOfTypeArgumentChild)
         if(!!typeTypeOfTypeArgumentChild && typeTypeOfTypeArgumentChild==="classOrInterfaceType") { // then it is a type like "String"
             let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(childOfTypeArgumentChild, currentVisibleClassOrInterface);
             return typeTypeFinalType;

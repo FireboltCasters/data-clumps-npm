@@ -4,13 +4,21 @@ import {MyFile} from "../../../ParsedAstTypes";
 const FileA = new MyFile('javaParserTest/Main.java', `
 package javaParserTest;
 
-public class Main<T> {
+public class Main {
+    public int x;
+
+    // Anonymous class
+    public static void main(String[] args) {
+        new MyAnonymousClass() {
+            public int x;
+        };
+    }
   
 }
 `);
 
-export const GenericClass = new TestCaseBaseClassForParser(
-    'GenericClass',
+export const AnonymousClass = new TestCaseBaseClassForParser(
+    'AnonymousClass',
     [FileA],
     [FileA.getFileExtension()],
     []

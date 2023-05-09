@@ -3,8 +3,6 @@ import {ClassOrInterfaceTypeContext, MethodParameterTypeContext, MethodTypeConte
 import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 import {JavaParserFieldAndParameterTypeExtractor} from "./JavaParserFieldAndParameterTypeExtractor";
 
-//TODO: check for class/interface declaration inside method declaration --> See anonymous class test case
-
 export class JavaParserMethodExtractor {
     public output: MethodTypeContext;
     public classOrInterface: ClassOrInterfaceTypeContext;
@@ -15,13 +13,6 @@ export class JavaParserMethodExtractor {
         this.classOrInterface = classOrInterface;
         this.currentVisibleClassOrInterface = currentVisibleClassOrInterface;
         this.output = this.enterMethodDeclaration(ctx, modifierCtx);
-    }
-
-    custom_getFormalParameterType(ctx){
-        // TODO See JavaParserFieldExtractor.custom_getFieldType
-        JavaAntlr4CstPrinter.print(ctx, "custom_getFormalParameterType");
-
-        return ctx.getText();
     }
 
     custom_getFormalParameter(ctx, method: MethodTypeContext){
@@ -46,7 +37,7 @@ export class JavaParserMethodExtractor {
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
         let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, this.currentVisibleClassOrInterface);
 
-            this.custom_getFormalParameterType(typeType);
+
         if(!!type && this.currentVisibleClassOrInterface[type]){
             type = this.currentVisibleClassOrInterface[type];
         }
@@ -129,6 +120,12 @@ export class JavaParserMethodExtractor {
         if(this.includePosition){
             method.position = JavaParserHelper.custom_getPosition(ctx);
         }
+
+        //TODO: get body
+        // search for anonymous class and interface declarations
+        // See anonymous class test case
+        //JavaAntlr4CstPrinter.print(ctx, "methodDeclaration");
+
 
         // @ts-ignore
 

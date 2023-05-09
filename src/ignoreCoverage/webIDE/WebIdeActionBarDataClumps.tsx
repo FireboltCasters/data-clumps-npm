@@ -123,12 +123,20 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 items: getTestCaseGroupsMenuItems(negativeTestCases)
             }
 
+            let unknownTestCases = language.getUnknownTestCasesCasesDataClumps();
+            let testCaseUnknownItem = {
+                label: "Unknowns",
+                icon:'pi pi-fw',
+                items: getTestCaseGroupsMenuItems(unknownTestCases)
+            }
+
             let testCasesDataClumps = {
                 label: "Data-Clumps",
                 icon:'pi pi-fw',
                 items: [
                     testCasePositiveItem,
-                    testCaseNegativeItem
+                    testCaseNegativeItem,
+                    testCaseUnknownItem
                 ]
             }
 

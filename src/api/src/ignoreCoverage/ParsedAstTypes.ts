@@ -160,18 +160,9 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public isSubtypeOf(otherClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts){
         // TODO: do we need PsiUtils.java line 360
 
-        console.log("isSubtypeOf")
-        console.log("this.key: "+this.key)
-        console.log("otherClass.key: "+otherClass.key)
-
         // PsiUtils.java line 363
         let thisHierarchy = this.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
         let otherHierarchy = otherClass.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
-
-        console.log("thisHierarchy: ");
-        console.log(thisHierarchy);
-        console.log("otherHierarchy: ");
-        console.log(otherHierarchy);
 
         // PsiUtils.java line 371 is not correct, because it checks if they have a common hierarchy
 

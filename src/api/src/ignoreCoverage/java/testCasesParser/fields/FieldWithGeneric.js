@@ -11,6 +11,7 @@ public class Main<T> {
   private static Type<?> genericNormal;
   private static Type<? extends Icon> genericExtends;
   private static Type<? super Icon> genericSuper;
+  private static Type<? extends Icon & Number> genericExtendsAndInterface;
 }
 `);
 

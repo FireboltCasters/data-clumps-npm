@@ -8,13 +8,15 @@ import java.util.HashMap;
 import javax.swing.Icon;
 
 public class Main {  
-  public void method(HashMap<String, HashMap<String, String>> map) {
-  }
+  public void method(T<?> normalGeneric) {}
+  public void method(T<? extends Number> extendsGeneric) {}
+  public void method(T<? super Number> superGeneric) {}
+  // no correct java syntax: public void method(T<? extends Number & Icon> extendsAndGeneric) {}
 }
 `);
 
-export const ParametersWithHash = new TestCaseBaseClassForParser(
-    'ParametersWithHash',
+export const ParametersWithGenerics = new TestCaseBaseClassForParser(
+    'ParametersWithGenerics',
     [FileA],
     [FileA.getFileExtension()],
     []

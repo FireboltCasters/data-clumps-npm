@@ -8,5 +8,6 @@ export interface LanguageSupportInterface {
     getParser(): LanguageParserInterface;
     getPositiveTestCasesGroupsDataClumps(): TestCaseBaseClassGroup[];
     getNegativeTestCasesCasesDataClumps(): TestCaseBaseClassGroup[];
+    getUnknownTestCasesCasesDataClumps(): TestCaseBaseClassGroup[];
     getTestCasesGroupsParser(): TestCaseBaseClassGroup[];
 }

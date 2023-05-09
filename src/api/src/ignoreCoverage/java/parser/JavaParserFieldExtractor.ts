@@ -5,7 +5,6 @@ import {
     MemberFieldTypeContext
 } from "./../../ParsedAstTypes";
 import {JavaParserFieldAndParameterTypeExtractor} from "./JavaParserFieldAndParameterTypeExtractor";
-import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
@@ -21,8 +20,8 @@ export class JavaParserFieldExtractor {
     }
 
     private enterFieldDeclaration(ctx) {
-        console.log("------------------")
-        JavaAntlr4CstPrinter.print(ctx, "FieldDeclarationContext")
+        //console.log("------------------")
+        //JavaAntlr4CstPrinter.print(ctx, "FieldDeclarationContext")
 
         /**
          "type": "modifier",
@@ -64,11 +63,9 @@ export class JavaParserFieldExtractor {
         let parameters: MemberFieldParameterTypeContext[] = [];
         for(let i = 0; i < variableDeclarators.children.length; i++){ // loop through a, b, c
             let variableDeclarator = variableDeclarators.children[i];
-            let nextVariableDeclarator = variableDeclarators.children[i+2] || null // we skip the comma
             if(variableDeclarator.getText()===","){
                 // skip the comma
             } else {
-                console.log("1. ", JavaParserHelper.custom_getPosition(variableDeclarator));
                 let variableName = variableDeclarator.children[0].getText(); // get the name of the variable
 
                 let parameterPosition: any = JavaParserHelper.custom_getPosition(variableDeclarator);
@@ -76,10 +73,7 @@ export class JavaParserFieldExtractor {
                 // Workaround: we use the length of the name of the variable
                 parameterPosition.endColumn = parameterPosition.startColumn + variableName.length;
 
-
                 let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
-                console.log("parameterPosition: ");
-                console.log(parameterPosition)
                 parameter.position = parameterPosition
                 parameters.push(parameter);
             }

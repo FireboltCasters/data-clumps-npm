@@ -1,11 +1,10 @@
-import {TestCaseBaseClassForParser} from "../../TestCaseBaseClassForParser";
 import {ExtendingClass} from "./extends/ExtendingClass";
 import {ExtendingClassWithExplicitImport} from "./extends/ExtendingClassWithExplicitImport";
 import {ExtendingClassWithWildcardImport} from "./extends/ExtendingClassWithWildcardImport";
 import {ImportTest} from "./importTest/ImportTest";
 import {ImportTestInnerClass} from "./importTest/ImportTestInnerClass";
-import {NestedInnerClasses} from "./nestedClasses/NestedInnerClasses";
-import {NestedInnerClassesExplicitType} from "./nestedClasses/NestedInnerClassesExplicitType";
+import {NestedInnerClasses} from "./classes/NestedInnerClasses";
+import {NestedInnerClassesExplicitType} from "./classes/NestedInnerClassesExplicitType";
 import {ClassImplementsInterface} from "./implements/ClassImplementsInterfaces";
 import {InterfaceExtendsInterfaces} from "./extends/InterfaceExtendsInterfaces";
 import {ClassInPackage} from "./package/ClassInPackage";
@@ -25,12 +24,18 @@ import {ParametersWithArray} from "./parameters/ParametersWithArray";
 import {FieldsMultipleInRow} from "./fields/FieldsMultipleInRow";
 import {FieldsMultipleInRowWithSpacesAndLinebreaks} from "./fields/FieldsMultipleInRowWithSpacesAndLinebreaks";
 import {FieldWithGeneric} from "./fields/FieldWithGeneric";
+import {SimpleClass} from "./classes/SimpleClass";
+import {GenericClass} from "./classes/GenericClass";
+import {AnonymousClass} from "./classes/AnonymousClass";
+import {ExtremeGenericClass} from "./classes/ExtremeGenericClass";
+import {SimpleFields} from "./fields/SimpleFields";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
     static fieldsTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
         "Fields",
         [
+            SimpleFields,
             FieldArray,
             FieldHashMap,
             FieldList,
@@ -71,10 +76,14 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
     );
 
     static nestedClassesTestCaseGroup: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
-        "Nested Classes",
+        "Classes",
         [
+            SimpleClass,
+            AnonymousClass,
             NestedInnerClasses,
-            NestedInnerClassesExplicitType
+            NestedInnerClassesExplicitType,
+            GenericClass,
+            ExtremeGenericClass,
         ],
         []
     );

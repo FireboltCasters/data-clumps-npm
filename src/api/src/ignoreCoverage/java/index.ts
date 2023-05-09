@@ -6,6 +6,7 @@ import {TestCaseBaseClassGroup} from "../TestCaseBaseClass";
 
 import {Positive} from "./testCasesDataClumps/positive"
 import {Negative} from "./testCasesDataClumps/negative"
+import {Unknown} from "./testCasesDataClumps/unknown";
 
 export {TestCasesParserJava};
 
@@ -37,6 +38,15 @@ export class JavaLanguageSupport implements LanguageSupportInterface {
         let keys = Object.keys(Negative);
         for (let key of keys) {
             testCases.push(Negative[key]);
+        }
+        return testCases;
+    }
+
+    public getUnknownTestCasesCasesDataClumps(): TestCaseBaseClassGroup[] {
+        let testCases: TestCaseBaseClassGroup[] = [];
+        let keys = Object.keys(Unknown);
+        for (let key of keys) {
+            testCases.push(Unknown[key]);
         }
         return testCases;
     }

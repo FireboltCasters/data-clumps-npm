@@ -10,12 +10,6 @@ import {SiblingsWithFields} from "./hierarchy/SiblingsWithFields";
 import {SiblingsWithMethods} from "./hierarchy/SiblingsWithMethods";
 import {InnerSmellyClasses} from "./innerInterfacePositive/InnerSmellyClasses";
 
-export {SimpleFields};
-export {SimpleMethodsWithDataClumps};
-export {AnonymousClass};
-export {Polymorphism};
-export {SimpleMethodsPositiveSameClass};
-
 export class Positive extends TestCaseBaseClassForDataClumps {
 
     // TODO Split between Field and Parameter Data Clumps
