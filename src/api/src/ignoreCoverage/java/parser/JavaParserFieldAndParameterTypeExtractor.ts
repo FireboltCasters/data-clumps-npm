@@ -8,13 +8,39 @@ import {JavaAntlr4CstPrinter} from "./../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldAndParameterTypeExtractor {
 
-    public static custom_getFieldType(ctx, currentVisibleClassOrInterface){
+    public static custom_getFieldType(ctx, variableDeclaratorIdCtx, currentVisibleClassOrInterface){
         let rawTypeText = ctx.getText();
         //console.log("custom_getFieldType called with rawTypeText: " + rawTypeText);
         //JavaAntlr4CstPrinter.print(ctx, "custom_getFieldType");
 
         //let ctx = JavaParserFieldAndParameterTypeExtractor.getExampleFieldOrParameterTypeCtx();
 
+        let firstPartOfType = JavaParserFieldAndParameterTypeExtractor.getTypeOfFirstPartOfTypeArgumentChild(ctx, currentVisibleClassOrInterface);
+
+        let finalType = "";
+
+
+        let secondPartOfType = "";
+        // since we got the first part of the type, we can now check if it is an array type in the variableDeclaratorId
+        // E.g. "String[] myStringArray" or "String myStringArray[]"
+        for(let variableDeclaratorChild of variableDeclaratorIdCtx.children){
+            let typeOfVariableDeclaratorChild = JavaParserHelper.getCtxType(variableDeclaratorChild);
+            if(typeOfVariableDeclaratorChild==="identifier"){
+
+            } else {
+                let secondPartText = variableDeclaratorChild?.getText?.() || "";
+                secondPartOfType += secondPartText;
+            }
+        }
+
+        finalType += firstPartOfType;
+        finalType += secondPartOfType;
+
+        //console.log("custom_getFieldType returning finalType: " + finalType)
+        return finalType;
+    }
+
+    private static getTypeOfFirstPartOfTypeArgumentChild(ctx, currentVisibleClassOrInterface){
         let finalType = "";
 
         for(let ctxChild of ctx.children){
@@ -114,8 +140,6 @@ export class JavaParserFieldAndParameterTypeExtractor {
             }
         }
 
-
-        //console.log("custom_getFieldType returning finalType: " + finalType)
         return finalType;
     }
 
@@ -123,7 +147,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
         let typeTypeOfTypeArgumentChild = JavaParserHelper.getCtxType(childOfTypeArgumentChild);
         //console.log("- typeTypeOfTypeArgumentChild: " + typeTypeOfTypeArgumentChild)
         if(!!typeTypeOfTypeArgumentChild && typeTypeOfTypeArgumentChild==="classOrInterfaceType") { // then it is a type like "String"
-            let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(childOfTypeArgumentChild, currentVisibleClassOrInterface);
+            let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.getTypeOfFirstPartOfTypeArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface);
             return typeTypeFinalType;
         } else { // then it might be something like "super" or "extends" or "?"
             let rawText = childOfTypeArgumentChild?.getText?.() || "";

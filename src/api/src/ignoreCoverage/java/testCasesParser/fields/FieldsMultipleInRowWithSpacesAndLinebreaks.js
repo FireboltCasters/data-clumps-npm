@@ -7,7 +7,15 @@ package javaParserTest;
 import javax.swing.Icon;
 
 public class Main {
-  private static String foo    ,   bar   , baz   ;
+    private static String foo    ,   bar   , baz   ;
+    
+    private static Icon[] icons = 
+    {inherit,
+     inherit,
+     null,
+     null,
+     null,
+    };
 }
 `);
 

@@ -7,8 +7,13 @@ package javaParserTest;
 import javax.swing.Icon;
 
 public class Main {  
-  public void method(Icon icon, Icon[] iconArray, Icon[][] iconMatrix) {
-  }
+    public void methodWithArrayBefore(Icon[] arrayBefore){}
+    public void methodWithArrayAfter(Icon arrayBefore[]){}
+    public void methodWithArbitraryNumberOfArgumentsBefore(Icon... arrayWithArbitraryBefore){}
+    public void methodWithArbitraryNumberOfArgumentsAfter(Icon ...arrayWithArbitraryAfter){}
+    
+    public void methodWithMatrix(Icon[][] arrayMatrix){}
+    public void methodWithMatrixButAsArrayBeforeAndAfter(Icon[] arrayMatrixBefore[]){}  
 }
 `);
 

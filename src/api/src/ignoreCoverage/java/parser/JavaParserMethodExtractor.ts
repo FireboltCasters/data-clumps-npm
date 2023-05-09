@@ -35,27 +35,28 @@ export class JavaParserMethodExtractor {
                             "List"
          */
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
-        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, this.currentVisibleClassOrInterface);
-
-
-        if(!!type && this.currentVisibleClassOrInterface[type]){
-            type = this.currentVisibleClassOrInterface[type];
-        }
 
         let modifiers = JavaParserHelper.getModifiers(ctx);
 
         let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");
-        // @ts-ignore
-        let name: string = variableDeclaratorId.getText();
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(name, name, type, modifiers, method);
+        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, variableDeclaratorId, this.currentVisibleClassOrInterface);
+
+        let variableIdentifier = JavaParserHelper.getChildByType(variableDeclaratorId, "identifier");
+        let variableName = variableIdentifier.getText(); // get the name of the variable
+
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(variableName, variableName, type, modifiers, method);
 
         if(this.includePosition){
-            let position = JavaParserHelper.custom_getPosition(variableDeclaratorId);
+            let parameterPosition = JavaParserHelper.custom_getPosition(variableDeclaratorId);
             // Somehow the position is not correct for the parameter name, so we fix it here
             // we get the correct start column for the parameter
             // but the end column is not correct, so we add the length of the parameter name
-            position.endColumn = position.endColumn+name.length-1;
-            parameter.position = position;
+            parameterPosition.endColumn = parameterPosition.startColumn + variableName.length;
+            parameterPosition.endLine = parameterPosition.startLine; // since the end of the declaration might be on the next line, we set it to the same line but we want the end of the variable name
+
+            parameter.position = parameterPosition;
+
+
         }
 
         return parameter;
@@ -100,14 +101,15 @@ export class JavaParserMethodExtractor {
         let formalParameters = ctx.children[2];
 
         // create an empty method, so that we can use it to get parameters
-        let methodPlaceholder: MethodTypeContext = new MethodTypeContext("", methodName, modifiers, this.classOrInterface);
+        let methodPlaceholder: MethodTypeContext = new MethodTypeContext("", methodName, "method", this.classOrInterface);
         // lets get the parameters but with incorrect methodplaceholder
         let parametersPlaceholder = this.custom_getFormalParameters(formalParameters, methodPlaceholder);
 
         // lets get the correct method signature from the names of the parameters
         let methodSignature = methodName + "("+parametersPlaceholder.map(p=>p.name).join(",")+")";
         // create the correct method
-        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, modifiers, this.classOrInterface);
+        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, "method", this.classOrInterface);
+        method.modifiers = modifiers;
         // create the correct parameters
         let parameters = this.custom_getFormalParameters(formalParameters, method);
         // get return type

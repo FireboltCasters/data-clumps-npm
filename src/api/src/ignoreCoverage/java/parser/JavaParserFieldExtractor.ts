@@ -5,6 +5,7 @@ import {
     MemberFieldTypeContext
 } from "./../../ParsedAstTypes";
 import {JavaParserFieldAndParameterTypeExtractor} from "./JavaParserFieldAndParameterTypeExtractor";
+import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
@@ -51,7 +52,6 @@ export class JavaParserFieldExtractor {
         let modifiers = JavaParserHelper.getModifiers(ctx.parentCtx.parentCtx);
 
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
-        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, this.currentVisibleClassOrInterface);
 
         let position: any = undefined;
         if(this.includePosition){
@@ -60,22 +60,33 @@ export class JavaParserFieldExtractor {
 
         let variableDeclarators = ctx.children[1]; // for example: int a, b, c;
 
+        //JavaAntlr4CstPrinter.print(variableDeclarators, "VariableDeclaratorsContext")
+
         let parameters: MemberFieldParameterTypeContext[] = [];
         for(let i = 0; i < variableDeclarators.children.length; i++){ // loop through a, b, c
             let variableDeclarator = variableDeclarators.children[i];
             if(variableDeclarator.getText()===","){
                 // skip the comma
             } else {
-                let variableName = variableDeclarator.children[0].getText(); // get the name of the variable
+                let variableDeclaratorId = JavaParserHelper.getChildByType(variableDeclarator, "variableDeclaratorId");
+                if(!!variableDeclaratorId){
+                    let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, variableDeclaratorId, this.currentVisibleClassOrInterface);
+                    let variableIdentifier = JavaParserHelper.getChildByType(variableDeclaratorId, "identifier");
+                    if(!!variableIdentifier){
+                        let variableName = variableIdentifier.getText(); // get the name of the variable
 
-                let parameterPosition: any = JavaParserHelper.custom_getPosition(variableDeclarator);
-                // TODO: Check why position is not correct
-                // Workaround: we use the length of the name of the variable
-                parameterPosition.endColumn = parameterPosition.startColumn + variableName.length;
+                        let parameterPosition: any = JavaParserHelper.custom_getPosition(variableDeclarator);
 
-                let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
-                parameter.position = parameterPosition
-                parameters.push(parameter);
+                        // TODO: Check why position is not correct
+                        // Workaround: we use the length of the name of the variable
+                        parameterPosition.endColumn = parameterPosition.startColumn + variableName.length;
+                        parameterPosition.endLine = parameterPosition.startLine; // since the end of the declaration might be on the next line, we set it to the same line but we want the end of the variable name
+
+                        let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
+                        parameter.position = parameterPosition
+                        parameters.push(parameter);
+                    }
+                }
             }
         }
 
@@ -91,7 +102,7 @@ export class JavaParserFieldExtractor {
         let key = namesAsString;
         let name = key;
 
-        let field = new MemberFieldTypeContext(key, name, type, this.classOrInterface);
+        let field = new MemberFieldTypeContext(key, name, "field", this.classOrInterface);
         field.modifiers = modifiers;
         field.position = position;
         field.parameters = parameters;

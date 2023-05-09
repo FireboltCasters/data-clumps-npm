@@ -9,6 +9,22 @@ import javax.swing.Icon;
 public class Main {
   private static Icon[] iconArray;
   private static Icon[][] iconMatrix;
+  
+  private static Icon iconsArrayAfter[] = 
+    {inherit,
+     realiz,
+     null,
+     null,
+     null,
+    };
+    
+   private static Icon[] iconsArrayBefore = 
+    {inherit,
+     inherit,
+     null,
+     null,
+     null,
+    };
 }
 `);
 
