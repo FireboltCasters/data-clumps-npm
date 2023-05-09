@@ -8,8 +8,8 @@ import javax.swing.Icon;
 
 public class Main {
   private static Icon[] iconArray;
-  private static Icon[][] iconMatrix;
-  
+  private static Icon [] iconArrayWithSpace;
+  private static Icon [ ] iconArrayWithSpaceInside;  
   private static Icon iconsArrayAfter[] = 
     {inherit,
      realiz,
@@ -25,6 +25,15 @@ public class Main {
      null,
      null,
     };
+    
+    private static Icon[][] iconMatrix;
+    private static Icon [][] iconMatrixWithSpace;
+    private static Icon [ ] [ ] iconMatrixWithSpaceInside;
+    private static Icon iconMatrixAfter[][];
+    private static Icon[] iconMatrixBefore[];
+    private static Icon[] iconMatrixBefore2 [];
+    private static Icon iconMatrixAfter2 [] [];
+    
 }
 `);
 
