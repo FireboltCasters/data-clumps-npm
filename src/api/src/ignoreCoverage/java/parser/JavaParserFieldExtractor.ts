@@ -70,7 +70,7 @@ export class JavaParserFieldExtractor {
             } else {
                 let variableDeclaratorId = JavaParserHelper.getChildByType(variableDeclarator, "variableDeclaratorId");
                 if(!!variableDeclaratorId){
-                    let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, variableDeclaratorId, this.currentVisibleClassOrInterface);
+                    let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, variableDeclarator, this.currentVisibleClassOrInterface);
                     let variableIdentifier = JavaParserHelper.getChildByType(variableDeclaratorId, "identifier");
                     if(!!variableIdentifier){
                         let variableName = variableIdentifier.getText(); // get the name of the variable

@@ -34,13 +34,16 @@ export class JavaParserMethodExtractor {
                           "children": [
                             "List"
          */
+        //JavaAntlr4CstPrinter.print(ctx, "methodParameter");
+
         let typeType = JavaParserHelper.getChildByType(ctx, "typeType");
 
         let modifiers = JavaParserHelper.getModifiers(ctx);
 
-        let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");
-        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, variableDeclaratorId, this.currentVisibleClassOrInterface);
 
+        let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, ctx, this.currentVisibleClassOrInterface);
+
+        let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");
         let variableIdentifier = JavaParserHelper.getChildByType(variableDeclaratorId, "identifier");
         let variableName = variableIdentifier.getText(); // get the name of the variable
 

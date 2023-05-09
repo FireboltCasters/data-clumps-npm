@@ -8,10 +8,9 @@ import {JavaAntlr4CstPrinter} from "./../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldAndParameterTypeExtractor {
 
-    public static custom_getFieldType(ctx, variableDeclaratorIdCtx, currentVisibleClassOrInterface){
+    public static custom_getFieldType(ctx, variableDeclaratorCtx, currentVisibleClassOrInterface){
         let rawTypeText = ctx.getText();
         //console.log("custom_getFieldType called with rawTypeText: " + rawTypeText);
-        //JavaAntlr4CstPrinter.print(ctx, "custom_getFieldType");
 
         //let ctx = JavaParserFieldAndParameterTypeExtractor.getExampleFieldOrParameterTypeCtx();
 
@@ -23,6 +22,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
         let secondPartOfType = "";
         // since we got the first part of the type, we can now check if it is an array type in the variableDeclaratorId
         // E.g. "String[] myStringArray" or "String myStringArray[]"
+        let variableDeclaratorIdCtx = JavaParserHelper.getChildByType(variableDeclaratorCtx, "variableDeclaratorId");
         for(let variableDeclaratorChild of variableDeclaratorIdCtx.children){
             let typeOfVariableDeclaratorChild = JavaParserHelper.getCtxType(variableDeclaratorChild);
             if(typeOfVariableDeclaratorChild==="identifier"){
@@ -33,8 +33,24 @@ export class JavaParserFieldAndParameterTypeExtractor {
             }
         }
 
+        let thirdPartOfType = "";
+        // maybe it is an arbitrary number of parameters like "String... myStringArray" or "String myStringArray..."
+        // Only the last parameter in a method can be a vararg
+        let variableDeclaratorCtxChildren = variableDeclaratorCtx?.children || [];
+        for(let variableDeclaratorCtxChild of variableDeclaratorCtxChildren){
+            let textOfVariableDeclaratorCtxChild = variableDeclaratorCtxChild?.getText?.() || "";
+            if(textOfVariableDeclaratorCtxChild==="..."){
+                // IntelliJ handles varargs "String... args" as "String... args" and "String ...args" and "String... args"
+                // So in IntelliJ vargarg is a unique type, and therefore we also handle it as a unique type
+                // Since it would make us problems when refactoring or handling them as arrays.
+                thirdPartOfType = "...";
+            }
+        }
+
+
         finalType += firstPartOfType;
         finalType += secondPartOfType;
+        finalType += thirdPartOfType;
 
         //console.log("custom_getFieldType returning finalType: " + finalType)
         return finalType;
