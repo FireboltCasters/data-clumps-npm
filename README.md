@@ -47,6 +47,7 @@ npm install data-clumps
 
 ## Roadmap
 
+- [ ] Integrate website-to-gif: https://github.com/PabloLec/website-to-gif
 - [ ] Support Java
     - [X] Integrated Antlr4
     - [X] Converting of JavaCST to JavaAST
@@ -55,7 +56,6 @@ npm install data-clumps
     - [ ] Investigate why more files than LCSD have been found
     - [ ] Implement Java Refactor Interface
 - [ ] Support TypeScript
-- [ ] Support Java
 - [ ] Support JavaScript
 - [ ] Support Python
 - [ ] Support C#

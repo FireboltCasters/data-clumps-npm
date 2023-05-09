@@ -58,6 +58,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
 
     private static getTypeOfFirstPartOfTypeArgumentChild(ctx, currentVisibleClassOrInterface){
         let finalType = "";
+        //console.log("ctx.getText(): "+ctx.getText());
 
         for(let ctxChild of ctx.children){
             let ctxChildType = JavaParserHelper.getCtxType(ctxChild);
@@ -78,8 +79,13 @@ export class JavaParserFieldAndParameterTypeExtractor {
                                 if (isTypeIdentifier) {
                                     //console.log("- child is isTypeIdentifier: " + childType)
                                     let simpleOrQualifiedChildType = child?.children?.[0];
+
+                                    //console.log("- child is simpleOrQualifiedChildType: " + simpleOrQualifiedChildType)
+
                                     // TODO: i believe i did in inner class extraction something similar. Maybe refactor this and merge it with that
                                     let qualifiedChildType = currentVisibleClassOrInterface[simpleOrQualifiedChildType];
+                                    //console.log("- child is qualifiedChildType: " + qualifiedChildType)
+
                                     if (qualifiedChildType) { // then it is a qualified type like "java.util.List"
                                         //console.log("- child is qualified type: " + qualifiedChildType)
                                         finalType += qualifiedChildType;
@@ -162,7 +168,7 @@ export class JavaParserFieldAndParameterTypeExtractor {
     private static getTypeOfChildArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface){
         let typeTypeOfTypeArgumentChild = JavaParserHelper.getCtxType(childOfTypeArgumentChild);
         //console.log("- typeTypeOfTypeArgumentChild: " + typeTypeOfTypeArgumentChild)
-        if(!!typeTypeOfTypeArgumentChild && typeTypeOfTypeArgumentChild==="classOrInterfaceType") { // then it is a type like "String"
+        if(!!typeTypeOfTypeArgumentChild && typeTypeOfTypeArgumentChild==="typeType") { // then it is a type like "String"
             let typeTypeFinalType = JavaParserFieldAndParameterTypeExtractor.getTypeOfFirstPartOfTypeArgumentChild(childOfTypeArgumentChild, currentVisibleClassOrInterface);
             return typeTypeFinalType;
         } else { // then it might be something like "super" or "extends" or "?"
