@@ -29,6 +29,7 @@ import {GenericClass} from "./classes/GenericClass";
 import {AnonymousClass} from "./classes/AnonymousClass";
 import {ExtremeGenericClass} from "./classes/ExtremeGenericClass";
 import {SimpleFields} from "./fields/SimpleFields";
+import {MultipleClassInOneFile} from "./classes/MultipleClassInOneFile";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -84,6 +85,7 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
             NestedInnerClassesExplicitType,
             GenericClass,
             ExtremeGenericClass,
+            MultipleClassInOneFile
         ],
         []
     );

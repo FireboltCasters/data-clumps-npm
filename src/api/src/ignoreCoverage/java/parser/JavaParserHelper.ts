@@ -28,6 +28,22 @@ export class JavaParserHelper {
         return children
     }
 
+    static getChildrenByTypeInnerList(ctx, ...childTypes){
+            let memberDeclarations: any[] = [];
+            let childType = childTypes[0];
+            let childDeclarations = JavaParserHelper.getChildrenByType(ctx, childType);
+            for(let childDeclaration of childDeclarations){
+                let remainingChildTypes = childTypes.slice(1);
+                if(remainingChildTypes.length===0){
+                    memberDeclarations.push(childDeclaration);
+                } else {
+                    let childMemberDeclarations = JavaParserHelper.getChildrenByTypeInnerList(childDeclaration, ...remainingChildTypes);
+                    memberDeclarations = memberDeclarations.concat(childMemberDeclarations);
+                }
+            }
+            return memberDeclarations;
+        }
+
     static getChildByType(ctx, type): null | any {
         let children = JavaParserHelper.getChildrenByType(ctx, type);
         if(!!children && children.length>0){

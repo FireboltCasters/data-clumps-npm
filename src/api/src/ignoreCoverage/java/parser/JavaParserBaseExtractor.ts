@@ -250,19 +250,7 @@ export class BaseParser {
     }
 
     protected getMemberDeclarations(ctx, ...childTypes){
-        let memberDeclarations: any[] = [];
-        let childType = childTypes[0];
-        let childDeclarations = JavaParserHelper.getChildrenByType(ctx, childType);
-        for(let childDeclaration of childDeclarations){
-            let remainingChildTypes = childTypes.slice(1);
-            if(remainingChildTypes.length===0){
-                memberDeclarations.push(childDeclaration);
-            } else {
-                let childMemberDeclarations = this.getMemberDeclarations(childDeclaration, ...remainingChildTypes);
-                memberDeclarations = memberDeclarations.concat(childMemberDeclarations);
-            }
-        }
-        return memberDeclarations;
+        return JavaParserHelper.getChildrenByTypeInnerList(ctx, ...childTypes);
     }
 
 

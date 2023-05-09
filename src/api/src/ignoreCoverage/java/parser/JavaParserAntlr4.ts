@@ -40,36 +40,19 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         return null;
     }
 
-    static getTopFileClassCst(cst: any): any {
-        let typeDeclaration = JavaParserHelper.getChildByType(cst, "typeDeclaration");
-        if(!!typeDeclaration) {
-            let classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "classDeclaration");
-            if (!!classOrInterfaceCst) {
-                return classOrInterfaceCst;
-            }
-        }
+    static getTopFileClassesCstList(cst: any): any {
+        return JavaParserHelper.getChildrenByTypeInnerList(cst, "typeDeclaration", "classDeclaration");
     }
 
-    static getTopFileInterfaceCst(cst: any): any {
-        let typeDeclaration = JavaParserHelper.getChildByType(cst, "typeDeclaration");
-        if(!!typeDeclaration) {
-            let classOrInterfaceCst = JavaParserHelper.getChildByType(typeDeclaration, "interfaceDeclaration");
-            if (!!classOrInterfaceCst) {
-                return classOrInterfaceCst;
-            }
-        }
+    static getTopFileInterfacesCstList(cst: any): any {
+        return JavaParserHelper.getChildrenByTypeInnerList(cst, "typeDeclaration", "interfaceDeclaration");
     }
 
-    static getTopFileClassOrInterfaceCst(file: MyFile): any {
+    static getTopFileClassAndInterfaceCstList(file: MyFile): any {
         let cst = JavaParserAntlr4.getCst(file);
-        let classCst = JavaParserAntlr4.getTopFileClassCst(cst);
-        if (!!classCst) {
-            return classCst;
-        }
-        let interfaceCst = JavaParserAntlr4.getTopFileInterfaceCst(cst);
-        if (!!interfaceCst) {
-            return interfaceCst;
-        }
+        let classesCstList = JavaParserAntlr4.getTopFileClassesCstList(cst);
+        let interfacesCstList = JavaParserAntlr4.getTopFileInterfacesCstList(cst);
+        return classesCstList.concat(interfacesCstList);
     }
 
     static getQualifiedNameOfClassOrInterface(cst: any, packageName: string | null): string | null {
@@ -103,8 +86,8 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         //console.log("Files in same package: " + filesInSamePackage.length)
 
         for (let fileInSamePackage of filesInSamePackage) {
-            let classOrInterfaceCst = JavaParserAntlr4.getTopFileClassOrInterfaceCst(fileInSamePackage);
-            if(!!classOrInterfaceCst){
+            let classAndInterfaceCstList = JavaParserAntlr4.getTopFileClassAndInterfaceCstList(fileInSamePackage);
+            for(let classOrInterfaceCst of classAndInterfaceCstList){
                 let qualifiedName = JavaParserAntlr4.getQualifiedNameOfClassOrInterface(classOrInterfaceCst, packageName);
                 let classOrInterfaceName = JavaParserAntlr4.getNameOfClassOrInterface(classOrInterfaceCst);
                 if (!!qualifiedName && classOrInterfaceName) {
@@ -206,35 +189,46 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         // 1. Get the package name and the class or interface name of the file
         let ownPackageName = JavaParserAntlr4.getPackageDeclaration(cst);
 
-        let classCst = JavaParserAntlr4.getTopFileClassCst(cst);
-        let interfaceCst = JavaParserAntlr4.getTopFileInterfaceCst(cst);
+        let classesCstList = JavaParserAntlr4.getTopFileClassesCstList(cst);
+        let interfacesCstList = JavaParserAntlr4.getTopFileInterfacesCstList(cst);
 
+        // create a dictionary with the classes and interfaces with their qualified names
+        // key = class or interface name, value = qualified name of the class or interface
+        // qualified name = package name + class or interface name
+        // We store the currently visible classes and interfaces in the same package
+        let currentVisibleClassesAndInterfaces = {};
+
+        let currentVisibleVariables = {};
+
+        // 2. By default all classes and interfaces in the same package are public
+        // So we should check all the classes and interfaces in the same package
+        // 2.1 get all the files in the same package
+        // 2.2 get all the classes and interfaces in the same package
+
+        let samePackageClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackage(softwareProject, ownPackageName);
+
+        // copy the same package classes and interfaces to the current visible classes and interfaces
+        currentVisibleClassesAndInterfaces = {...samePackageClassesAndInterfaces};
+
+        // 3. Get the imports (explicit and wildcard)
+        let importDeclarations = JavaParserHelper.getChildrenByType(cst, "importDeclaration");
+        let importDeclarationClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackageFromImportDeclarations(softwareProject, importDeclarations);
+
+        // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
+        currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...importDeclarationClassesAndInterfaces};
+
+        for(let classesCst of classesCstList){
+            this.preParseClassOrInterfaceCst(classesCst, null, file, ownPackageName, currentVisibleClassesAndInterfaces, currentVisibleVariables, options);
+        }
+        for(let interfacesCst of interfacesCstList){
+            this.preParseClassOrInterfaceCst(null, interfacesCst, file, ownPackageName, currentVisibleClassesAndInterfaces, currentVisibleVariables, options);
+        }
+    }
+
+    preParseClassOrInterfaceCst(classCst, interfaceCst, file: MyFile, ownPackageName: string | null, currentVisibleClassesAndInterfaces: any, currentVisibleVariables: any, options: ParserOptions){
 
         if(!!classCst || !!interfaceCst){ // if our file has a class or interface
-            // create a dictionary with the classes and interfaces with their qualified names
-            // key = class or interface name, value = qualified name of the class or interface
-            // qualified name = package name + class or interface name
-            // We store the currently visible classes and interfaces in the same package
-            let currentVisibleClassesAndInterfaces = {};
 
-            let currentVisibleVariables = {};
-
-            // 2. By default all classes and interfaces in the same package are public
-            // So we should check all the classes and interfaces in the same package
-            // 2.1 get all the files in the same package
-            // 2.2 get all the classes and interfaces in the same package
-
-            let samePackageClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackage(softwareProject, ownPackageName);
-
-            // copy the same package classes and interfaces to the current visible classes and interfaces
-            currentVisibleClassesAndInterfaces = {...samePackageClassesAndInterfaces};
-
-            // 3. Get the imports (explicit and wildcard)
-            let importDeclarations = JavaParserHelper.getChildrenByType(cst, "importDeclaration");
-            let importDeclarationClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackageFromImportDeclarations(softwareProject, importDeclarations);
-
-            // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
-            currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...importDeclarationClassesAndInterfaces};
 
 
             // 4. Get the class or interface body
@@ -253,43 +247,6 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
             }
 
         }
-
-
-
-/**
-        let output: Dictionary<ClassOrInterfaceTypeContext> = {};
-
-
-
-        // @ts-ignore
-        let typeDeclarations = JavaParserHelper.getChildrenByType(cst, "typeDeclaration");
-
-        for (let typeDeclaration of typeDeclarations) {
-            // @ts-ignore
-            for (let i = 0; i < typeDeclaration.children.length; i++) {
-                // @ts-ignore
-                let child = typeDeclaration.children[i];
-                let type = JavaParserHelper.getCtxType(child);
-                if (type === "classDeclaration") {
-                    let classDeclaration = child;
-                    let classExtractor = new ClassExtractor(file, ownPackageName, classDeclaration, includePosition);
-                    let extractorOutput = classExtractor.classOrInterface;
-                    let key = extractorOutput.key
-                    output[key] = extractorOutput;
-                }
-                if (type === "interfaceDeclaration") {
-                    let interfaceDeclaration = child;
-                    let interfaceExtractor = new InterfaceExtractor(file, ownPackageName, interfaceDeclaration, includePosition);
-                    let extractorOutput = interfaceExtractor.classOrInterface;
-                    let key = extractorOutput.key
-                    output[key] = extractorOutput;
-                }
-            }
-        }
-
- */
-        //console.log("++++++++++++++++++++++");
-
     }
 
     /**
