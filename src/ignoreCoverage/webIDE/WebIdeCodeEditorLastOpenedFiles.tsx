@@ -71,7 +71,7 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
         let activeStyle = isActive ? {backgroundColor: "orange"} : {}
 
         return(
-            <div style={{paddingRight: "5px", ...invisibleStyle}}
+            <div style={{cursor: "pointer", paddingRight: "5px", ...invisibleStyle}}
             >
                 <div style={{...activeStyle, display: "inline-block", flexDirection: "row", border: "solid", borderColor: "gray", borderWidth: 1, paddingTop: paddingVertically+"px", paddingBottom: paddingVertically+"px", paddingLeft: paddingHorizontally+"px", paddingRight: paddingHorizontally+"px"}}>
                     <div style={{display: "inline-block", ...activeStyle}}
@@ -79,7 +79,7 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
                     >
                         <FileItemWithFileIcon treeNode={treeNode} />
                     </div>
-                    <div style={{display: "inline-block"}} onClick={handleCloseOpenedFile.bind(null, openFileKey)}>
+                    <div style={{display: "inline-block", cursor: ""}} onClick={handleCloseOpenedFile.bind(null, openFileKey)}>
                         <i className={"pi pi-times"} />
                     </div>
                 </div>
@@ -102,7 +102,7 @@ export const WebIdeCodeEditorLastOpenedFiles : FunctionComponent<WebIdeCodeEdito
     }
 
     return(
-        <div style={{width: "100%", backgroundColor: "transparent", display: "flex", justifyContent: "flex-start", flexDirection: "row", flex: 1}}>
+        <div style={{width: "100%", backgroundColor: "transparent", display: "flex", justifyContent: "flex-start", flexDirection: "row"}}>
             {renderOpenedFiles()}
         </div>
     )

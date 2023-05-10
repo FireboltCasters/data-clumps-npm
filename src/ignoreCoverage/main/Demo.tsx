@@ -373,11 +373,11 @@ export const Demo : FunctionComponent = (props) => {
         let editorActive = selectedViewOption === ViewOptionValues.fileContent;
         if(editorActive){
             content = (
-                <>
+                <div style={{height: '100%', width: '100%', display: "flex", flexDirection: "column"}}>
                     {renderOpenedFiles()}
                     {renderActiveFilePath()}
                     {renderCodeEditor()}
-                </>
+                </div>
             )
         }
 

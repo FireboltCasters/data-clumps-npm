@@ -87,7 +87,7 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
         setTimerId(newTimerId);
     }
 
-    return(
+    return <div style={{width: "100%", height: "100%", display: "flex"}}>
         <Editor
 
             onMount={(editor, monaco) => {
@@ -100,14 +100,14 @@ export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (prop
                     let decorations = editor.createDecorationsCollection(decorationCopy);
                 }
             }}
-            height="90vh"
-            width={"auto"}
+            height="100%"
+            width={"100%"}
             defaultLanguage={props?.language}
             defaultValue={code}
             options={{glyphMargin: true, ...props?.options}}
             onChange={handleCodeChange}
         />
-    )
+    </div>
 
 
 }

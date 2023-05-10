@@ -14,7 +14,7 @@ export const WebIdeCodeEditorActiveFilePath : FunctionComponent<WebIdeCodeEditor
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
 
     return(
-        <div style={{width: "100%", backgroundColor: "transparent", display: "flex", justifyContent: "flex-start", flexDirection: "row", flex: 1}}>
+        <div style={{width: "100%", backgroundColor: "transparent", display: "inline-block", justifyContent: "flex-start", flexDirection: "row"}}>
             {activeFileKey}
         </div>
     )
