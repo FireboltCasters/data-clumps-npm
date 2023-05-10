@@ -4,6 +4,7 @@ import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
 import {SoftwareProject} from "../../api/src";
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
+import {useEffect, useState} from "react";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {
@@ -135,6 +136,52 @@ export function useSynchedOpenedFiles(): [value: any, setValue: (value) => {}] {
         setOpenedFileKeys
     ];
 }
+
+
+export enum ColorModeOptions {
+    light = "light",
+    dark = "dark",
+    auto = "auto"
+}
+export function useSynchedColorModeOption(): [value: any, setValue: (value) => {}] {
+    const [colorModeOption, setColorModeOption] = useSynchedJSONState(SynchedStates.colorModeOption)
+    let usedColorMode = colorModeOption || ColorModeOptions.auto;
+    return [
+        usedColorMode,
+        setColorModeOption
+    ];
+}
+
+const useIsSystemDarkDetector = () => {
+    const getCurrentTheme = () => window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const [isDarkTheme, setIsDarkTheme] = useState(getCurrentTheme());
+    const mqListener = (e => {
+        setIsDarkTheme(e.matches);
+    });
+
+    useEffect(() => {
+        const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+        darkThemeMq.addListener(mqListener);
+        return () => darkThemeMq.removeListener(mqListener);
+    }, []);
+    return isDarkTheme;
+}
+
+export function isDarkModeEnabled(): any {
+    const [colorModeOption, setColorModeOption] = useSynchedColorModeOption();
+    const isSystemDark = useIsSystemDarkDetector();
+
+    if(!!colorModeOption){
+        if(colorModeOption===ColorModeOptions.auto){
+            return isSystemDark
+        } else {
+            return colorModeOption===ColorModeOptions.dark;
+        }
+    } else {
+        return isSystemDark;
+    }
+}
+
 
 /**
 export function useSynchedProject(): [value: SoftwareProject, setValue: (value) => {}] {

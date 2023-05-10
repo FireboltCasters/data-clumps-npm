@@ -2,13 +2,15 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
+    isDarkModeEnabled,
     useSynchedActiveFileKey,
     useSynchedDataClumpsDict,
     useSynchedFileExplorerTree,
     useSynchedModalState,
     useSynchedOpenedFiles,
     useSynchedViewOptions,
-    ViewOptionValues, ViewPanelValues
+    ViewOptionValues,
+    ViewPanelValues
 } from "../storage/SynchedStateHelper";
 import {WebIdeLayout} from "../webIDE/WebIdeLayout";
 import {WebIdeCodeEditor} from "../webIDE/WebIdeCodeEditor";
@@ -23,13 +25,12 @@ import {MyAbortController} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
-import {SoftwareProject} from "../../api/src";
+import {ParserOptions, SoftwareProject} from "../../api/src";
 import {DetectorOptions} from "../../api/src/ignoreCoverage/Detector";
-import {ParserOptions} from "../../api/src";
 import DecorationHelper from "../helper/DecorationHelper";
 import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
-
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
+
 
 export class ProjectHolder{
     public static project: SoftwareProject = new SoftwareProject(["java"]);
@@ -142,7 +143,9 @@ export const Demo : FunctionComponent = (props) => {
 
     function renderActionBar(){
         return(
-            <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} loadSoftwareProject={loadSoftwareProject} />
+            <div style={{width: "100%"}}>
+                <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} loadSoftwareProject={loadSoftwareProject} />
+            </div>
         )
     }
 
@@ -413,7 +416,7 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     return (
-        <div style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
+        <div className={"p-splitter"} style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
             <WebIdeLayout
                 menuBarItems={renderActionBar()}
                 panelInitialSizes={[20, 50, 30]}

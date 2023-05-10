@@ -12,6 +12,7 @@ import {
 } from "../storage/SynchedStateHelper";
 import {SoftwareProject} from "../../api/src";
 import {WebIdeFileExplorerDropZone} from "./WebIdeFileExplorerDropZone";
+import {WebIdeFileExplorerNode} from "./WebIdeFileExplorerNode";
 
 // @ts-ignore
 export interface WebIdeFileExplorerProps {
@@ -165,22 +166,7 @@ export const WebIdeFileExplorer : FunctionComponent<WebIdeFileExplorerProps> = (
     };
 
     function itemRenderer(treeNode: TreeNode) {
-        let uri = treeNode.uri;
-
-        let treeNodeWithoutStart = uri.replace(startUri+"/", "");
-
-        let style = {};
-        if(treeNodeWithoutStart==selectedFileInExplorer){
-            style = {
-                border: "solid", borderColor: "gray", borderWidth: 1
-            }
-        }
-
-        return (
-            <div style={{...style}}>
-                <FileItemWithFileIcon treeNode={treeNode} />
-            </div>
-        )
+        return <WebIdeFileExplorerNode selectedFileInExplorer={selectedFileInExplorer} treeNode={treeNode} startUri={startUri} />
     }
 
     if(loading){

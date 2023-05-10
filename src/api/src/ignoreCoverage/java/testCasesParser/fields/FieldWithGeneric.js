@@ -5,6 +5,7 @@ const FileA = new MyFile('javaParserTest/Main.java', `
 package javaParserTest;
 
 import javax.swing.Icon;
+import java.util.HashMap;
 
 public class Main<T> {
   private static MyGeneric<String> myGeneric;
@@ -12,6 +13,7 @@ public class Main<T> {
   private static Type<? extends Icon> genericExtends;
   private static Type<? super Icon> genericSuper;
   // private static Type<? extends Icon & Number> genericExtendsAndInterface; // this is not allowed in java as a field type
+  private static HashMap<? extends Icon, ? super Number> genericExtendsAndSuperHashMap;
 }
 `);
 

@@ -12,6 +12,8 @@ export class SynchedStates {
 	static activeFile = "MySynchedStates.activeFile"
 	static result = "MySynchedStates.result"
 
+	static colorModeOption = "MySynchedStates.colorModeOption"
+
 	static viewOptions = "MySynchedStates.viewOptions"
 
 	static activeRightPanelView = "MySynchedStates.activeRightPanelView"

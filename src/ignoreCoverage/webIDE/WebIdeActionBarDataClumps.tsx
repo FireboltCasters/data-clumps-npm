@@ -1,5 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {
+    ColorModeOptions,
+    isDarkModeEnabled, useSynchedColorModeOption,
     useSynchedFileExplorerTree,
     useSynchedModalState,
     useSynchedViewOptions,
@@ -23,6 +25,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
 
     const [viewOptions, setViewOptions] = useSynchedViewOptions()
     const [tree, setTree] = useSynchedFileExplorerTree();
+    const [colorModeOption, setColorModeOption] = useSynchedColorModeOption();
 
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
@@ -37,6 +40,29 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 viewOptions.editor = ViewOptionValues.decorationFieldAndParameters
                 setViewOptions({...viewOptions})
             }
+        }
+    }
+
+    function renderColorModeItem(){
+        let items: any[] = [];
+        let colorModeOptionKeys = Object.keys(ColorModeOptions);
+        for(let colorModeOptionKey of colorModeOptionKeys){
+            let label = ""+ColorModeOptions[colorModeOptionKey]
+            let active = colorModeOptionKey === colorModeOption;
+            items.push({
+                label: label,
+                disabled: active,
+                icon: active ? "pi pi-check": "",
+                command: () => {
+                    setColorModeOption(label);
+                }
+            })
+        }
+
+        return {
+            label: "ColorMode: "+colorModeOption,
+            icon: "pi pi-sun",
+            items: items
         }
     }
 
@@ -303,7 +329,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             ]
         },
         {
-            label:'Tools',
+            label:'Extra',
             icon:'pi pi-fw pi-cog',
             items:[
                 {
@@ -311,7 +337,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     disabled: true,
                     icon:'pi pi-fw pi-pencil',
                 },
-
+                renderColorModeItem(),
             ]
         },
         {
