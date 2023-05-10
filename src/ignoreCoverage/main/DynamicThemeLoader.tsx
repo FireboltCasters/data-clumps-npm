@@ -4,6 +4,8 @@ import {useIsDarkModeEnabled} from "../storage/SynchedStateHelper";
 
 //import "primereact/resources/themes/bootstrap4-dark-blue/theme.css";
 
+console.log("Public URL start: "+process.env.PUBLIC_URL);
+
 export const DynamicThemeLoader : FunctionComponent = (props) => {
 
     const isDarkMode = useIsDarkModeEnabled();
@@ -17,6 +19,9 @@ export const DynamicThemeLoader : FunctionComponent = (props) => {
 
         if (themeLink) {
             let href = publicUrl+"/themes/"+theme + '/theme.css';
+            console.log("href: "+href);
+
+
             // @ts-ignore
             themeLink.href = href;
         }
