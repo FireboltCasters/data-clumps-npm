@@ -1,7 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import {
     ColorModeOptions,
-    isDarkModeEnabled, useSynchedColorModeOption,
+    useIsDarkModeEnabled, useSynchedColorModeOption,
     useSynchedFileExplorerTree,
     useSynchedModalState,
     useSynchedViewOptions,

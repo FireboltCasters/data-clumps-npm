@@ -1,7 +1,7 @@
 import React, {FunctionComponent, useEffect, useState} from 'react';
 import Editor, {loader} from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import {isDarkModeEnabled} from "../storage/SynchedStateHelper";
+import {useIsDarkModeEnabled} from "../storage/SynchedStateHelper";
 
 
 loader.config({ monaco });
@@ -26,7 +26,7 @@ export type DecorationRange = {
 
 export const WebIdeCodeEditor : FunctionComponent<WebIdeCodeEditorProps> = (props: WebIdeCodeEditorProps) => {
 
-    const isDarkMode = isDarkModeEnabled();
+    const isDarkMode = useIsDarkModeEnabled();
 
     const [timerId, setTimerId] = useState<NodeJS.Timeout | undefined>(); // declare the timer variable
     // @ts-ignore

@@ -167,7 +167,7 @@ const useIsSystemDarkDetector = () => {
     return isDarkTheme;
 }
 
-export function isDarkModeEnabled(): any {
+export function useIsDarkModeEnabled(): any {
     const [colorModeOption, setColorModeOption] = useSynchedColorModeOption();
     const isSystemDark = useIsSystemDarkDetector();
 

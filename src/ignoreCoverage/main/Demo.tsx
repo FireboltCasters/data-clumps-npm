@@ -2,7 +2,7 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
-    isDarkModeEnabled,
+    useIsDarkModeEnabled,
     useSynchedActiveFileKey,
     useSynchedDataClumpsDict,
     useSynchedFileExplorerTree,
