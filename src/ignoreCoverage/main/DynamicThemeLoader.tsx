@@ -7,6 +7,7 @@ import {useIsDarkModeEnabled} from "../storage/SynchedStateHelper";
 export const DynamicThemeLoader : FunctionComponent = (props) => {
 
     const isDarkMode = useIsDarkModeEnabled();
+    const publicUrl = process.env.PUBLIC_URL;
 
     useEffect(() => {
         let themeBootstrap = isDarkMode ? "bootstrap4-dark-blue" : "bootstrap4-light-blue";
@@ -15,7 +16,7 @@ export const DynamicThemeLoader : FunctionComponent = (props) => {
         let themeLink = document.getElementById('app-theme');
 
         if (themeLink) {
-            let href = "/themes/"+theme + '/theme.css';
+            let href = publicUrl+"/themes/"+theme + '/theme.css';
             // @ts-ignore
             themeLink.href = href;
         }
