@@ -232,8 +232,7 @@ export const Demo : FunctionComponent = (props) => {
         )
     }
 
-    function renderExplorerDataClumps(){
-        let defaultValue = "";
+    function getDataClumpsDictFileAmountDataClumps(){
         let resultDict = {};
         if(dataClumpsDict && JSON.stringify(dataClumpsDict) !== "{}"){
             let data_clumps = dataClumpsDict?.data_clumps || {};
@@ -245,7 +244,34 @@ export const Demo : FunctionComponent = (props) => {
                 amountFound++;
                 resultDict[file_path] = amountFound;
             }
-            defaultValue = JSON.stringify(resultDict, null, 2);
+        }
+        return resultDict;
+    }
+
+    function renderExplorerDataClumpsJSON(){
+        let defaultValue = "";
+        let resultDict = getDataClumpsDictFileAmountDataClumps();
+        defaultValue = JSON.stringify(resultDict, null, 2);
+
+        return(
+            <WebIdeCodeEditor
+                key={JSON.stringify(dataClumpsDict)}
+                defaultValue={defaultValue}
+                options={{ readOnly: true }}
+            />
+        )
+    }
+
+    function renderExplorerDataClumpsCSV(){
+        let defaultValue = "";
+        defaultValue += "FilePath,DataClumps\n"
+
+        let resultDict = getDataClumpsDictFileAmountDataClumps();
+        let fileKeys = Object.keys(resultDict);
+        for(let fileKey of fileKeys){
+            let amount = resultDict[fileKey];
+            let csvLine = fileKey+","+amount+"\n";
+            defaultValue += csvLine;
         }
 
         return(
@@ -384,8 +410,11 @@ export const Demo : FunctionComponent = (props) => {
             )
         }
 
-        if(selectedViewOption === ViewOptionValues.explorerDataClumps){
-            content = renderExplorerDataClumps();
+        if(selectedViewOption === ViewOptionValues.explorerDataClumpsJSON){
+            content = renderExplorerDataClumpsJSON();
+        }
+        if(selectedViewOption === ViewOptionValues.explorerDataClumpsCSV){
+            content = renderExplorerDataClumpsCSV();
         }
         if(selectedViewOption === ViewOptionValues.dataClumpsDictionary){
             content = renderDataClumpsDict();

@@ -29,110 +29,20 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
         [ViewOptionValues.fileAst]: "File AST",
         [ViewOptionValues.fileContent]: "File Content",
         [ViewOptionValues.explorerFile]: "FileExplorer",
-        [ViewOptionValues.explorerDataClumps]: "Data-Clumps Explorer",
+        [ViewOptionValues.explorerDataClumpsJSON]: "Data-Clumps FileLevel JSON",
+        [ViewOptionValues.explorerDataClumpsCSV]: "Data-Clumps FileLevel CSV",
         [ViewOptionValues.classOrInterfaceDictionary]: "Class/Interface Dictionary",
         [ViewOptionValues.methodsDictionary]: "Methods Dictionary",
     }
 
-    function getViewOptionItemDictClassOrInterface(){
-        let active = selectedViewOption === ViewOptionValues.classOrInterfaceDictionary
+    function getViewOptionItem(viewOptionValue){
+        let active = selectedViewOption === viewOptionValue
 
         return {
-            label: dictLabel[ViewOptionValues.classOrInterfaceDictionary],
+            label: dictLabel[viewOptionValue],
             icon: active ? 'pi pi-check': "pi",
             command: () => {
-                viewOptions[panel] = ViewOptionValues.classOrInterfaceDictionary
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemDictMethods(){
-        let active = selectedViewOption === ViewOptionValues.methodsDictionary
-
-        return {
-            label: dictLabel[ViewOptionValues.methodsDictionary],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.methodsDictionary
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemDataClumpsGraph(){
-        let active = selectedViewOption === ViewOptionValues.dataClumpsGraph
-
-        return {
-            label: dictLabel[ViewOptionValues.dataClumpsGraph],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.dataClumpsGraph
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemDataClumpsDict(){
-        let active = selectedViewOption === ViewOptionValues.dataClumpsDictionary
-
-        return {
-            label: dictLabel[ViewOptionValues.dataClumpsDictionary],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.dataClumpsDictionary
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemFileAst(){
-        let active = selectedViewOption === ViewOptionValues.fileAst
-
-        return {
-            label: dictLabel[ViewOptionValues.fileAst],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.fileAst
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemExplorerFile(){
-        let active = selectedViewOption === ViewOptionValues.explorerFile
-
-        return {
-            label: dictLabel[ViewOptionValues.explorerFile],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.explorerFile
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemFileContent(){
-        let active = selectedViewOption === ViewOptionValues.fileContent
-
-        return {
-            label: dictLabel[ViewOptionValues.fileContent],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.fileContent
-                setViewOptions({...viewOptions})
-            }
-        }
-    }
-
-    function getViewOptionItemExplorerDataClumps(){
-        let active = selectedViewOption === ViewOptionValues.explorerDataClumps
-
-        return {
-            label: dictLabel[ViewOptionValues.explorerDataClumps],
-            icon: active ? 'pi pi-check': "pi",
-            command: () => {
-                viewOptions[panel] = ViewOptionValues.explorerDataClumps
+                viewOptions[panel] = viewOptionValue
                 setViewOptions({...viewOptions})
             }
         }
@@ -149,26 +59,27 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
                     label: "Explorer",
                     icon:'pi pi-fw pi-user',
                     items: [
-                        getViewOptionItemExplorerFile(),
-                        getViewOptionItemExplorerDataClumps(),
+                        getViewOptionItem(ViewOptionValues.explorerFile),
                     ]
                 },
                 {
                     label: "Editor",
                     icon:'pi pi-fw pi-user',
                     items: [
-                        getViewOptionItemFileContent(),
+                        getViewOptionItem(ViewOptionValues.fileContent)
                     ]
                 },
                 {
                     label: "Result",
                     icon:'pi pi-fw pi-user',
                     items: [
-                        getViewOptionItemDataClumpsDict(),
-                        getViewOptionItemFileAst(),
-                        getViewOptionItemDataClumpsGraph(),
-                        getViewOptionItemDictClassOrInterface(),
-                        getViewOptionItemDictMethods(),
+                        getViewOptionItem(ViewOptionValues.dataClumpsDictionary),
+                        getViewOptionItem(ViewOptionValues.fileAst),
+                        getViewOptionItem(ViewOptionValues.dataClumpsGraph),
+                        getViewOptionItem(ViewOptionValues.explorerDataClumpsJSON),
+                        getViewOptionItem(ViewOptionValues.explorerDataClumpsCSV),
+                        getViewOptionItem(ViewOptionValues.classOrInterfaceDictionary),
+                        getViewOptionItem(ViewOptionValues.methodsDictionary),
                         {
                             label:'Speed evaluation (TODO)',
                             disabled: true,

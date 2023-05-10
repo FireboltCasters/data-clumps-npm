@@ -63,7 +63,8 @@ export enum ViewOptionValues {
     dataClumpsGraph = "dataClumpsGraph",
     fileContent = "fileContent",
     explorerFile = "explorerFile",
-    explorerDataClumps = "explorerDataClumps",
+    explorerDataClumpsJSON = "explorerDataClumpsJSON",
+    explorerDataClumpsCSV = "explorerDataClumpsCSV",
     fileAst = "fileAst",
     decorationFieldAndParameters = "decorationFieldAndParameters",
 }
@@ -107,14 +108,14 @@ export function useSynchedActiveFileKey(): [value: any, setValue: (value) => {}]
 
 
 export function useSynchedFileExplorerTree(): [any, ((value) => void)] {
-    const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.softwareProjectTree)
+    const [softwareProjectTree, setSoftwareProjectTree] = useSynchedJSONState(SynchedStates.softwareProjectTree)
     const setTreeWrapper = (tree: any) => {
         //console.log("setTreeWrapper")
         //console.log(tree)
-        setActiveFileKey(tree);
+        setSoftwareProjectTree(tree);
     }
     return [
-        activeFileKey,
+        softwareProjectTree,
         setTreeWrapper
     ];
 }
