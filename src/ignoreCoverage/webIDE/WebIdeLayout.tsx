@@ -59,7 +59,7 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
             <div style={{flex: 1, width: "100%", height: "100vh", backgroundColor: "transparent"}}>
                 <Skeleton width={"100%"} height={"100%"}>
                     <div style={{display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-                        <div style={{padding: "10px", display: "inline-block", flexDirection: "row", backgroundColor: "white", alignItems: "center", justifyContent: "center"}}>
+                        <div style={{padding: "10px", display: "inline-block", flexDirection: "row", backgroundColor: "transparent", alignItems: "center", justifyContent: "center"}}>
                             <div style={{alignItems: 'center',
                                 justifyContent: 'center', display: 'flex'}}>
                                 <div style={{display: "inline-block"}}>
@@ -120,7 +120,7 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
         return renderedPanels;
     }
 
-    function renderWebIDE(){
+    function renderHolder(){
         return(
             <div style={{width: "100%", display: "flex", flexDirection: "row", backgroundColor: "transparent"}}>
                 {/* Render Action bar */}
@@ -145,7 +145,7 @@ export const WebIdeLayout : FunctionComponent<WebIDEProps> = (props: WebIDEProps
 
     return (
             <div style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
-                {renderWebIDE()}
+                {renderHolder()}
             </div>
         );
 }

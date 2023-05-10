@@ -183,8 +183,6 @@ export function isDarkModeEnabled(): any {
 }
 
 
-
-
 /**
 export function useSynchedProject(): [value: SoftwareProject, setValue: (value) => {}] {
     const [projectObj, setProject] = useSynchedJSONState(SynchedStates.softwareProject)

@@ -1,4 +1,4 @@
-import React, {FunctionComponent, ReactNode, useState} from 'react';
+import React, {FunctionComponent, ReactNode} from 'react';
 // default style
 import '@sinm/react-file-tree/styles.css';
 import '@sinm/react-file-tree/icons.css';
