@@ -94,7 +94,7 @@ export class JavaParserMethodExtractor {
 
 
     enterMethodDeclaration(ctx, modifierCtx) {
-        JavaAntlr4CstPrinter.print(modifierCtx, "method modifierCtx");
+        //JavaAntlr4CstPrinter.print(modifierCtx, "method modifierCtx");
         //JavaAntlr4CstPrinter.print(ctx, "methodDeclaration");
 
         let hasOverrideAnnotation = JavaParserHelper.hasMethodOverrideAnnotationFromModifierCtx(modifierCtx);

@@ -2,11 +2,14 @@ import {MyFile} from '../../../../ParsedAstTypes';
 import {TestCaseBaseClassForDataClumps} from "../../../../TestCaseBaseClassForDataClumps";
 
 const FileA = new MyFile('MyCalendar.java', `
-import java.util.Calendar;
+import org.unknown.Calendar;
 
+/**
+ * The annotation for @Override is not given. 
+ * Since we dont know the Calendar class, we cant detect if the method is inherited
+ */
 public class MyCalendar extends Calendar {
 
-	@Override
 	public void setWeekDate(int weekYear, int weekOfYear, int dayOfWeek) {
 		
 	}
@@ -14,16 +17,19 @@ public class MyCalendar extends Calendar {
 }`);
 
 const FileB = new MyFile('MyOtherCalendar.java',`
-import java.util.Calendar;
 
-public class MyOtherCalendar extends Calendar {
+/**
+ * Note we dont extend Calendar
+ * We might analyse this method, but we wont find any other matching method, since MyCalendar is
+ * extending an unknown class, where we don't know if the method is inherited
+ */
+public class MyOtherCalendar {
 
-    @Override // When we want to take hierarchy into account, we dont want to detect Data clumps in overrided methods
 	public void setWeekDate(int weekYear, int weekOfYear, int dayOfWeek) {
 		
 	}
-
-}`);
+}
+`);
 
 export const ExtendingFromJavaAndOverrideMethods = new TestCaseBaseClassForDataClumps(
     'ExtendingFromJavaAndOverrideMethods',

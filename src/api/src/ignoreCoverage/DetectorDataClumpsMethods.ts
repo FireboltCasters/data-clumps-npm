@@ -7,6 +7,7 @@ import {MyAbortController, SoftwareProjectDicts} from "./SoftwareProject";
 export class DetectorOptionsDataClumpsMethods {
     public sharedMethodParametersMinimum: number = 3;
     public sharedMethodParametersHierarchyConsidered: boolean = false;
+    public analyseMethodsWithUnknownHierarchy: boolean = false; // is we dont know all parents (extendings,interfaces) we will ignore the method, since the method might or might not be overrided
 
     public constructor(options: any | DetectorOptionsDataClumpsMethods){
         let keys = Object.keys(options || {});
@@ -61,6 +62,7 @@ export class DetectorDataClumpsMethods {
      */
     private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
 
+        console.log("Analyze method: "+method.key);
         let methodParameters = method.parameters;
 
         let methodParametersKeys = Object.keys(methodParameters);
@@ -70,11 +72,21 @@ export class DetectorDataClumpsMethods {
             return;
         }
 
+        // TODO: check if whole hierarchy is known
+        if(!this.options.analyseMethodsWithUnknownHierarchy){
+            console.log("- check if methods hierarchy is complete")
+            let wholeHierarchyKnown = method.isWholeHierarchyKnown(softwareProjectDicts)
+            if(!wholeHierarchyKnown){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
+                console.log("-- check if methods hierarchy is complete")
+                return; // therefore we stop here
+            }
+        }
+
+
         /* "These methods should not in a same inheritance hierarchy" */
         /* "[...] we should exclude methods inherited from parent-classes. " */
         // it is not enough to check if the classes are in the same hierarchy
         // DataclumpsInspection.java line 376
-        // We can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
         let thisMethodIsInherited = method.isInheritedFromParentClassOrInterface(softwareProjectDicts);
         if(thisMethodIsInherited) { // if the method is inherited
             // then skip this method
@@ -96,14 +108,6 @@ export class DetectorDataClumpsMethods {
      */
     private checkParameterDataClumps(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
         //console.log("Checking parameter data clumps for method " + method.key);
-
-        /**
-         * TODO: DataclumpsInspection.java line 493
-             // avoid checking inherited methods
-             if (!checkHierarchyInParametersInstances && currentMethod.findSuperMethods().length != 0) {
-                return dataclumpParametherLists;
-            }
-         */
 
         let classesOrInterfacesDict = softwareProjectDicts.dictClassOrInterface;
         let otherClassesOrInterfacesKeys = Object.keys(classesOrInterfacesDict);
@@ -135,7 +139,7 @@ export class DetectorDataClumpsMethods {
      * @private
      */
     private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
-        //console.log("Checking method parameters for data clumps for method " + method.key + " and method " + otherMethod.key)
+        console.log("--- otherMethod"+ otherMethod.key)
 
         /**
          * TODO: DataclumpsInspection.java line 548
@@ -162,6 +166,16 @@ export class DetectorDataClumpsMethods {
         if(otherMethodParametersAmount < this.options.sharedMethodParametersMinimum){ // avoid checking methods with less than 3 parameters
             //console.log("Method " + otherMethod.key + " has less than " + this.options.sharedMethodParametersMinimum + " parameters. Skipping this method.")
             return;
+        }
+
+
+        if(!this.options.analyseMethodsWithUnknownHierarchy){
+            console.log("---- check otherMethod wholeHierarchyKnownOfOtherMethod");
+            let wholeHierarchyKnownOfOtherMethod = otherMethod.isWholeHierarchyKnown(softwareProjectDicts)
+            if(!wholeHierarchyKnownOfOtherMethod){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
+                console.log("Other hierarchy not full known");
+                return; // therefore we stop here
+            }
         }
 
         /**

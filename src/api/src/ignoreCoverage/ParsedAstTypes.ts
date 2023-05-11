@@ -128,8 +128,8 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public methods: Dictionary<MethodTypeContext>;
     public fileKey: string;
 
-    public implements: Dictionary<string>;
-    public extends: Dictionary<string>; // Languages that support multiple inheritance include: C++, Common Lisp
+    public implements: string[]
+    public extends: string[] // Languages that support multiple inheritance include: C++, Common Lisp
 
     public definedInClassOrInterfaceTypeKey: string | undefined; // key of the class or interface where this class or interface is defined
 
@@ -146,82 +146,52 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         this.methods = {};
         this.innerDefinedClasses = {};
         this.innerDefinedInterfaces = {};
-        this.implements = {}; //TODO parse what interface we implement
-        this.extends = {}; //TODO parse what class we extend
+        this.implements = [];
+        this.extends = [];
     }
 
-    public getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts: SoftwareProjectDicts){
-        let superClassesAndInterfacesDict = this.getSuperClassesAndInterfacesDict(softwareProjectDicts);
-        let thisHierarchy: ClassOrInterfaceTypeContext[] = [this];
-        let superClassesAndInterfacesKeys = Object.keys(superClassesAndInterfacesDict);
-        for(let i = 0; i < superClassesAndInterfacesKeys.length; i++){
-            let superClassOrInterfaceKey = superClassesAndInterfacesKeys[i];
-            let superClassOrInterface = superClassesAndInterfacesDict[superClassOrInterfaceKey];
-            thisHierarchy = thisHierarchy.concat(superClassOrInterface.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts));
+    public getSuperClassesAndInterfacesKeys(softwareProjectDicts: SoftwareProjectDicts, recursive: boolean): any[] {
+   //     console.log("getSuperClassesAndInterfacesKeys for: "+this.key);
+     //   console.log(this);
+        let foundKeys: Dictionary<string | null> = {};
+
+        let extendingClassesOrInterfacesKeys: string[] = []
+        let extendingKeys = this.extends;
+        for(let extendingKey of extendingKeys){
+            extendingClassesOrInterfacesKeys.push(extendingKey)
+        }
+        let implementsKeys = this.implements;
+        for(let implementsKey of implementsKeys){
+            extendingClassesOrInterfacesKeys.push(implementsKey)
         }
 
-        return thisHierarchy;
-    }
-
-    public getSuperClassesAndInterfacesDict(softwareProjectDicts: SoftwareProjectDicts){
-        let superClassesAndInterfaces: Dictionary<ClassOrInterfaceTypeContext> = {};
-
-        let thisSuperClassesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "extends", {})
-        let thisSuperClassesKeys = Object.keys(thisSuperClassesDict)
-        for(let i = 0; i < thisSuperClassesKeys.length; i++){
-            let superClassKey = thisSuperClassesKeys[i];
-            let superClass = thisSuperClassesDict[superClassKey];
-            superClassesAndInterfaces[superClassKey] = superClass;
-        }
-
-        let thisImplementedInterfacesDict = this.getSuperClassesOrInterfacesDict(softwareProjectDicts, "implements", {})
-        let thisImplementedInterfacesKeys = Object.keys(thisImplementedInterfacesDict)
-        for(let i = 0; i < thisImplementedInterfacesKeys.length; i++){
-            let implementedInterfaceKey = thisImplementedInterfacesKeys[i];
-            let implementedInterface = thisImplementedInterfacesDict[implementedInterfaceKey];
-            superClassesAndInterfaces[implementedInterfaceKey] = implementedInterface;
-        }
-
-        return superClassesAndInterfaces;
-    }
-
-    public getSuperClassesOrInterfacesDict(softwareProjectDicts: SoftwareProjectDicts, extendsOrInterfacesFieldKey: string, passedSuperClasses: Dictionary<ClassOrInterfaceTypeContext>){
-        let currentClass = this;
-        let extendsDict = currentClass[extendsOrInterfacesFieldKey];
-        let extendsKeys = Object.keys(extendsDict);
-
-        for(let i = 0; i < extendsKeys.length; i++){
-            let extendsKey = extendsKeys[i];
-            let extendsClassOrInterfaceKey = extendsDict[extendsKey];
-            let superClassOrInterface = softwareProjectDicts.dictClassOrInterface[extendsClassOrInterfaceKey]
-            if(!superClassOrInterface){
-                //console.log("ERROR: superClass not found for key: "+extendsClassOrInterfaceKey)
-                // javax.swing.JPanel // so standard bibs cant be found
-                // org.tigris.gef.undo.UndoableAction // and custom bibs cant be found
-                // TODO we should mark them as superclasses and interfaces so we can still use them for the hierarchy
-                // We get here another problem:
-                // A extends UnknownSuperClassA
-                // B extends UnknownSuperClassB
-                // UnknownSuperClassB extends UnknownSuperClass A
-                // Since we dont know anything about the UnknownSuperClasses we cant know if they are in a hierarchy
-                // Therefore we would need technically the imports and packages.
-                let name = extendsClassOrInterfaceKey.split(".").pop();
-                passedSuperClasses[extendsClassOrInterfaceKey] = new ClassOrInterfaceTypeContext(extendsClassOrInterfaceKey, name, "unkown", new MyFile("", ""));
-            } else {
-                if(!!passedSuperClasses){
-                    if(!passedSuperClasses[superClassOrInterface.key]){
-                        // save the class or interface in the dict
-                        passedSuperClasses[superClassOrInterface.key] = superClassOrInterface;
-
-                        // get the superclasses of the superclass
-                        superClassOrInterface.getSuperClassesOrInterfacesDict(softwareProjectDicts, extendsOrInterfacesFieldKey, passedSuperClasses);
-                    } else {
-//                        console.log("ERROR: superClass already in passedSuperClasses: "+superClass.key);
+      //  console.log("implements and extends");
+    //    console.log(JSON.parse(JSON.stringify(extendingClassesOrInterfacesKeys)))
+        for(let extendingClassesOrInterfacesKey of extendingClassesOrInterfacesKeys){
+            let newFinding = !foundKeys[extendingClassesOrInterfacesKey];
+            if(newFinding){
+                foundKeys[extendingClassesOrInterfacesKey] = extendingClassesOrInterfacesKey;
+                if(recursive){
+                    let foundClassOrInterface = softwareProjectDicts.dictClassOrInterface[extendingClassesOrInterfacesKey];
+                    if(!!foundClassOrInterface){
+  //                      console.log("--> Recursive call for: "+foundClassOrInterface.key)
+                        let recursiveFindings = foundClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, recursive);
+//                        console.log("<-- Recursive call endet");
+                        for(let recursiveFindingKey of recursiveFindings){
+                            let newRecursiveFinding = !foundKeys[recursiveFindingKey];
+                            if(newRecursiveFinding){
+                                foundKeys[recursiveFindingKey] = recursiveFindingKey;
+                            }
+                        }
                     }
                 }
             }
         }
-        return passedSuperClasses;
+
+        let superClassesAndInterfacesKeys = Object.keys(foundKeys);
+        //console.log("Returning: ")
+        //console.log(superClassesAndInterfacesKeys)
+        return superClassesAndInterfacesKeys;
     }
 }
 
@@ -300,42 +270,63 @@ export class MethodTypeContext extends AstElementTypeContext{
         return hasSameSignature;
     }
 
-    public isInheritedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
-        console.log("check isInheriatedFromParentClassOrInterface")
-        console.log("this: "+this.key)
+    public isWholeHierarchyKnown(softwareProjectDicts: SoftwareProjectDicts){
+        // TODO: check if we can find all parents
+        console.log("isWholeHierarchyKnown?")
+        console.log("softwareProjectDicts.dictClassOrInterface")
+        console.log(softwareProjectDicts.dictClassOrInterface);
 
-        console.log("Do we have an @Override annotation: "+this.overrideAnnotation);
-        if(this.overrideAnnotation){
-            console.log("So we dont event look further and say we are inherited");
-            return true;
+        let currentClassOrInterfaceKey = this.classOrInterfaceKey;
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
+        let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
+        console.log(superClassesOrInterfacesKeys);
+        for(let superClassesOrInterfaceKey of superClassesOrInterfacesKeys){
+            let superClassesOrInterface = softwareProjectDicts.dictClassOrInterface[superClassesOrInterfaceKey];
+            if(!superClassesOrInterface){
+                console.log("Found no superClassesOrInterface for: "+superClassesOrInterfaceKey);
+                console.log("The hierarchy is therefore not complete");
+                return false;
+            }
         }
 
-        let isInheriated = false;
+        return true;
+    }
+
+    public isInheritedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
+        // In Java we can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
+        if(this.overrideAnnotation){
+            return true;
+        }
+        // Since the @Override is not mandatory, we need to dig down deeper by ourself
+
+        let isInherited = false;
         let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[this.classOrInterfaceKey];
         if(currentClassOrInterface){
-            // TODO: we should check if all superClassesAndInterfaces are found
-            // If we extend/implement a file we dont know, we cant tell if we override the method
+            // DONE: we should check if all superClassesAndInterfaces are found
+            // We will check this in DetectorDataClumpsMethods.ts with method: isWholeHierarchyNotKnown(
 
-            let superClassesOrInterfacesDict = currentClassOrInterface.getSuperClassesAndInterfacesDict(softwareProjectDicts);
-            let superClassesOrInterfacesKeys = Object.keys(superClassesOrInterfacesDict);
+            let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
             for(let superClassOrInterfaceKey of superClassesOrInterfacesKeys){
                 console.log("superClassOrInterfaceKey: "+superClassOrInterfaceKey)
-                let superClassOrInterface = superClassesOrInterfacesDict[superClassOrInterfaceKey];
+                let superClassOrInterface = softwareProjectDicts.dictClassOrInterface[superClassOrInterfaceKey];
                 if(!!superClassOrInterface){
                     let superClassOrInterfaceMethodsDict = superClassOrInterface.methods;
                     let superClassOrInterfaceMethodsKeys = Object.keys(superClassOrInterfaceMethodsDict);
                     for(let superClassOrInterfaceMethodsKey of superClassOrInterfaceMethodsKeys){
                         console.log("-- superClassOrInterfaceMethodsKey: "+superClassOrInterfaceMethodsKey)
                         let superClassOrInterfaceMethod = superClassOrInterfaceMethodsDict[superClassOrInterfaceMethodsKey];
-                        if(superClassOrInterfaceMethod.hasSameSignatureAs(this)){
-                            isInheriated = true;
-                            return isInheriated;
+                        if(this.hasSameSignatureAs(superClassOrInterfaceMethod)){
+                            isInherited = true;
+                            return isInherited;
                         }
                     }
+                } else {
+                    console.log("A superClassOrInterface could not be found: "+superClassOrInterfaceKey)
+                    console.log("It might be, that this is a library import")
                 }
             }
         }
         console.log("++++++++++++++")
-        return isInheriated;
+        return isInherited;
     }
 }

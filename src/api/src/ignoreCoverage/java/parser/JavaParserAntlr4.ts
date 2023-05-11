@@ -115,6 +115,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         //JavaAntlr4CstPrinter.print(importDeclaration, "import declaration");
         // @ts-ignore
         let importDeclarationText = ""+importDeclaration.getText();
+
         // remove the "import" keyword at the beginning and the semicolon at the end
         let importKeyword = "import";
         importDeclarationText = importDeclarationText.substring(importKeyword.length, importDeclarationText.length);
@@ -217,6 +218,9 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
         currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...importDeclarationClassesAndInterfaces};
 
+        console.log("currentVisibleClassesAndInterfaces");
+        console.log(currentVisibleClassesAndInterfaces);
+
         for(let classesCst of classesCstList){
             this.preParseClassOrInterfaceCst(classesCst, null, file, ownPackageName, currentVisibleClassesAndInterfaces, currentVisibleVariables, options);
         }
@@ -226,14 +230,10 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
     }
 
     preParseClassOrInterfaceCst(classCst, interfaceCst, file: MyFile, ownPackageName: string | null, currentVisibleClassesAndInterfaces: any, currentVisibleVariables: any, options: ParserOptions){
-
         if(!!classCst || !!interfaceCst){ // if our file has a class or interface
-
-
-
             // 4. Get the class or interface body
             if(!!classCst){
-                //console.log("Found class at the top of the file: "+file.path)
+                console.log("Found class at the top of the file: "+file.path)
                 let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 classExtractor.parse();
                 this.saveClassOrInterfaceToFile(classExtractor, file);
