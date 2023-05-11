@@ -30,6 +30,8 @@ import {AnonymousClass} from "./classes/AnonymousClass";
 import {ExtremeGenericClass} from "./classes/ExtremeGenericClass";
 import {SimpleFields} from "./fields/SimpleFields";
 import {MultipleClassInOneFile} from "./classes/MultipleClassInOneFile";
+import {ExtendingClassFromJava} from "./extends/ExtendingClassFromJava";
+import {ExtendingClassFromUnknownPackage} from "./extends/ExtendingClassFromUnknownPackage";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -61,7 +63,9 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
             ExtendingClassWithWildcardImport,
             InterfaceExtendsInterfaces,
             ExtendingClassWithQualifiedName,
-            ExtendsInterfaceWithQualifiedName
+            ExtendsInterfaceWithQualifiedName,
+            ExtendingClassFromJava,
+            ExtendingClassFromUnknownPackage
         ],
     []
     );

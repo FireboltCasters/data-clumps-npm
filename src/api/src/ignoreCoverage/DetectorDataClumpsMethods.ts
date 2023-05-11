@@ -75,7 +75,7 @@ export class DetectorDataClumpsMethods {
         // it is not enough to check if the classes are in the same hierarchy
         // DataclumpsInspection.java line 376
         // We can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
-        let thisMethodIsInherited = method.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
+        let thisMethodIsInherited = method.isInheritedFromParentClassOrInterface(softwareProjectDicts);
         if(thisMethodIsInherited) { // if the method is inherited
             // then skip this method
             return;
@@ -179,7 +179,7 @@ export class DetectorDataClumpsMethods {
             if(method.hasSameSignatureAs(otherMethod)) { // if the methods have the same signature
                 //console.log("Method " + method.key + " has the same signature as method " + otherMethod.key + "")
                 // we already checked if our method is inherited, now we check if the other method is inherited
-                let otherMethodIsInherited = otherMethod.isInheriatedFromParentClassOrInterface(softwareProjectDicts);
+                let otherMethodIsInherited = otherMethod.isInheritedFromParentClassOrInterface(softwareProjectDicts);
                 if(otherMethodIsInherited) { // if the method is inherited
                     // then skip this method
                     return;

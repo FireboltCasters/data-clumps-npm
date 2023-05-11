@@ -80,6 +80,18 @@ export class JavaParserHelper {
         }
     }
 
+    static hasMethodOverrideAnnotationFromModifierCtx(ctx){
+        let annotations = JavaParserHelper.getChildrenByTypeInnerList(ctx, "modifier", "classOrInterfaceModifier", "annotation");
+        for(let annotation of annotations){
+            let annotationText = annotation.getText() || "";
+            console.log("annotationText: "+annotationText);
+            if(annotationText.includes("@Override")){
+                return true;
+            }
+        }
+        return false;
+    }
+
     static getModifiers(ctx){
         let modifiers = [];
         let amountOfChildren = !!ctx?.children ? ctx.children.length : 0;

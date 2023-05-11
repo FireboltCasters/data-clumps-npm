@@ -4,6 +4,7 @@ import {ParametersWithModifiers} from "./parametersWithModifiers/ParametersWithM
 import {TestCaseBaseClassGroup} from "../../../TestCaseBaseClass";
 import {SerialVersionUID} from "./specialFields/SerialVersionUID";
 import {ChildrenWithMethods} from "./hierarchy/ChildrenWithMethods";
+import {ExtendingFromJavaAndOverrideMethods} from "./hierarchy/ExtendingFromJavaAndOverrideMethods";
 
 export class Negative extends TestCaseBaseClassForDataClumps{
 
@@ -23,6 +24,7 @@ export class Negative extends TestCaseBaseClassForDataClumps{
         "Hierarchy",
         [
             ChildrenWithMethods,
+            ExtendingFromJavaAndOverrideMethods
     ], []);
 
     static specialFields : TestCaseBaseClassGroup = new TestCaseBaseClassGroup(

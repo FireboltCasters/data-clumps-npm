@@ -94,6 +94,11 @@ export class JavaParserMethodExtractor {
 
 
     enterMethodDeclaration(ctx, modifierCtx) {
+        JavaAntlr4CstPrinter.print(modifierCtx, "method modifierCtx");
+        //JavaAntlr4CstPrinter.print(ctx, "methodDeclaration");
+
+        let hasOverrideAnnotation = JavaParserHelper.hasMethodOverrideAnnotationFromModifierCtx(modifierCtx);
+
         // get visibility from parent
         let modifiers = JavaParserHelper.getModifiers(modifierCtx);
         //method["position"] = custom_getPosition(ctx.parentCtx.parentCtx);
@@ -104,19 +109,20 @@ export class JavaParserMethodExtractor {
         let formalParameters = ctx.children[2];
 
         // create an empty method, so that we can use it to get parameters
-        let methodPlaceholder: MethodTypeContext = new MethodTypeContext("", methodName, "method", this.classOrInterface);
+        let methodPlaceholder: MethodTypeContext = new MethodTypeContext("", methodName, "method", hasOverrideAnnotation, this.classOrInterface);
         // lets get the parameters but with incorrect methodplaceholder
         let parametersPlaceholder = this.custom_getFormalParameters(formalParameters, methodPlaceholder);
 
         // lets get the correct method signature from the names of the parameters
         let methodSignature = methodName + "("+parametersPlaceholder.map(p=>p.name).join(",")+")";
         // create the correct method
-        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, "method", this.classOrInterface);
+        let method: MethodTypeContext = new MethodTypeContext(methodSignature, methodName, "method", hasOverrideAnnotation, this.classOrInterface);
         method.modifiers = modifiers;
         // create the correct parameters
         let parameters = this.custom_getFormalParameters(formalParameters, method);
         // get return type
-        let returnType = ctx.children[0].getText();
+        // TODO: this is not correct way to get return type:
+        let returnType = ctx.children[0].getText(); // Example: public void int method()[] {return new int[0];} is returning an array
         method.returnType = returnType;
         // get visibility
 
@@ -129,7 +135,7 @@ export class JavaParserMethodExtractor {
         //TODO: get body
         // search for anonymous class and interface declarations
         // See anonymous class test case
-        //JavaAntlr4CstPrinter.print(ctx, "methodDeclaration");
+
 
 
         // @ts-ignore

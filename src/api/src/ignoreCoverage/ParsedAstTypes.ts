@@ -150,45 +150,6 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         this.extends = {}; //TODO parse what class we extend
     }
 
-    /**
-     * This means, that our or the other class is a subclass of the other
-     * It does not mean that they have a common hierarchy
-     * The function is called isSubclassOf if they are classes and isSubinterfaceOf if they are interfaces
-     * Together they are called isSubtypeOf
-     * PsiUtils.java line 362
-     */
-    public isSubtypeOf(otherClass: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts){
-        // TODO: do we need PsiUtils.java line 360
-
-        // PsiUtils.java line 363
-        let thisHierarchy = this.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
-        let otherHierarchy = otherClass.getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts);
-
-        // PsiUtils.java line 371 is not correct, because it checks if they have a common hierarchy
-
-        let areWeInOtherHierarchy = false;
-        for(let otherOrParents of otherHierarchy){
-            if(otherOrParents.key === this.key){
-                areWeInOtherHierarchy = true;
-                break;
-            }
-        }
-
-        let areTheyInOurHierarchy = false;
-        for(let thisOrParents of thisHierarchy){
-            if(thisOrParents.key === otherClass.key){
-                areTheyInOurHierarchy = true;
-                break;
-            }
-        }
-
-        let isSubtypeOf = areWeInOtherHierarchy || areTheyInOurHierarchy;
-
-        return isSubtypeOf;
-    }
-
-
-
     public getHierarchyForSuperClassesAndImplementedInterfaces(softwareProjectDicts: SoftwareProjectDicts){
         let superClassesAndInterfacesDict = this.getSuperClassesAndInterfacesDict(softwareProjectDicts);
         let thisHierarchy: ClassOrInterfaceTypeContext[] = [this];
@@ -238,6 +199,12 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
                 // javax.swing.JPanel // so standard bibs cant be found
                 // org.tigris.gef.undo.UndoableAction // and custom bibs cant be found
                 // TODO we should mark them as superclasses and interfaces so we can still use them for the hierarchy
+                // We get here another problem:
+                // A extends UnknownSuperClassA
+                // B extends UnknownSuperClassB
+                // UnknownSuperClassB extends UnknownSuperClass A
+                // Since we dont know anything about the UnknownSuperClasses we cant know if they are in a hierarchy
+                // Therefore we would need technically the imports and packages.
                 let name = extendsClassOrInterfaceKey.split(".").pop();
                 passedSuperClasses[extendsClassOrInterfaceKey] = new ClassOrInterfaceTypeContext(extendsClassOrInterfaceKey, name, "unkown", new MyFile("", ""));
             } else {
@@ -292,15 +259,17 @@ export class MethodParameterTypeContext extends ParameterTypeContext{
 
 export class MethodTypeContext extends AstElementTypeContext{
     public modifiers: string[];
+    public overrideAnnotation: boolean
     public returnType: string | undefined;
     public parameters: MethodParameterTypeContext[];
     public classOrInterfaceKey: string;
 
-    public constructor(key, name, type, classOrInterface: ClassOrInterfaceTypeContext){
+    public constructor(key, name, type, overrideAnnotation: boolean, classOrInterface: ClassOrInterfaceTypeContext){
         super(classOrInterface.key+"/method/"+key, name, type);
         this.modifiers = [];
         this.parameters = [];
         this.classOrInterfaceKey = classOrInterface.key;
+        this.overrideAnnotation = overrideAnnotation;
     }
 
     public getMethodSignature(){
@@ -331,12 +300,22 @@ export class MethodTypeContext extends AstElementTypeContext{
         return hasSameSignature;
     }
 
-    public isInheriatedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
+    public isInheritedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
         console.log("check isInheriatedFromParentClassOrInterface")
         console.log("this: "+this.key)
+
+        console.log("Do we have an @Override annotation: "+this.overrideAnnotation);
+        if(this.overrideAnnotation){
+            console.log("So we dont event look further and say we are inherited");
+            return true;
+        }
+
         let isInheriated = false;
         let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[this.classOrInterfaceKey];
         if(currentClassOrInterface){
+            // TODO: we should check if all superClassesAndInterfaces are found
+            // If we extend/implement a file we dont know, we cant tell if we override the method
+
             let superClassesOrInterfacesDict = currentClassOrInterface.getSuperClassesAndInterfacesDict(softwareProjectDicts);
             let superClassesOrInterfacesKeys = Object.keys(superClassesOrInterfacesDict);
             for(let superClassOrInterfaceKey of superClassesOrInterfacesKeys){
