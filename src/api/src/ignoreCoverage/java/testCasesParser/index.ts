@@ -32,6 +32,7 @@ import {SimpleFields} from "./fields/SimpleFields";
 import {MultipleClassInOneFile} from "./classes/MultipleClassInOneFile";
 import {ExtendingClassFromJava} from "./extends/ExtendingClassFromJava";
 import {ExtendingClassFromUnknownPackage} from "./extends/ExtendingClassFromUnknownPackage";
+import {NestedInnerInterfaces} from "./classes/NestedInnerInterfaces";
 
 export class JavaTestCasesParser extends TestCaseBaseClassGroup {
 
@@ -89,7 +90,8 @@ export class JavaTestCasesParser extends TestCaseBaseClassGroup {
             NestedInnerClassesExplicitType,
             GenericClass,
             ExtremeGenericClass,
-            MultipleClassInOneFile
+            MultipleClassInOneFile,
+            NestedInnerInterfaces
         ],
         []
     );

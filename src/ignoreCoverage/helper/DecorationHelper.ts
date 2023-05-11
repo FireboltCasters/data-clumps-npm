@@ -4,24 +4,19 @@ import {Dictionary} from "../../api/src/ignoreCoverage/UtilTypes";
 
 export default class DecorationHelper extends Component {
 
-    static getDecorationForFields(ast: Dictionary<ClassOrInterfaceTypeContext>){
+    static getDecorationForFields(classOrInterface: ClassOrInterfaceTypeContext){
         console.log("getDecorationForFields")
-        console.log(ast)
         let decoration: any[] = [];
-        if(!ast){
+        if(!classOrInterface){
             return decoration;
         }
 
-        let classesOrInterfacesKeys = Object.keys(ast);
-        for(let i = 0; i < classesOrInterfacesKeys.length; i++){
-            let classOrInterfaceKey = classesOrInterfacesKeys[i];
-            let classOrInterface = ast[classOrInterfaceKey];
-
-            let fields = classOrInterface.fields || {};
-            let fieldKeys = Object.keys(fields);
-            for(let i = 0; i < fieldKeys.length; i++){
-                let fieldKey = fieldKeys[i];
-                let field = fields[fieldKey];
+        let fields = classOrInterface.fields || {};
+        let fieldKeys = Object.keys(fields);
+        for(let i = 0; i < fieldKeys.length; i++){
+            let fieldKey = fieldKeys[i];
+            let field = fields[fieldKey];
+            if(!!field){
                 let position = field.position;
                 let hoverMessage = field.modifiers?.join(" ")+" "+field.type+" "+field.name;
                 console.log("position")
@@ -51,32 +46,28 @@ export default class DecorationHelper extends Component {
     }
 
 
-    static getDecorationForParameters(ast: Dictionary<ClassOrInterfaceTypeContext>){
+    static getDecorationForParameters(classOrInterface: ClassOrInterfaceTypeContext){
         //console.log("getDecorationForParameters")
         //console.log(ast)
         let decoration: any[] = [];
 
-        if(!ast){
+        if(!classOrInterface){
             return decoration;
         }
 
-        let classesOrInterfacesKeys = Object.keys(ast);
-        for(let classOrInterfaceKey of classesOrInterfacesKeys){
-            //console.log("classOrInterfaceKey")
-            //console.log(classOrInterfaceKey)
-            let classOrInterface = ast[classOrInterfaceKey];
 
-            let methods = classOrInterface.methods || {};
-            let methodKeys = Object.keys(methods);
-            for(let methodKey of methodKeys){
-                //console.log("methodKey")
-                //console.log(methodKey)
-                let method = methods[methodKey];
+        let methods = classOrInterface.methods || {};
+        let methodKeys = Object.keys(methods);
+        for(let methodKey of methodKeys){
+            //console.log("methodKey")
+            //console.log(methodKey)
+            let method = methods[methodKey];
 
-                let parameters = method.parameters || {};
-                let parameterKeys = Object.keys(parameters);
-                for(let paremterKey of parameterKeys){
-                    let parameter = parameters[paremterKey];
+            let parameters = method.parameters || {};
+            let parameterKeys = Object.keys(parameters);
+            for(let paremterKey of parameterKeys){
+                let parameter = parameters[paremterKey];
+                if(!!parameter){
                     let position = parameter.position;
                     let hoverMessage = parameter.modifiers?.join(" ")+" "+parameter.type+" "+parameter.name;
 
@@ -109,12 +100,38 @@ export default class DecorationHelper extends Component {
         return decoration;
     }
 
-    static getDecorationForFieldsAndParameters(ast: Dictionary<ClassOrInterfaceTypeContext>){
+    static getDecorationForFieldsAndParametersRecursive(ast: Dictionary<ClassOrInterfaceTypeContext>, recursive: boolean){
         //console.log("getDecorationForFieldsAndParameters")
         //console.log(ast)
         let decoration: any[] = [];
-        decoration.push(...DecorationHelper.getDecorationForFields(ast));
-        decoration.push(...DecorationHelper.getDecorationForParameters(ast));
+
+        let classesOrInterfacesKeys = Object.keys(ast);
+        for(let i = 0; i < classesOrInterfacesKeys.length; i++) {
+            let classOrInterfaceKey = classesOrInterfacesKeys[i];
+            let classOrInterface = ast[classOrInterfaceKey];
+
+            decoration.push(...DecorationHelper.getDecorationForFields(classOrInterface));
+            decoration.push(...DecorationHelper.getDecorationForParameters(classOrInterface));
+
+            if(recursive){
+                let innerDefinedClasses = classOrInterface.innerDefinedClasses;
+                decoration.push(...DecorationHelper.getDecorationForFieldsAndParametersRecursive(innerDefinedClasses, recursive));
+
+                let innerDefinedInterfaces = classOrInterface.innerDefinedInterfaces;
+                decoration.push(...DecorationHelper.getDecorationForFieldsAndParametersRecursive(innerDefinedInterfaces, recursive));
+            }
+
+        }
+
+        return decoration;
+    }
+
+    static getDecorationForFieldsAndParameters(ast: Dictionary<ClassOrInterfaceTypeContext>){
+        //console.log("getDecorationForFieldsAndParameters")
+        //console.log(ast)
+        let decoration: any[] = DecorationHelper.getDecorationForFieldsAndParametersRecursive(ast, true);
+        //console.log("decoration final");
+        //console.log(decoration);
 
         return decoration;
     }
