@@ -1,6 +1,6 @@
 {
   "name": "data-clumps",
-  "version": "0.1.60",
+  "version": "0.1.61",
   "description": "This is a package to identify data-clumps",
   "main": "index.js",
   "types": "index.d.ts",
