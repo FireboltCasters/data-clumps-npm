@@ -119,13 +119,11 @@ export class DetectorDataClumpsFields {
         let fieldParameters = currentClass.fields;
         let fieldParameterKeys = Object.keys(fieldParameters);
         for (let fieldKey of fieldParameterKeys) {
-            // TODO: we should exclude special fields like serialVersionUID
-            // and fields which must be unique like serialVersionID, serialPersistentFields
-            // TODO: what about loggers?
-
-
             let fieldParameter = fieldParameters[fieldKey];
-            classParameters.push(fieldParameter);
+            if(!fieldParameter.ignore){
+                // DONE: The parser itself should set the Flag if we should ignore this field.
+                classParameters.push(fieldParameter);
+            }
         }
 
         // A class can inherit all members from its superclass

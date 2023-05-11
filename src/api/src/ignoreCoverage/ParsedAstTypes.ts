@@ -16,10 +16,12 @@ export class AstElementTypeContext {
 
 export class ParameterTypeContext extends AstElementTypeContext{
     public modifiers: string[] | undefined;
+    public ignore: boolean;
 
-    public constructor(key, name, type, modifiers){
+    public constructor(key, name, type, modifiers, ignore){
         super(key, name, type);
         this.modifiers = modifiers;
+        this.ignore = ignore;
     }
 
     public isSimilarTo(otherParameter: ParameterTypeContext){
@@ -199,8 +201,8 @@ export class MemberFieldParameterTypeContext extends ParameterTypeContext{
     public memberFieldKey: string | undefined;
     public classOrInterfaceKey: string;
 
-    public constructor(key, name, type, modifiers, classOrInterface: ClassOrInterfaceTypeContext){
-        super(classOrInterface.key+"/"+"memberParameter"+"/"+key, name, type, modifiers);
+    public constructor(key, name, type, modifiers, ignore, classOrInterface: ClassOrInterfaceTypeContext){
+        super(classOrInterface.key+"/"+"memberParameter"+"/"+key, name, type, modifiers, ignore);
         this.classOrInterfaceKey = classOrInterface.key;
     }
 }
@@ -221,8 +223,8 @@ export class MemberFieldTypeContext extends AstElementTypeContext{
 export class MethodParameterTypeContext extends ParameterTypeContext{
     public methodKey: string;
 
-    public constructor(key, name, type, modifiers, method: MethodTypeContext){
-        super(method.key+"/"+key, name, type, modifiers);
+    public constructor(key, name, type, modifiers, ignore, method: MethodTypeContext){
+        super(method.key+"/"+key, name, type, modifiers, ignore);
         this.methodKey = method.key;
     }
 }

@@ -34,7 +34,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
         let active = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters
 
         return {
-            label:'Highlight Field and Parameters',
+            label:'Highlight suitable Field and Parameters',
             icon: active ? 'pi pi-check': "pi",
             command: () => {
                 viewOptions.editor = ViewOptionValues.decorationFieldAndParameters

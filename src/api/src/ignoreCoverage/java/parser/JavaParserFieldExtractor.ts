@@ -5,13 +5,13 @@ import {
     MemberFieldTypeContext
 } from "./../../ParsedAstTypes";
 import {JavaParserFieldAndParameterTypeExtractor} from "./JavaParserFieldAndParameterTypeExtractor";
-import {JavaAntlr4CstPrinter} from "../util/JavaAntlr4CstPrinter";
 
 export class JavaParserFieldExtractor {
     public field: MemberFieldTypeContext;
     public classOrInterface: ClassOrInterfaceTypeContext;
     public currentVisibleClassOrInterface: any;
     public includePosition: boolean;
+
     constructor(classOrInterface: ClassOrInterfaceTypeContext, currentVisibleClassOrInterface: any, ctx, includePosition: boolean) {
         this.includePosition = includePosition;
         this.currentVisibleClassOrInterface = currentVisibleClassOrInterface;
@@ -82,7 +82,9 @@ export class JavaParserFieldExtractor {
                         parameterPosition.endColumn = parameterPosition.startColumn + variableName.length;
                         parameterPosition.endLine = parameterPosition.startLine; // since the end of the declaration might be on the next line, we set it to the same line but we want the end of the variable name
 
-                        let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, this.classOrInterface);
+                        let ignore = this.shouldIgnore(variableName);
+
+                        let parameter = new MemberFieldParameterTypeContext(variableName, variableName, type, modifiers, ignore, this.classOrInterface);
                         parameter.position = parameterPosition
                         parameters.push(parameter);
                     }
@@ -113,6 +115,22 @@ export class JavaParserFieldExtractor {
         }
 
         return field;
+    }
+
+    private shouldIgnore(variableName){
+        // DONE: we should exclude special fields
+
+        // like serialVersionUID, serialPersistentFields
+        if(variableName==="serialVersionUID"){
+            return true;
+        }
+        if(variableName==="serialPersistentFields"){
+            return true;
+        }
+
+        // TODO: what about loggers?
+
+        return false;
     }
 
 }

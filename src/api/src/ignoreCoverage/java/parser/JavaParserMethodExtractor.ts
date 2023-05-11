@@ -47,7 +47,9 @@ export class JavaParserMethodExtractor {
         let variableIdentifier = JavaParserHelper.getChildByType(variableDeclaratorId, "identifier");
         let variableName = variableIdentifier.getText(); // get the name of the variable
 
-        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(variableName, variableName, type, modifiers, method);
+        let ignore = false; // TODO: check if in java we should ignore some parameters, like for fields: serialVersionUID
+
+        let parameter: MethodParameterTypeContext = new MethodParameterTypeContext(variableName, variableName, type, modifiers, ignore, method);
 
         if(this.includePosition){
             let parameterPosition = JavaParserHelper.custom_getPosition(variableDeclaratorId);
