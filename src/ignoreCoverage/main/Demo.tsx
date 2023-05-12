@@ -89,7 +89,7 @@ export const Demo : FunctionComponent = (props) => {
 
     async function generateAstCallback(message, index, total): Promise<void> {
         let content = `${index}/${total}: ${message}`;
-        let isEveryHundreds = index % 100 === 0;
+        let isEveryHundreds = index % 10 === 0;
         let firstAndSecond = index === 0 || index === 1;
         let lastAndPreLast = index === total - 1 || index === total - 2;
         if(firstAndSecond || isEveryHundreds || lastAndPreLast) {
