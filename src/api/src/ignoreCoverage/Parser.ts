@@ -1,4 +1,4 @@
-import {JavaLanguageSupport} from "./java";
+import {JavaLanguageSupport} from "./languages/java";
 import {SoftwareProject, MyAbortController} from "./SoftwareProject";
 import {ClassOrInterfaceTypeContext, MyFile} from "./ParsedAstTypes";
 import {Dictionary} from "./UtilTypes";

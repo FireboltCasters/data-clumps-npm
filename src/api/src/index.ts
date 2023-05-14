@@ -2,7 +2,7 @@
 import {antlr4} from "./ignoreCoverage/util/MyAntlr4";
 import {SoftwareProject, MyAbortController, SoftwareProjectDicts} from "./ignoreCoverage/SoftwareProject";
 import * as ParsedAstTypes from "./ignoreCoverage/ParsedAstTypes";
-import {JavaLanguageSupport} from "./ignoreCoverage/java/"
+import {JavaLanguageSupport} from "./ignoreCoverage/languages/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
 import {TestCaseBaseClassForDataClumps} from "./ignoreCoverage/TestCaseBaseClassForDataClumps";
 import {ParserOptions} from "./ignoreCoverage/Parser";

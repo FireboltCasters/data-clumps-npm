@@ -6,7 +6,7 @@ import {
   MethodTypeContext,
   MyFile
 } from "./ParsedAstTypes";
-import {Detector} from "./Detector";
+import {Detector} from "./detector/Detector";
 import {DataClumpsTypeContext} from "./DataClumpTypes";
 import {Dictionary} from "./UtilTypes";
 

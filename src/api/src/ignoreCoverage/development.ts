@@ -1,4 +1,4 @@
-import {JavaLanguageSupport} from "./java";
+import {JavaLanguageSupport} from "./languages/java";
 import {SoftwareProject} from "./SoftwareProject";
 
 async function main() {

@@ -26,7 +26,7 @@ import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZ
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
 import {ParserOptions, SoftwareProject} from "../../api/src";
-import {DetectorOptions} from "../../api/src/ignoreCoverage/Detector";
+import {DetectorOptions} from "../../api/src/ignoreCoverage/detector/Detector";
 import DecorationHelper from "../helper/DecorationHelper";
 import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
