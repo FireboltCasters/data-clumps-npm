@@ -1,11 +1,11 @@
-import {SoftwareProject, SoftwareProjectDicts} from "./../SoftwareProject";
-import {Dictionary} from "./../UtilTypes";
+import {SoftwareProject, SoftwareProjectDicts} from "../SoftwareProject";
+import {Dictionary} from "../UtilTypes";
 import {
     DataClumpsParameterFromContext,
     DataClumpsParameterToContext,
     DataClumpsParameterTypeRelatedToContext
-} from "./../DataClumpTypes";
-import {ClassOrInterfaceTypeContext, MethodTypeContext, MyFile, ParameterTypeContext} from "./../ParsedAstTypes";
+} from "../DataClumpTypes";
+import {ClassOrInterfaceTypeContext, MethodTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
 
 type ParameterPair = {
     parameterKey: string;

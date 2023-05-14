@@ -1,8 +1,8 @@
-import {MyAbortController, SoftwareProject, SoftwareProjectDicts} from "./../SoftwareProject";
+import {MyAbortController, SoftwareProject, SoftwareProjectDicts} from "../SoftwareProject";
 import {DetectorDataClumpsMethods, DetectorOptionsDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields, DetectorOptionsDataClumpsFields} from "./DetectorDataClumpsFields";
-import {DataClumpsTypeContext} from "./../DataClumpTypes";
-import {Timer} from "./../Timer";
+import {DataClumpsTypeContext} from "../DataClumpTypes";
+import {Timer} from "../Timer";
 
 export class DetectorOptions {
     public optionsDataClumpsMethod: DetectorOptionsDataClumpsMethods

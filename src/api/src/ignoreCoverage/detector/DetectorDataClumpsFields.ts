@@ -1,10 +1,10 @@
 
 import {DetectorUtils} from "./DetectorUtils";
-import {Dictionary} from "./UtilTypes";
+import {Dictionary} from "./../UtilTypes";
 
-import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./DataClumpTypes";
-import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./ParsedAstTypes";
-import {MyAbortController, SoftwareProjectDicts} from "./SoftwareProject";
+import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./../DataClumpTypes";
+import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./../ParsedAstTypes";
+import {MyAbortController, SoftwareProjectDicts} from "./../SoftwareProject";
 
 export class DetectorOptionsDataClumpsFields {
     public sharedFieldParametersMinimum: number = 3;
