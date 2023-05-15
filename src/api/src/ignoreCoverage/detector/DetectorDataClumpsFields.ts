@@ -1,35 +1,33 @@
-
 import {DetectorUtils} from "./DetectorUtils";
 import {Dictionary} from "./../UtilTypes";
 
-import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./../DataClumpTypes";
+import {DataClumpTypeContext} from "./../DataClumpTypes";
 import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./../ParsedAstTypes";
 import {MyAbortController, SoftwareProjectDicts} from "./../SoftwareProject";
+import {DetectorOptions} from "./Detector";
 
-export class DetectorOptionsDataClumpsFields {
-    public sharedFieldParametersMinimum: number = 3;
-    public sharedFieldParametersCheckIfAreSubtypes: boolean = false;
-    public subclassInheritsAllMembersFromSuperclass: boolean = false;
+// TODO refactor this method to Detector since there is already the creation, so why not the refactoring
+function getParsedValuesFromPartialOptions(rawOptions: DetectorOptions): DetectorOptions{
 
-    public constructor(options: any | DetectorOptionsDataClumpsFields){
-        let keys = Object.keys(options || {});
-        for (let key of keys) {
-            // check if this key exists in this class
-            if (this.hasOwnProperty(key)) {
-                this[key] = options[key]; // set the value
-            }
-        }
+    function parseBoolean(value: any){
+        return ""+value==="true";
     }
+
+    rawOptions.sharedFieldParametersMinimum = parseInt(rawOptions.sharedFieldParametersMinimum)
+    rawOptions.subclassInheritsAllMembersFromSuperclass = parseBoolean(rawOptions.subclassInheritsAllMembersFromSuperclass)
+    rawOptions.sharedFieldParametersCheckIfAreSubtypes = parseBoolean(rawOptions.sharedFieldParametersCheckIfAreSubtypes);
+
+    return rawOptions;
 }
 
 export class DetectorDataClumpsFields {
 
-    public options: DetectorOptionsDataClumpsFields;
+    public options: DetectorOptions;
     public progressCallback: any;
     public abortController: MyAbortController | undefined;
 
-    public constructor(options: any, progressCallback?: any, abortController?: MyAbortController){
-        this.options = new DetectorOptionsDataClumpsFields(options);
+    public constructor(options: DetectorOptions, progressCallback?: any, abortController?: MyAbortController){
+        this.options = getParsedValuesFromPartialOptions(options)
         this.progressCallback = progressCallback;
         this.abortController = abortController;
     }

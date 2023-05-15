@@ -5,7 +5,7 @@ import {
     DataClumpsParameterToContext,
     DataClumpsParameterTypeRelatedToContext
 } from "../DataClumpTypes";
-import {ClassOrInterfaceTypeContext, MethodTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
+import {ClassOrInterfaceTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
 
 type ParameterPair = {
     parameterKey: string;
@@ -13,13 +13,6 @@ type ParameterPair = {
 }
 
 export class DetectorUtils {
-
-    public static countCommonParametersBetweenMethods(method: MethodTypeContext, otherMethod: MethodTypeContext){
-        let parameters = method.parameters;
-        let otherParameters = otherMethod.parameters;
-        let amountCommonParameters = DetectorUtils.countCommonParameters(parameters, otherParameters);
-        return amountCommonParameters;
-    }
 
     public static countCommonParameters(parameters: ParameterTypeContext[], otherParameters: ParameterTypeContext[]){
         let commonParameterKeys = DetectorUtils.getCommonParameterPairKeys(parameters, otherParameters);
@@ -102,12 +95,6 @@ export class DetectorUtils {
         return [currentParameters, commonFieldParameterKeysAsKey];
     }
 
-    public static printDictKeys(dict: Dictionary<any>){
-        let keys = Object.keys(dict);
-        for (let key of keys) {
-            console.log("- " + key)
-        }
-    }
 
     public static getClassesOrInterfacesDict(project: SoftwareProject){
         let classesOrInterfaces: Dictionary<ClassOrInterfaceTypeContext> = {};

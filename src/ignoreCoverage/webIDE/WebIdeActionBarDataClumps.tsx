@@ -26,6 +26,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
     const [viewOptions, setViewOptions] = useSynchedViewOptions()
     const [tree, setTree] = useSynchedFileExplorerTree();
     const [colorModeOption, setColorModeOption] = useSynchedColorModeOption();
+    const [detectorModalOptions, setDetectorModalOptions] = useSynchedModalState(SynchedStates.detectorModalOptions);
 
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
@@ -64,26 +65,6 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             icon: "pi pi-sun",
             items: items
         }
-    }
-
-    function getTestCaseMenuItems(testCases){
-        let testCasesItems: any[] = [];
-        for(let testCase of testCases){
-            let testCaseProject = testCase.getSoftwareProject()
-            let testCaseName = testCase.getName();
-            let testCaseItem = {
-                label: testCaseName,
-                icon:'pi pi-fw',
-                command: async () => {
-                    //console.log("load test case", testCaseName)
-                    //console.log("testCaseProject")
-                    //console.log(testCaseProject)
-                    await props.loadSoftwareProject(testCaseProject)
-                }
-            }
-            testCasesItems.push(testCaseItem);
-        }
-        return testCasesItems;
     }
 
 
@@ -244,7 +225,7 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                 },
                 {
                     label:'Export as ... (Experimental)',
-                    icon:'pi pi-fw pi-file-export',
+                    icon:'pi pi-fw pi-download',
                     items:[
                         {
                             label:'JSON (Experimental)',
@@ -260,7 +241,8 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
             ]
         },
         {
-            label:'Edit',
+            label:'Edit (TODO)',
+            disabled: true,
             icon:'pi pi-fw pi-pencil',
             items:[
                 {
@@ -304,6 +286,17 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
                     label:'Parameter Data-Clumps (TODO)',
                     disabled: true,
                     icon:'pi pi-fw pi-pencil',
+                },
+                {
+                    separator:true
+                },
+                {
+                    label:'Options',
+                    icon:'pi pi-fw pi-cog',
+                    command: () => {
+                        let options = {...detectorModalOptions, ...{visible: true}};
+                        setDetectorModalOptions(options);
+                    }
                 },
             ]
         },

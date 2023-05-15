@@ -1,33 +1,32 @@
 import {DetectorUtils} from "./DetectorUtils";
 import {Dictionary} from "./../UtilTypes";
-import {DataClumpsParameterTypeRelatedToContext, DataClumpTypeContext} from "./../DataClumpTypes";
+import {DataClumpTypeContext} from "./../DataClumpTypes";
 import {MethodTypeContext} from "./../ParsedAstTypes";
 import {MyAbortController, SoftwareProjectDicts} from "./../SoftwareProject";
+import {DetectorOptions, DetectorOptionsInformation} from "./Detector";
 
-export class DetectorOptionsDataClumpsMethods {
-    public sharedMethodParametersMinimum: number = 3;
-    public sharedMethodParametersHierarchyConsidered: boolean = false;
-    public analyseMethodsWithUnknownHierarchy: boolean = false; // is we dont know all parents (extendings,interfaces) we will ignore the method, since the method might or might not be overrided
+// TODO refactor this method to Detector since there is already the creation, so why not the refactoring
+function getParsedValuesFromPartialOptions(rawOptions: DetectorOptions): DetectorOptions{
 
-    public constructor(options: any | DetectorOptionsDataClumpsMethods){
-        let keys = Object.keys(options || {});
-        for (let key of keys) {
-            // check if this key exists in this class
-            if (this.hasOwnProperty(key)) {
-                this[key] = options[key]; // set the value
-            }
-        }
+    function parseBoolean(value: any){
+        return ""+value==="true";
     }
+
+    rawOptions.sharedMethodParametersMinimum = parseInt(rawOptions.sharedMethodParametersMinimum)
+    rawOptions.sharedMethodParametersHierarchyConsidered = parseBoolean(rawOptions.sharedMethodParametersHierarchyConsidered)
+    rawOptions.sharedFieldParametersCheckIfAreSubtypes = parseBoolean(rawOptions.sharedFieldParametersCheckIfAreSubtypes);
+
+    return rawOptions;
 }
 
 export class DetectorDataClumpsMethods {
 
-    public options: DetectorOptionsDataClumpsMethods;
+    public options: DetectorOptions;
     public progressCallback: any;
     public abortController: MyAbortController | undefined;
 
-    public constructor(options: any, progressCallback?: any, abortController?: MyAbortController){
-        this.options = new DetectorOptionsDataClumpsMethods(options);
+    public constructor(options: DetectorOptions, progressCallback?: any, abortController?: MyAbortController){
+        this.options = getParsedValuesFromPartialOptions(JSON.parse(JSON.stringify(options)));
         this.progressCallback = progressCallback;
         this.abortController = abortController;
     }
@@ -72,7 +71,6 @@ export class DetectorDataClumpsMethods {
             return;
         }
 
-        // TODO: check if whole hierarchy is known
         if(!this.options.analyseMethodsWithUnknownHierarchy){
             console.log("- check if methods hierarchy is complete")
             let wholeHierarchyKnown = method.isWholeHierarchyKnown(softwareProjectDicts)

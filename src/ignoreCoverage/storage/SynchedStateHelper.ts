@@ -2,9 +2,9 @@ import {action, createStore, useStoreActions, useStoreState} from "easy-peasy";
 import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
-import {SoftwareProject} from "../../api/src";
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 import {useEffect, useState} from "react";
+import {Detector, DetectorOptions} from "../../api/src";
 
 export function useSynchedState(storageKey): [value: string, setValue: (value) => {}] {
     const value = useStoreState((state) => {
@@ -56,6 +56,16 @@ export function useSynchedModalState(storageKey): [value: ModalOptions, setValue
     ]
 }
 
+export function useSynchedDetectorOptions(): [value: DetectorOptions, setValue: (value: any) => void] {
+    const [detectorOptions, setDetectorOptions] = useSynchedJSONState(SynchedStates.detectorOptions);
+
+    const useModalOptions = Detector.getDefaultOptions(detectorOptions);
+    return [
+        useModalOptions,
+        setDetectorOptions
+    ]
+}
+
 export enum ViewOptionValues {
     dataClumpsDictionary = "dataClumpsDictionary",
     classOrInterfaceDictionary = "classOrInterfaceDictionary",
@@ -88,7 +98,7 @@ export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) 
         [ViewPanelValues.leftPanel]: ViewOptionValues.explorerFile,
         [ViewPanelValues.middlePanel]: ViewOptionValues.fileContent,
         editor: ViewOptionValues.decorationFieldAndParameters,
-        [ViewPanelValues.rightPanel]: ViewOptionValues.fileAst
+        [ViewPanelValues.rightPanel]: ViewOptionValues.dataClumpsGraph
     };
     return [
         useViewOptions,

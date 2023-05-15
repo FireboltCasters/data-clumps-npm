@@ -2,10 +2,9 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
-    useIsDarkModeEnabled,
     useSynchedActiveFileKey,
-    useSynchedDataClumpsDict,
-    useSynchedFileExplorerTree,
+    useSynchedDataClumpsDict, useSynchedDetectorOptions,
+    useSynchedFileExplorerTree, useSynchedJSONState,
     useSynchedModalState,
     useSynchedOpenedFiles,
     useSynchedViewOptions,
@@ -26,9 +25,10 @@ import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZ
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
 import {ParserOptions, SoftwareProject} from "../../api/src";
-import {DetectorOptions} from "../../api/src/ignoreCoverage/detector/Detector";
 import DecorationHelper from "../helper/DecorationHelper";
 import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
+import {WebIdeModalDetectorOptions} from "../webIDE/WebIdeModalDetectorOptions";
+
 let abortController = new MyAbortController(); // Dont initialize in the component, otherwise the abortController will be new Instance
 
 
@@ -41,6 +41,7 @@ export const Demo : FunctionComponent = (props) => {
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
     const [decorations, setDecorations] = useState<any[]>([]);
     const [modalOptions, setModalOptions] = useSynchedModalState(SynchedStates.modalOptions);
+    const [detectorOptions, setDetectorOptions] = useSynchedDetectorOptions();
     const [viewOptions, setViewOptions] = useSynchedViewOptions();
 
     const [openedFiles, setOpenedFiles] = useSynchedOpenedFiles();
@@ -115,9 +116,7 @@ export const Demo : FunctionComponent = (props) => {
             modalOptions.content = "Detecting Data Clumps..."
             modalOptions.visible = true;
             setModalOptions(modalOptions)
-            let options = new DetectorOptions({
-
-            });
+            let options = detectorOptions || {};
             let dataClumpsContext: DataClumpsTypeContext = await project.detectDataClumps(options)
             setDataClumpsDict(dataClumpsContext);
 
@@ -461,6 +460,7 @@ export const Demo : FunctionComponent = (props) => {
                 </div>
             </WebIdeLayout>
             <WebIdeModalProgress onAbort={onAbort} />
+            <WebIdeModalDetectorOptions />
             <WebIdeFileExplorerDropZoneModal loadSoftwareProject={loadSoftwareProject} />
             <WebIdeProjectImportGithubModal loadSoftwareProject={loadSoftwareProject} />
         </div>

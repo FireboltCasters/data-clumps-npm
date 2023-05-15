@@ -1,16 +1,6 @@
 import React, {FunctionComponent} from 'react';
-import {
-    useSynchedFileExplorerTree,
-    useSynchedModalState,
-    useSynchedViewOptions,
-    ViewOptionValues, ViewPanelValues
-} from "../storage/SynchedStateHelper";
-import {Languages, SoftwareProject} from "../../api/src";
+import {useSynchedViewOptions, ViewOptionValues} from "../storage/SynchedStateHelper";
 import {WebIdeCodeActionBar} from "./WebIdeActionBar";
-import {SynchedStates} from "../storage/SynchedStates";
-import ProjectImportExportHelper from "../helper/ProjectImportExportHelper";
-import DownloadHelper from "../helper/DownloadHelper";
-import {ProjectHolder} from "../main/Demo";
 
 // @ts-ignore
 export interface WebIdeCodeActionBarDataClumpsProps {
@@ -63,10 +53,11 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
                     ]
                 },
                 {
-                    label: "Editor",
+                    label: "File",
                     icon:'pi pi-fw pi-user',
                     items: [
-                        getViewOptionItem(ViewOptionValues.fileContent)
+                        getViewOptionItem(ViewOptionValues.fileContent),
+                        getViewOptionItem(ViewOptionValues.fileAst),
                     ]
                 },
                 {
@@ -74,7 +65,6 @@ export const WebIdeCodeActionBarViews : FunctionComponent<WebIdeCodeActionBarDat
                     icon:'pi pi-fw pi-user',
                     items: [
                         getViewOptionItem(ViewOptionValues.dataClumpsDictionary),
-                        getViewOptionItem(ViewOptionValues.fileAst),
                         getViewOptionItem(ViewOptionValues.dataClumpsGraph),
                         getViewOptionItem(ViewOptionValues.explorerDataClumpsJSON),
                         getViewOptionItem(ViewOptionValues.explorerDataClumpsCSV),
