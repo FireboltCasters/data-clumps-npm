@@ -5,7 +5,8 @@ import {DataClumpsTypeContext} from "../DataClumpTypes";
 import {Timer} from "../Timer";
 
 const defaultValueField = "defaultValue";
-export type DetectorOptionInformationParameter = {
+
+type DetectorOptionInformationParameter = {
     label: string;
     description: string;
     [defaultValueField]: any

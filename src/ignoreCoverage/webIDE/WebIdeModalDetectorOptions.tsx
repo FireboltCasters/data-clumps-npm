@@ -4,11 +4,9 @@ import {SynchedStates} from "../storage/SynchedStates";
 import {Dialog} from "primereact/dialog";
 import {Button} from "primereact/button";
 import {InputNumber} from "primereact/inputnumber";
-import {DetectorOptionInformationParameter, DetectorOptionsInformation} from "../../api/src";
+import {DetectorOptionsInformation} from "../../api/src";
 import {Accordion, AccordionTab} from "primereact/accordion";
 import {ToggleButton} from "primereact/togglebutton";
-import {Fieldset} from "primereact/fieldset";
-import {Tooltip} from "primereact/tooltip";
 
 // @ts-ignore
 export interface WebIdeModalProps {
@@ -80,7 +78,7 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
     }
 
     function renderInput(key){
-        let detectorOptionInformationParameter: DetectorOptionInformationParameter = DetectorOptionsInformation[key];
+        let detectorOptionInformationParameter = DetectorOptionsInformation[key];
         let type = detectorOptionInformationParameter.type;
         let value = unsavedOptions[key];
 
@@ -122,7 +120,7 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
 
         let keys = Object.keys(DetectorOptionsInformation);
         for(let key of keys){
-            let detectorOptionInformationParameter: DetectorOptionInformationParameter = DetectorOptionsInformation[key];
+            let detectorOptionInformationParameter = DetectorOptionsInformation[key];
             let group = detectorOptionInformationParameter.group;
             if(groupKey==group){
                 let label = detectorOptionInformationParameter.label;
@@ -154,7 +152,7 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
         let groupDict: any = {}
 
         for(let key of keys){
-            let detectorOptionInformationParameter: DetectorOptionInformationParameter = DetectorOptionsInformation[key];
+            let detectorOptionInformationParameter = DetectorOptionsInformation[key];
             let group = detectorOptionInformationParameter.group;
             groupDict[group] = true
         }
