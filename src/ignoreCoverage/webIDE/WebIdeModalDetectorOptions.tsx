@@ -175,7 +175,7 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
 
 
     return(
-        <Dialog key={visible+""} draggable={false} resizable={false} visible={true} header={"Detector Options"} onHide={onHide} style={{width: '100vw', height: "100vh"}}>
+        <Dialog key={visible+""} draggable={false} resizable={false} visible={visible} header={"Detector Options"} onHide={onHide} style={{width: '100vw', height: "100vh"}}>
             {renderInputs()}
 
             <div style={{
