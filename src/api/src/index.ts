@@ -6,9 +6,9 @@ import {JavaLanguageSupport} from "./ignoreCoverage/languages/java/"
 import {LanguageSupportInterface} from "./ignoreCoverage/LanguageSupportInterface";
 import {TestCaseBaseClassForDataClumps} from "./ignoreCoverage/TestCaseBaseClassForDataClumps";
 import {ParserOptions} from "./ignoreCoverage/Parser";
-import {DetectorOptionsInformation, Detector, DetectorOptions} from "./ignoreCoverage/detector/Detector";
+import {Detector, DetectorOptionsInformation} from "./ignoreCoverage/detector";
 export {SoftwareProject, MyAbortController, SoftwareProjectDicts};
-export {DetectorOptionsInformation, Detector, DetectorOptions}
+export {Detector, DetectorOptionsInformation}
 export {TestCaseBaseClassForDataClumps};
 export {antlr4};
 export {ParsedAstTypes};
