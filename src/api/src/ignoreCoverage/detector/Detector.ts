@@ -19,22 +19,22 @@ export class DetectorOptionsInformation {
      * Fields
      */
     public static sharedFieldParametersMinimum: DetectorOptionInformationParameter = {
-        label: "Minimum shared fields",
-        description: "hi",
+        label: "Minimum Number of Shared Fields",
+        description: "The minimum number of fields that two or more classes must share to be considered related. Default value is 3.",
         defaultValue: 3,
         group: "field",
         type: "number"
     }
     public static sharedFieldParametersCheckIfAreSubtypes: DetectorOptionInformationParameter = {
-        label: "Check if fields in classes are subtypes",
-        description: "Check if fields in classes are subtypes",
+        label: "Check Subtyping of Shared Fields",
+        description: "If set to true, the detector will check if shared fields in related classes are subtypes of each other. Default value is false.",
         defaultValue: false,
         group: "field",
         type: "boolean"
     }
     public static subclassInheritsAllMembersFromSuperclass: DetectorOptionInformationParameter = {
-        label: "Subclass inherits all members from superclass",
-        description: "Subclass inherits all members from superclass",
+        label: "Subclass Inherits All Members",
+        description: "If set to true, the detector will consider a subclass related to its superclass only if it inherits all members fields from it. Default value is false.",
         defaultValue: false,
         group: "field",
         type: "boolean"
@@ -44,22 +44,22 @@ export class DetectorOptionsInformation {
      * Methods
      */
     public static sharedMethodParametersMinimum: DetectorOptionInformationParameter = {
-        label: "shared Method Parameters Minimum",
-        description: "shared Method Parameters Minimum",
+        label: "Minimum Number of Shared Method Parameters",
+        description: "The minimum number of method parameters that two or more classes must share to be considered related. Default value is 3.",
         defaultValue: 3,
         group: "method",
         type: "number"
     }
     public static sharedMethodParametersHierarchyConsidered: DetectorOptionInformationParameter = {
-        label: "shared Method Parameters Hierarchy Considered",
-        description: "shared Method Parameters Hierarchy Considered",
+        label: "Consider Hierarchy for Shared Method Parameters",
+        description: "If set to true, the detector will consider the hierarchy of classes when checking for shared method parameters. Default value is false.",
         defaultValue: false,
         group: "method",
         type: "boolean"
     }
     public static analyseMethodsWithUnknownHierarchy: DetectorOptionInformationParameter = {
-        label: "analyse Methods WithUnknown Hierarchy",
-        description: "analyse Methods With Unknown Hierarchy",
+        label: "Analyze Methods with Unknown Hierarchy",
+        description: "If set to true, the detector will analyze methods that are not part of a known hierarchy of related classes. Default value is false.",
         defaultValue: false,
         group: "method",
         type: "boolean"

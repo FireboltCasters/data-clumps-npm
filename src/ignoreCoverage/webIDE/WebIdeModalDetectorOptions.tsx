@@ -187,8 +187,9 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
                 height: "30px"
             }} />
             <Button disabled={!existUnsavedChanges} label={"Save"} icon={"pi pi-save"}
-                onClick={() => {
-                    setDetectorOptions({...unsavedOptions})
+                onClick={async () => {
+                    await setDetectorOptions({...unsavedOptions})
+                    await onHide()
                 }}
             />
             <Button label="Cancel" icon="pi pi-times" onClick={onHide} className="p-button-text" />
