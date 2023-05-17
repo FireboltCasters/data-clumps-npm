@@ -274,19 +274,19 @@ export class MethodTypeContext extends AstElementTypeContext{
 
     public isWholeHierarchyKnown(softwareProjectDicts: SoftwareProjectDicts){
         // TODO: check if we can find all parents
-        console.log("isWholeHierarchyKnown?")
-        console.log("softwareProjectDicts.dictClassOrInterface")
-        console.log(softwareProjectDicts.dictClassOrInterface);
+        //console.log("isWholeHierarchyKnown?")
+        //console.log("softwareProjectDicts.dictClassOrInterface")
+        //console.log(softwareProjectDicts.dictClassOrInterface);
 
         let currentClassOrInterfaceKey = this.classOrInterfaceKey;
         let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
         let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
-        console.log(superClassesOrInterfacesKeys);
+        //console.log(superClassesOrInterfacesKeys);
         for(let superClassesOrInterfaceKey of superClassesOrInterfacesKeys){
             let superClassesOrInterface = softwareProjectDicts.dictClassOrInterface[superClassesOrInterfaceKey];
             if(!superClassesOrInterface){
-                console.log("Found no superClassesOrInterface for: "+superClassesOrInterfaceKey);
-                console.log("The hierarchy is therefore not complete");
+                //console.log("Found no superClassesOrInterface for: "+superClassesOrInterfaceKey);
+                //console.log("The hierarchy is therefore not complete");
                 return false;
             }
         }
@@ -309,13 +309,13 @@ export class MethodTypeContext extends AstElementTypeContext{
 
             let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
             for(let superClassOrInterfaceKey of superClassesOrInterfacesKeys){
-                console.log("superClassOrInterfaceKey: "+superClassOrInterfaceKey)
+                //console.log("superClassOrInterfaceKey: "+superClassOrInterfaceKey)
                 let superClassOrInterface = softwareProjectDicts.dictClassOrInterface[superClassOrInterfaceKey];
                 if(!!superClassOrInterface){
                     let superClassOrInterfaceMethodsDict = superClassOrInterface.methods;
                     let superClassOrInterfaceMethodsKeys = Object.keys(superClassOrInterfaceMethodsDict);
                     for(let superClassOrInterfaceMethodsKey of superClassOrInterfaceMethodsKeys){
-                        console.log("-- superClassOrInterfaceMethodsKey: "+superClassOrInterfaceMethodsKey)
+                        //console.log("-- superClassOrInterfaceMethodsKey: "+superClassOrInterfaceMethodsKey)
                         let superClassOrInterfaceMethod = superClassOrInterfaceMethodsDict[superClassOrInterfaceMethodsKey];
                         if(this.hasSameSignatureAs(superClassOrInterfaceMethod)){
                             isInherited = true;
@@ -323,12 +323,12 @@ export class MethodTypeContext extends AstElementTypeContext{
                         }
                     }
                 } else {
-                    console.log("A superClassOrInterface could not be found: "+superClassOrInterfaceKey)
-                    console.log("It might be, that this is a library import")
+                    //console.log("A superClassOrInterface could not be found: "+superClassOrInterfaceKey)
+                    //console.log("It might be, that this is a library import")
                 }
             }
         }
-        console.log("++++++++++++++")
+        //console.log("++++++++++++++")
         return isInherited;
     }
 }

@@ -40,7 +40,6 @@ export class JavaParserMethodExtractor {
 
         let modifiers = JavaParserHelper.getModifiers(ctx);
 
-
         let type = JavaParserFieldAndParameterTypeExtractor.custom_getFieldType(typeType, ctx, this.currentVisibleClassOrInterface);
 
         let variableDeclaratorId = JavaParserHelper.getChildByType(ctx, "variableDeclaratorId");

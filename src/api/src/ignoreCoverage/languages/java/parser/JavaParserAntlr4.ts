@@ -179,7 +179,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
     }
 
     preParse(softwareProject: SoftwareProject, file: MyFile, options: ParserOptions) {
-        console.log("Parsing file: " + file.path)
+        //console.log("Parsing file: " + file.path)
 
         file.ast = {};
 
@@ -207,9 +207,14 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         // 2.2 get all the classes and interfaces in the same package
 
         let samePackageClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesWithPackage(softwareProject, ownPackageName);
-
         // copy the same package classes and interfaces to the current visible classes and interfaces
-        currentVisibleClassesAndInterfaces = {...samePackageClassesAndInterfaces};
+        currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...samePackageClassesAndInterfaces};
+
+
+        let sameFolderClassesAndInterfaces = JavaParserAntlr4.getPackageClassesAndInterfacesInFolderPathWithPackageName(softwareProject, file.path,ownPackageName);
+        // copy the same package classes and interfaces to the current visible classes and interfaces
+        currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...sameFolderClassesAndInterfaces};
+
 
         // 3. Get the imports (explicit and wildcard)
         let importDeclarations = JavaParserHelper.getChildrenByType(cst, "importDeclaration");
@@ -218,8 +223,8 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         // add or overwrite the classes and interfaces in the import declarations to currentVisibleClassesAndInterfacesInSamePackage
         currentVisibleClassesAndInterfaces = {...currentVisibleClassesAndInterfaces, ...importDeclarationClassesAndInterfaces};
 
-        console.log("currentVisibleClassesAndInterfaces");
-        console.log(currentVisibleClassesAndInterfaces);
+        //console.log("currentVisibleClassesAndInterfaces");
+        //console.log(currentVisibleClassesAndInterfaces);
 
         for(let classesCst of classesCstList){
             this.preParseClassOrInterfaceCst(classesCst, null, file, ownPackageName, currentVisibleClassesAndInterfaces, currentVisibleVariables, options);
@@ -233,7 +238,7 @@ export class JavaParserAntlr4 implements LanguageParserInterface {
         if(!!classCst || !!interfaceCst){ // if our file has a class or interface
             // 4. Get the class or interface body
             if(!!classCst){
-                console.log("Found class at the top of the file: "+file.path)
+                //console.log("Found class at the top of the file: "+file.path)
                 let classExtractor = new ClassParser(file, ownPackageName, classCst, currentVisibleClassesAndInterfaces, currentVisibleVariables, options, null);
                 classExtractor.parse();
                 this.saveClassOrInterfaceToFile(classExtractor, file);

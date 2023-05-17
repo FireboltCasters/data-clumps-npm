@@ -77,7 +77,7 @@ function getDefaultValuesFromPartialOptions(partialOptions: Partial<DetectorOpti
     let result: DetectorOptions = {}
 
     let DetectorOptionsKeys = Object.keys(DetectorOptionsInformation);
-    console.log(DetectorOptionsKeys)
+    //console.log(DetectorOptionsKeys)
 
     for (const key of DetectorOptionsKeys) {
         const attributeKey = key;
@@ -127,7 +127,7 @@ export class Detector {
 
         let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
         console.log("Detecting software project for data clumps");
-        console.log(softwareProjectDicts);
+        //console.log(softwareProjectDicts);
         let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options, this.progressCallback, this.abortController);
         let commonMethodParameters = await detectorDataClumpsMethods.detect(softwareProjectDicts);
         if(!!commonMethodParameters){
@@ -154,8 +154,6 @@ export class Detector {
 
         console.log("Detecting software project for data clumps (done)")
         this.timer.printElapsedTime("Detector.detect");
-
-        console.log(JSON.stringify(dataClumpsTypeContext, null, 2));
 
 
         return dataClumpsTypeContext;

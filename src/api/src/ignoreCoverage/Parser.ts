@@ -30,7 +30,6 @@ export class Parser {
       let timer = new Timer();
         timer.start();
 
-
     await Parser.preParseSoftwareProject(softwareProject, options, abortController, progressCallback);
     await Parser.postParseSoftwareProject(softwareProject, options, abortController, progressCallback);
 
@@ -48,9 +47,9 @@ export class Parser {
       let amountOfFiles = filePaths.length;
 
       // STEP 1: we need to pre parse all files before we can parse the files that reference other files
-      if(abortController && !abortController.isAbort()){
+      if(!abortController || (!!abortController && !abortController.isAbort())){
           for (let filePath of filePaths) {
-              if(abortController && abortController.isAbort()){
+              if(!!abortController && abortController.isAbort()){
                   break;
               }
               let file = softwareProject.getFile(filePath);
@@ -60,7 +59,7 @@ export class Parser {
       }
 
       timer.stop();
-      timer.printElapsedTime("Parser.parseSoftwareProject");
+      timer.printElapsedTime("- Parser.preParseSoftwareProject");
   }
 
 
@@ -74,9 +73,9 @@ export class Parser {
         let amountOfFiles = filePaths.length;
 
         // STEP 2: we need to parse all files that reference other files
-        if(abortController && !abortController.isAbort()){
+        if(!abortController || (!!abortController && !abortController.isAbort())){
             for (let filePath of filePaths) {
-                if(abortController && abortController.isAbort()){
+                if(!!abortController && !abortController.isAbort()){
                         break;
                 }
                 let file = softwareProject.getFile(filePath);
@@ -86,7 +85,7 @@ export class Parser {
         }
 
         timer.stop();
-        timer.printElapsedTime("Parser.parseSoftwareProject");
+        timer.printElapsedTime("- Parser.postParseSoftwareProject");
     }
 
     /**

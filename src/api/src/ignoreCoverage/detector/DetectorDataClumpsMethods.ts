@@ -61,7 +61,7 @@ export class DetectorDataClumpsMethods {
      */
     private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
 
-        console.log("Analyze method: "+method.key);
+        //console.log("Analyze method: "+method.key);
         let methodParameters = method.parameters;
 
         let methodParametersKeys = Object.keys(methodParameters);
@@ -72,10 +72,10 @@ export class DetectorDataClumpsMethods {
         }
 
         if(!this.options.analyseMethodsWithUnknownHierarchy){
-            console.log("- check if methods hierarchy is complete")
+            //console.log("- check if methods hierarchy is complete")
             let wholeHierarchyKnown = method.isWholeHierarchyKnown(softwareProjectDicts)
             if(!wholeHierarchyKnown){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
-                console.log("-- check if methods hierarchy is complete")
+                //console.log("-- check if methods hierarchy is complete")
                 return; // therefore we stop here
             }
         }
@@ -137,7 +137,7 @@ export class DetectorDataClumpsMethods {
      * @private
      */
     private checkMethodParametersForDataClumps(method: MethodTypeContext,otherMethod: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>) {
-        console.log("--- otherMethod"+ otherMethod.key)
+        //console.log("--- otherMethod"+ otherMethod.key)
 
         /**
          * TODO: DataclumpsInspection.java line 548
@@ -168,10 +168,10 @@ export class DetectorDataClumpsMethods {
 
 
         if(!this.options.analyseMethodsWithUnknownHierarchy){
-            console.log("---- check otherMethod wholeHierarchyKnownOfOtherMethod");
+            //console.log("---- check otherMethod wholeHierarchyKnownOfOtherMethod");
             let wholeHierarchyKnownOfOtherMethod = otherMethod.isWholeHierarchyKnown(softwareProjectDicts)
             if(!wholeHierarchyKnownOfOtherMethod){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
-                console.log("Other hierarchy not full known");
+                //console.log("Other hierarchy not full known");
                 return; // therefore we stop here
             }
         }
