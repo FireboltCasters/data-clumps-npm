@@ -97,7 +97,7 @@ async function main() {
 
     const path_to_dictClassOrInterface = "/Users/nbaumgartner/Desktop/dictClassOrInterface.json";
     let save_and_load_dictClassOrInterface = true;
-    let read_from_project = true;
+    let read_from_project = false;
 
 
     if(read_from_project){

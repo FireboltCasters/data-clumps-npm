@@ -139,6 +139,29 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;
     public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
+    public static fromObject(obj: ClassOrInterfaceTypeContext){
+        console.log("Copy ClassOrInterfaceTypeContext");
+
+        // @ts-ignore
+        let instance = new ClassOrInterfaceTypeContext();
+        Object.assign(instance, obj);
+        for(let fieldKey of Object.keys(instance.fields)){
+            instance.fields[fieldKey] = MemberFieldParameterTypeContext.fromObject(instance.fields[fieldKey]);
+        }
+        for(let methodKey of Object.keys(instance.methods)){
+            instance.methods[methodKey] = MethodTypeContext.fromObject(instance.methods[methodKey]);
+        }
+        for(let innerDefinedClassKey of Object.keys(instance.innerDefinedClasses)){
+            instance.innerDefinedClasses[innerDefinedClassKey] = ClassOrInterfaceTypeContext.fromObject(instance.innerDefinedClasses[innerDefinedClassKey]);
+        }
+        for(let innerDefinedInterfaceKey of Object.keys(instance.innerDefinedInterfaces)){
+            instance.innerDefinedInterfaces[innerDefinedInterfaceKey] = ClassOrInterfaceTypeContext.fromObject(instance.innerDefinedInterfaces[innerDefinedInterfaceKey]);
+        }
+
+        console.log("Copy ClassOrInterfaceTypeContext finished");
+        return instance;
+    }
+
     public constructor(key, name, type, fileKey){
         super(key, name, type);
         this.fileKey = fileKey;
@@ -202,8 +225,18 @@ export class MemberFieldParameterTypeContext extends ParameterTypeContext{
     public classOrInterfaceKey: string;
 
     public constructor(key, name, type, modifiers, ignore, classOrInterface: ClassOrInterfaceTypeContext){
-        super(classOrInterface.key+"/"+"memberParameter"+"/"+key, name, type, modifiers, ignore);
-        this.classOrInterfaceKey = classOrInterface.key;
+        super(classOrInterface?.key+"/"+"memberParameter"+"/"+key, name, type, modifiers, ignore);
+        this.classOrInterfaceKey = classOrInterface?.key;
+    }
+
+    public static fromObject(obj: MemberFieldParameterTypeContext){
+        console.log("MemberFieldParameterTypeContext fromObject")
+        // @ts-ignore
+        let instance = new MemberFieldParameterTypeContext();
+        console.log("Okay assign");
+        Object.assign(instance, obj);
+        console.log("MemberFieldParameterTypeContext fromObject finished");
+        return instance;
     }
 }
 
@@ -213,19 +246,26 @@ export class MemberFieldTypeContext extends AstElementTypeContext{
     public modifiers: string[];
 
     public constructor(key, name, type, classOrInterface: ClassOrInterfaceTypeContext){
-        super(classOrInterface.key+"/memberField/"+key, name, type);
+        super(classOrInterface?.key+"/memberField/"+key, name, type);
         this.parameters = [];
         this.modifiers = [];
-        this.classOrInterfaceKey = classOrInterface.key;
+        this.classOrInterfaceKey = classOrInterface?.key;
     }
 }
 
 export class MethodParameterTypeContext extends ParameterTypeContext{
     public methodKey: string;
 
+    public static fromObject(obj: MethodParameterTypeContext){
+        // @ts-ignore
+        let instance = new MethodParameterTypeContext();
+        Object.assign(instance, obj);
+        return instance;
+    }
+
     public constructor(key, name, type, modifiers, ignore, method: MethodTypeContext){
-        super(method.key+"/"+key, name, type, modifiers, ignore);
-        this.methodKey = method.key;
+        super(method?.key+"/"+key, name, type, modifiers, ignore);
+        this.methodKey = method?.key;
     }
 }
 
@@ -236,11 +276,21 @@ export class MethodTypeContext extends AstElementTypeContext{
     public parameters: MethodParameterTypeContext[];
     public classOrInterfaceKey: string;
 
+    public static fromObject(obj: MethodTypeContext){
+        // @ts-ignore
+        let instance = new MethodTypeContext();
+        Object.assign(instance, obj);
+        for(let i=0; i<instance.parameters.length; i++){
+            instance.parameters[i] = MethodParameterTypeContext.fromObject(instance.parameters[i]);
+        }
+        return instance;
+    }
+
     public constructor(key, name, type, overrideAnnotation: boolean, classOrInterface: ClassOrInterfaceTypeContext){
-        super(classOrInterface.key+"/method/"+key, name, type);
+        super(classOrInterface?.key+"/method/"+key, name, type);
         this.modifiers = [];
         this.parameters = [];
-        this.classOrInterfaceKey = classOrInterface.key;
+        this.classOrInterfaceKey = classOrInterface?.key;
         this.overrideAnnotation = overrideAnnotation;
     }
 

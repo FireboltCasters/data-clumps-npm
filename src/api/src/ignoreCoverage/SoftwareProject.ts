@@ -70,6 +70,9 @@ export class SoftwareProjectDicts {
     let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
     for (let classOrInterfaceKey of classOrInterfaceKeys) {
       let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
+      // we need to make sure, that we make a correct deserialization here
+      classOrInterface = ClassOrInterfaceTypeContext.fromObject(classOrInterface);
+
       this.handleClassOrInterface(classOrInterface);
     }
    }
