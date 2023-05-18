@@ -174,12 +174,12 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
         return graph;
     }
 
-    function getRawFileNode(file: MyFile, softwareProjectDicts: SoftwareProjectDicts, files_dict: any){
-        let file_node = files_dict[file.path];
+    function getRawFileNode(file_path, softwareProjectDicts: SoftwareProjectDicts, files_dict: any){
+        let file_node = files_dict[file_path];
         if(!file_node){
             file_node = {
-                id: file.path,
-                label: file.path,
+                id: file_path,
+                label: file_path,
                 color: "red",
                 classes_or_interfaces_ids: {},
             }
@@ -252,8 +252,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
 
     function initNodesForDataClumpData(dataClumpHolder: DataClumpTypeContext, dataClumpData: DataClumpsParameterFromContext, softwareProjectDicts: SoftwareProjectDicts, files_dict, classes_dict, fields_dict, methods_dict, parameters_dict){
         let file_path = dataClumpHolder.file_path;
-        let file = softwareProjectDicts.dictFile[file_path];
-        let file_node = getRawFileNode(file, softwareProjectDicts, files_dict);
+        let file_node = getRawFileNode(file_path, softwareProjectDicts, files_dict);
 
         let data_clump_type = dataClumpHolder.data_clump_type;
         if(data_clump_type==="parameter_data_clump"){
@@ -305,8 +304,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
             related_to_class_or_interface_node.method_ids[related_to_method_node.id] = related_to_method_node.id;
 
             let related_to_file_path = related_to_class_or_interface.fileKey;
-            let related_to_file = softwareProjectDicts.dictFile[related_to_file_path];
-            let related_to_file_node = getRawFileNode(related_to_file, softwareProjectDicts, files_dict);
+            let related_to_file_node = getRawFileNode(related_to_file_path, softwareProjectDicts, files_dict);
 
             related_to_file_node.classes_or_interfaces_ids[related_to_class_or_interface_node.id] = related_to_class_or_interface_node.id;
         }
@@ -348,8 +346,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
             related_to_class_or_interface_node.field_ids[related_to_field_node.id] = related_to_field_node.id;
 
             let related_to_file_path = related_to_class_or_interface.fileKey;
-            let related_to_file = softwareProjectDicts.dictFile[related_to_file_path];
-            let related_to_file_node = getRawFileNode(related_to_file, softwareProjectDicts, files_dict);
+            let related_to_file_node = getRawFileNode(related_to_file_path, softwareProjectDicts, files_dict);
             related_to_file_node.classes_or_interfaces_ids[related_to_class_or_interface_node.id] = related_to_class_or_interface_node.id;
         }
     }

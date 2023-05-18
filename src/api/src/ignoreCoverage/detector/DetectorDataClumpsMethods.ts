@@ -73,7 +73,8 @@ export class DetectorDataClumpsMethods {
 
         if(!this.options.analyseMethodsWithUnknownHierarchy){
             //console.log("- check if methods hierarchy is complete")
-            let wholeHierarchyKnown = method.isWholeHierarchyKnown(softwareProjectDicts)
+//            let wholeHierarchyKnown = method.isWholeHierarchyKnown(softwareProjectDicts)
+            let wholeHierarchyKnown = MethodTypeContext.isWholeHierarchyKnown(method, softwareProjectDicts);
             if(!wholeHierarchyKnown){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
                 //console.log("-- check if methods hierarchy is complete")
                 return; // therefore we stop here
@@ -169,7 +170,8 @@ export class DetectorDataClumpsMethods {
 
         if(!this.options.analyseMethodsWithUnknownHierarchy){
             //console.log("---- check otherMethod wholeHierarchyKnownOfOtherMethod");
-            let wholeHierarchyKnownOfOtherMethod = otherMethod.isWholeHierarchyKnown(softwareProjectDicts)
+//            let wholeHierarchyKnownOfOtherMethod = otherMethod.isWholeHierarchyKnown(softwareProjectDicts)
+            let wholeHierarchyKnownOfOtherMethod = MethodTypeContext.isWholeHierarchyKnown(otherMethod, softwareProjectDicts);
             if(!wholeHierarchyKnownOfOtherMethod){ // since we dont the complete hierarchy, we can't detect if a method is inherited or not
                 //console.log("Other hierarchy not full known");
                 return; // therefore we stop here
@@ -215,12 +217,13 @@ export class DetectorDataClumpsMethods {
             let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonMethodParameterPairKeys, method.parameters, otherMethod.parameters, softwareProjectDicts, otherClassOrInterface, otherMethod)
 
             let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
-            let currentFile = softwareProjectDicts.dictFile[currentClassOrInterface.fileKey];
+
+            let fileKey = currentClassOrInterface.fileKey;
 
             let dataClumpContext: DataClumpTypeContext = {
                 type: "data_clump",
-                key: currentFile.key+"-"+currentClassOrInterface.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-                file_path: currentFile.path,
+                key: fileKey+"-"+currentClassOrInterface.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+                file_path: fileKey,
                 class_or_interface_name: currentClassOrInterface.name,
                 method_name: method.name,
 

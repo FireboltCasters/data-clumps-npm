@@ -3,6 +3,8 @@ import {DetectorDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields} from "./DetectorDataClumpsFields";
 import {DataClumpsTypeContext} from "../DataClumpTypes";
 import {Timer} from "../Timer";
+import {Dictionary} from "../UtilTypes";
+import {ClassOrInterfaceTypeContext} from "../ParsedAstTypes";
 
 const defaultValueField = "defaultValue";
 
@@ -101,7 +103,7 @@ function getDefaultValuesFromPartialOptions(partialOptions: Partial<DetectorOpti
 export class Detector {
 
     public options: DetectorOptions;
-    public project: SoftwareProject;
+    public softwareProjectDicts: SoftwareProjectDicts;
     public timer: Timer;
     public progressCallback: any;
     public abortController: MyAbortController | undefined;
@@ -110,9 +112,10 @@ export class Detector {
         return getDefaultValuesFromPartialOptions(options || {});
     }
 
-    public constructor(project: SoftwareProject, options?: Partial<DetectorOptions>, progressCallback?: any, abortController?: MyAbortController){
+    public constructor(dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>, options?: Partial<DetectorOptions>, progressCallback?: any, abortController?: MyAbortController){
+        let softwareProjectDicts = new SoftwareProjectDicts(dictClassOrInterface);
         this.options = Detector.getDefaultOptions(options || {});
-        this.project = project;
+        this.softwareProjectDicts = softwareProjectDicts;
         this.timer = new Timer();
         this.progressCallback = progressCallback;
         this.abortController = abortController;
@@ -125,11 +128,10 @@ export class Detector {
             data_clumps: {}
         };
 
-        let softwareProjectDicts: SoftwareProjectDicts = this.project.getSoftwareProjectDicts();
         console.log("Detecting software project for data clumps");
         //console.log(softwareProjectDicts);
         let detectorDataClumpsMethods = new DetectorDataClumpsMethods(this.options, this.progressCallback, this.abortController);
-        let commonMethodParameters = await detectorDataClumpsMethods.detect(softwareProjectDicts);
+        let commonMethodParameters = await detectorDataClumpsMethods.detect(this.softwareProjectDicts);
         if(!!commonMethodParameters){
             let commonMethodParametersKeys = Object.keys(commonMethodParameters);
             for (let commonMethodParametersKey of commonMethodParametersKeys) {
@@ -139,7 +141,7 @@ export class Detector {
         }
 
         let detectorDataClumpsFields = new DetectorDataClumpsFields(this.options, this.progressCallback, this.abortController);
-        let commonFields = await detectorDataClumpsFields.detect(softwareProjectDicts);
+        let commonFields = await detectorDataClumpsFields.detect(this.softwareProjectDicts);
         if(!!commonFields){
             let commonFieldsKeys = Object.keys(commonFields);
             for (let commonFieldsKey of commonFieldsKeys) {

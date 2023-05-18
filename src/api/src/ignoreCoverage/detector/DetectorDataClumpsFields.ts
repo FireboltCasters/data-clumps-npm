@@ -97,11 +97,10 @@ export class DetectorDataClumpsFields {
         let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters, softwareProjectDicts, otherClass, null);
 
         let fileKey = currentClass.fileKey;
-        let currentFile = softwareProjectDicts.dictFile[fileKey]
         let dataClumpContext: DataClumpTypeContext = {
             type: "data_clump",
-            key: currentFile.key+"-"+currentClass.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-            file_path: currentFile.path,
+            key: fileKey+"-"+currentClass.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
+            file_path: fileKey,
             class_or_interface_name: currentClass.name,
             method_name: null,
 

@@ -294,6 +294,28 @@ export class MethodTypeContext extends AstElementTypeContext{
         return true;
     }
 
+    public static isWholeHierarchyKnown(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+        // TODO: check if we can find all parents
+        //console.log("isWholeHierarchyKnown?")
+        //console.log("softwareProjectDicts.dictClassOrInterface")
+        //console.log(softwareProjectDicts.dictClassOrInterface);
+
+        let currentClassOrInterfaceKey = method.classOrInterfaceKey;
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
+        let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
+        //console.log(superClassesOrInterfacesKeys);
+        for(let superClassesOrInterfaceKey of superClassesOrInterfacesKeys){
+            let superClassesOrInterface = softwareProjectDicts.dictClassOrInterface[superClassesOrInterfaceKey];
+            if(!superClassesOrInterface){
+                //console.log("Found no superClassesOrInterface for: "+superClassesOrInterfaceKey);
+                //console.log("The hierarchy is therefore not complete");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public isInheritedFromParentClassOrInterface(softwareProjectDicts: SoftwareProjectDicts){
         // In Java we can't rely on @Override annotation because it is not mandatory: https://stackoverflow.com/questions/4822954/do-we-really-need-override-and-so-on-when-code-java
         if(this.overrideAnnotation){

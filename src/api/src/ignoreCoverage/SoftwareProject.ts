@@ -29,41 +29,50 @@ export class MyAbortController {
 
 }
 
+export class SoftwareProjectClassOrInterfaceDicts {
+  public dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>
+
+  public constructor(dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>) {
+    this.dictClassOrInterface = dictClassOrInterface;
+  }
+
+  public static fromSoftwareProject(softwareProject: SoftwareProject){
+    let softwareProjectClassOrInterfaceDicts = new SoftwareProjectClassOrInterfaceDicts({});
+
+    let fileKeys = softwareProject.getFilePaths();
+    for (let fileKey of fileKeys) {
+      let file = softwareProject.getFile(fileKey);
+      let fileAst = file.ast;
+      let classOrInterfaceKeys = Object.keys(fileAst);
+      for (let classOrInterfaceKey of classOrInterfaceKeys) {
+        let classOrInterface = fileAst[classOrInterfaceKey];
+        softwareProjectClassOrInterfaceDicts.dictClassOrInterface[classOrInterface.key] = classOrInterface;
+      }
+    }
+
+    return softwareProjectClassOrInterfaceDicts;
+  }
+}
 
 export class SoftwareProjectDicts {
-  public dictFile: Dictionary<MyFile> = {};
   public dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
   public dictMemberFieldParameters: Dictionary<MemberFieldParameterTypeContext> = {};
   public dictMethod: Dictionary<MethodTypeContext> = {};
   public dictMethodParameters: Dictionary<MethodParameterTypeContext> = {};
 
-  public constructor(project: SoftwareProject) {
-    this.dictFile = {};
+  public constructor(dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>) {
     this.dictClassOrInterface = {};
     this.dictMemberFieldParameters = {};
     this.dictMethod = {};
     this.dictMethodParameters = {};
 
-    this.dictFile = project.getFilesDict();
-    //console.log("dictFile: ")
-    //console.log(this.dictFile);
-
-    this.dictClassOrInterface = {};
-    this.dictMemberFieldParameters = {};
-    this.dictMethod = {};
-    this.dictMethodParameters = {};
-
-    let fileKeys = Object.keys(this.dictFile);
-    for (let fileKey of fileKeys) {
-      let file = this.dictFile[fileKey];
-      let classOrInterfacesDictForFile = file.ast;
-      let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
-      for (let classOrInterfaceKey of classOrInterfaceKeys) {
-        let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
-        this.handleClassOrInterface(classOrInterface);
-      }
+    let classOrInterfacesDictForFile = dictClassOrInterface;
+    let classOrInterfaceKeys = Object.keys(classOrInterfacesDictForFile);
+    for (let classOrInterfaceKey of classOrInterfaceKeys) {
+      let classOrInterface = classOrInterfacesDictForFile[classOrInterfaceKey];
+      this.handleClassOrInterface(classOrInterface);
     }
-  }
+   }
 
   private fillMethodsForClassOrInterface(classOrInterface: ClassOrInterfaceTypeContext) {
     // Fill methods
@@ -129,10 +138,11 @@ export class SoftwareProject {
 
   public filesToParseDict: Dictionary<MyFile> = {};
   public fileExtensionsToBeChecked: Dictionary<string> = {};
-  public softwareProjectDicts: SoftwareProjectDicts = new SoftwareProjectDicts(this);
+  public dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
 
   constructor(fileExtensionsToBeChecked: string[]) {
     this.filesToParseDict = {};
+    this.dictClassOrInterface = {};
     this.fileExtensionsToBeChecked = {};
     for (let fileExtension of fileExtensionsToBeChecked) {
         this.fileExtensionsToBeChecked[fileExtension] = fileExtension;
@@ -183,22 +193,20 @@ export class SoftwareProject {
   }
 
   public async parseSoftwareProject(parserOptions?: ParserOptions, progressCallback?: any, abortController?: MyAbortController) {
+    this.dictClassOrInterface = {};
     parserOptions = this.getDefaultParserOptionsIfUndefined(parserOptions);
     await Parser.parseSoftwareProject(this, parserOptions, abortController, progressCallback);
-  }
 
-  public getAstAsString(): string {
-    let astAsString = "";
     let fileKeys = this.getFilePaths();
     for (let fileKey of fileKeys) {
-      astAsString += fileKey+"\":\n";
       let file = this.getFile(fileKey);
       let fileAst = file.ast;
-      let fileAstAsString = JSON.stringify(fileAst, null, 2);
-      astAsString += fileAstAsString;
-      astAsString += "\n";
+      let classOrInterfaceKeys = Object.keys(fileAst);
+      for (let classOrInterfaceKey of classOrInterfaceKeys) {
+        let classOrInterface = fileAst[classOrInterfaceKey];
+        this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
+      }
     }
-    return astAsString;
   }
 
   public getFilesDict() {
@@ -206,12 +214,15 @@ export class SoftwareProject {
   }
 
   public getSoftwareProjectDicts(){
-    return this.softwareProjectDicts;
+    return new SoftwareProjectDicts(this.getParsedSoftwareProject());
+  }
+
+  public getParsedSoftwareProject(){
+    return this.dictClassOrInterface;
   }
 
   public async detectDataClumps(detectorOptions?, progressCallback?: any, abortController?: MyAbortController): Promise<DataClumpsTypeContext> {
-    this.softwareProjectDicts = new SoftwareProjectDicts(this);
-    let detector = new Detector(this, detectorOptions, progressCallback, abortController);
+    let detector = new Detector(this.dictClassOrInterface, detectorOptions, progressCallback, abortController);
     let dataClumps = await detector.detect();
     return dataClumps;
   }
