@@ -139,9 +139,9 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public innerDefinedClasses: Dictionary<ClassOrInterfaceTypeContext>;
     public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
-    public constructor(key, name, type, file: MyFile){
+    public constructor(key, name, type, fileKey){
         super(key, name, type);
-        this.fileKey = file.key;
+        this.fileKey = fileKey;
         this.name = name;
         this.modifiers = [];
         this.fields = {};
