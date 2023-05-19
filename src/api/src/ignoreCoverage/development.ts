@@ -1,9 +1,4 @@
-import {
-    MyAbortController,
-    SoftwareProject,
-    SoftwareProjectDicts
-} from "./SoftwareProject";
-import {DataClumpsTypeContext} from "./DataClumpTypes";
+import {MyAbortController, SoftwareProject} from "./SoftwareProject";
 
 import fs from 'fs';
 import path from 'path';
@@ -26,6 +21,7 @@ function readFiles(project_root_directory, directory, project) {
         } else {
             let fileContent = fs.readFileSync(fullPath, 'utf-8');
             let relativePath = fullPath.substring(pathToFolderOfRootDir.length-1, fullPath.length);
+            console.log(relativePath);
             project.addFileContent(relativePath, fileContent);
         }
     }
@@ -55,9 +51,7 @@ function loadJSONFile(file_name): Dictionary<ClassOrInterfaceTypeContext> | null
 }
 
 function getParserOptions(){
-    let parserOptions = new ParserOptions({
-        includePositions: true,
-    });
+    let parserOptions = new ParserOptions({});
     return parserOptions;
 }
 

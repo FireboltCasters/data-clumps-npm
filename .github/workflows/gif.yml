@@ -1,0 +1,27 @@
+name: Demo Gif
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["Publish"]
+    types:
+      - completed
+
+jobs:
+  generate-gif:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Website to file
+        uses: PabloLec/website-to-gif@2.1.0
+        with:
+          url: "https://docs.github.com"
+#          url: "https://fireboltcasters.github.io/data-clumps/?demo"
+          save_path: "/docs/demo.gif"
+      - name: Commit file to GH repo
+        run: |
+          git config --global user.name "Firebolt Casters"
+          git config --global user.email "nilsbaumgartner@live.de"
+          git add .
+          git commit -m "[GIF] Update"
+          git push

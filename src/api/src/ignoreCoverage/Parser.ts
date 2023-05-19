@@ -5,7 +5,7 @@ import {Dictionary} from "./UtilTypes";
 import {Timer} from "./Timer";
 
 export class ParserOptions {
-    public includePositions: boolean = false;
+    public includePositions: boolean = true;
 
     public constructor(options: any){
         let keys = Object.keys(options || {});

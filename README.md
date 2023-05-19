@@ -45,6 +45,35 @@ https://fireboltcasters.github.io/data-clumps/
 npm install data-clumps
 ```
 
+## Usage
+
+Have a look at the development example in [development.ts](https://github.com/FireboltCasters/data-clumps/blob/master/src/api/src/ignoreCoverage/development.ts)
+
+```
+import {SoftwareProject} from "data-clumps";
+
+async function main(){
+  console.log("1. Create empty project");
+  let project: SoftwareProject = new SoftwareProject(["java"]);
+  console.log("2. Add files to project");
+  // for all files from your project
+  let virtualPathToFile = "/myExampleProject/src/HelloWorld.java";
+    let fileContent = "public class HelloWorld{ ... }";
+    project.addFileContent(virtualPathToFile, fileContent);
+  
+  console.log("3. Let the file be parsed");
+  await project.parseSoftwareProject();
+  
+  console.log(4. Detect Data-Clumps");
+  let dataClumpsContext = await project.detectDataClumps()
+  
+  console.log("5. Detected Data-Clumps");
+  console.log(dataClumpsContext);
+}
+
+main();
+```
+
 ## Roadmap
 
 - [ ] Integrate website-to-gif: https://github.com/PabloLec/website-to-gif

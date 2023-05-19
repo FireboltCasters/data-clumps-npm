@@ -8,26 +8,8 @@ on:
 permissions:
   contents: write
 jobs:
-  npm:
-    if: ${{!startsWith(github.event.head_commit.message, '[RELEASE]') }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
-          registry-url: 'https://registry.npmjs.org'
-      - run: cd ./src/api/ && npm ci
-      - run: cd ./src/api/ && git config --global user.name 'Firebolt Caster'
-      - run: cd ./src/api/ && git config --global user.email 'nilsbaumgartner@live.de'
-      - run: cd ./src/api/ && NEW_VERSION=$(npm version patch) && git add . && git tag $NEW_VERSION && git commit -m "[RELEASE] $NEW_VERSION"
-      - run: cd ./src/api/ && git push
-      - run: cd ./src/api/ && npm run _uploadWithoutPatch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   gh-pages:
-    if: ${{ !startsWith(github.event.head_commit.message, '[RELEASE]') }}
+    if: ${{!startsWith(github.event.head_commit.message, '[RELEASE]') || !startsWith(github.event.head_commit.message, '[GIF]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -45,3 +27,23 @@ jobs:
           CI=false npm run deploy -- -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+  npm:
+    needs: gh-pages
+    if: ${{!startsWith(github.event.head_commit.message, '[RELEASE]') || !startsWith(github.event.head_commit.message, '[GIF]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: cd ./src/api/ && npm ci
+      - run: cd ./src/api/ && git config --global user.name 'Firebolt Casters'
+      - run: cd ./src/api/ && git config --global user.email 'nilsbaumgartner@live.de'
+      - run: cd ./src/api/ && NEW_VERSION=$(npm version patch) && git add . && git tag $NEW_VERSION && git commit -m "[RELEASE] $NEW_VERSION"
+      - run: cd ./src/api/ && git push
+      - run: cd ./src/api/ && npm run _uploadWithoutPatch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+

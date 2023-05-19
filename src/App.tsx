@@ -13,6 +13,10 @@ export default class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     console.log("App Constructor");
+      const queryParameters = new URLSearchParams(window?.location?.search)
+      const type = queryParameters.get("demo")
+      const name = queryParameters.get("name")
+
     SynchedStateHelper.initSynchedKeys();
     SynchedStateHelper.initContextStores(); //after ConfigHolder.storage.initContextStores();
   }
