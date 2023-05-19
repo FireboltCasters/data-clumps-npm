@@ -1,6 +1,6 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent, useEffect} from 'react';
 import {
-    ColorModeOptions,
+    ColorModeOptions, useDemoType,
     useIsDarkModeEnabled, useSynchedColorModeOption,
     useSynchedFileExplorerTree,
     useSynchedModalState,
@@ -23,6 +23,7 @@ export interface WebIdeCodeActionBarDataClumpsProps {
 
 export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionBarDataClumpsProps> = (props: WebIdeCodeActionBarDataClumpsProps) => {
 
+    const demoType = useDemoType();
     const [viewOptions, setViewOptions] = useSynchedViewOptions()
     const [tree, setTree] = useSynchedFileExplorerTree();
     const [colorModeOption, setColorModeOption] = useSynchedColorModeOption();
@@ -30,6 +31,34 @@ export const WebIdeCodeActionBarDataClumps : FunctionComponent<WebIdeCodeActionB
 
     const [dropZoneModalOptions, setDropZoneModalOptions] = useSynchedModalState(SynchedStates.dropzoneModal);
     const [githubModalOptions, setGitHubModalOptions] = useSynchedModalState(SynchedStates.githubImportModal);
+
+    useEffect(() => {
+        if(demoType==="main"){
+            loadDemoProject();
+        }
+
+    }, [])
+
+    function loadDemoProject(){
+        let languages = Languages.getLanguages();
+        if(languages && languages.length>0){
+            let language = languages[0];
+            let positiveTestCases = language.getPositiveTestCasesGroupsDataClumps();
+            if(!!positiveTestCases && positiveTestCases.length>0){
+                let positiveTestCaseGroup = positiveTestCases[0];
+                if(!!positiveTestCaseGroup){
+                    let positiveTestCasesForGroup = positiveTestCaseGroup.testCases;
+                    if(!!positiveTestCasesForGroup && positiveTestCasesForGroup.length>0){
+                        let positiveTestCase = positiveTestCasesForGroup[0];
+                        if(!!positiveTestCase && props.loadSoftwareProject){
+                            let testCaseProject = positiveTestCase.getSoftwareProject()
+                            props.loadSoftwareProject(testCaseProject)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     function getViewOptionItemEditorHighlightFieldAndParameters(){
         let active = viewOptions.editor === ViewOptionValues.decorationFieldAndParameters

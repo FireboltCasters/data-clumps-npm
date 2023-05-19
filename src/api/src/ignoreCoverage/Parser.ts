@@ -41,7 +41,8 @@ export class Parser {
       let timer = new Timer();
       timer.start();
 
-      let parserOptions = options || new ParserOptions(false);
+      let parserOptions = new ParserOptions(options);
+
       let filePaths = softwareProject.getFilePaths();
       let index = 0;
       let amountOfFiles = filePaths.length;
@@ -67,7 +68,7 @@ export class Parser {
         let timer = new Timer();
         timer.start();
 
-        let parserOptions = options || new ParserOptions(false);
+        let parserOptions = new ParserOptions(options);
         let filePaths = softwareProject.getFilePaths();
         let index = 0;
         let amountOfFiles = filePaths.length;

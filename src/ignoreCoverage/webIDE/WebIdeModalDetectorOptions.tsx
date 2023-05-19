@@ -114,7 +114,7 @@ export const WebIdeModalDetectorOptions : FunctionComponent<WebIdeModalProps> = 
     }
 
     function renderKeysInGroup(groupKey: string){
-        console.log("renderKeysInGroup: "+groupKey);
+        //console.log("renderKeysInGroup: "+groupKey);
 
         let output: any[] = [];
 

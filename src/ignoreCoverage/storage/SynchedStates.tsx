@@ -2,6 +2,8 @@ export class SynchedStates {
 
 	static exampleSynchedText = "MySynchedStates.exampleSynchedText"
 
+	static demoType = "MySynchedStates.demoType";
+
 	static softwareProject = "MySynchedStates.softwareProject";
 	static softwareProjectTree = "MySynchedStates.softwareProjectTree";
 	static modalOptions = "MySynchedStates.modalOptions";

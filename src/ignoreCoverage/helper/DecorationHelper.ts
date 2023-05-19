@@ -17,29 +17,31 @@ export default class DecorationHelper extends Component {
             let fieldKey = fieldKeys[i];
             let field = fields[fieldKey];
             if(!!field){
-                let position = field.position;
-                let hoverMessage = field.modifiers?.join(" ")+" "+field.type+" "+field.name;
-                console.log("position")
-                console.log(position)
+                let position = field?.position;
+                if(!!position){
+                    let hoverMessage = field.modifiers?.join(" ")+" "+field.type+" "+field.name;
+                    console.log("position")
+                    console.log(position)
 
-                let decorationForField = {
-                    range: {
-                        startLineNumber: position.startLine,
-                        startColumn: position.startColumn+1,
-                        endLineNumber: position.endLine,
-                        endColumn: position.endColumn+1
-                    },
-                    options: {
-                        isWholeLine: false,
-                        inlineClassName: "myLineDecoration",
+                    let decorationForField = {
+                        range: {
+                            startLineNumber: position.startLine,
+                            startColumn: position.startColumn+1,
+                            endLineNumber: position.endLine,
+                            endColumn: position.endColumn+1
+                        },
+                        options: {
+                            isWholeLine: false,
+                            inlineClassName: "myLineDecoration",
 //                        className: "myContentClass",
-                        glyphMarginClassName: "myGlyphMarginClass",
-                        hoverMessage: {
-                            value: hoverMessage
+                            glyphMarginClassName: "myGlyphMarginClass",
+                            hoverMessage: {
+                                value: hoverMessage
+                            }
                         }
                     }
+                    decoration.push(decorationForField);
                 }
-                decoration.push(decorationForField);
             }
         }
         return decoration;

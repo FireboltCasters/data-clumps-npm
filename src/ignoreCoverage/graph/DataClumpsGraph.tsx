@@ -14,11 +14,11 @@ import {
 } from "../../api/src/ignoreCoverage/ParsedAstTypes";
 import {SoftwareProjectDicts} from "../../api/src/";
 import {Button} from "primereact/button";
+import {ProjectHolder} from "../main/Demo";
 
 // @ts-ignore
 export interface DataClumpsGraphProps {
     dataClumpsDict: DataClumpsTypeContext | null,
-    softwareProjectDicts: SoftwareProjectDicts | null
     activeFileKey: string | null,
 }
 
@@ -29,7 +29,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
     function getInitialGraphFromDataClumpsDict(){
         //console.log("getInitialGraphFromDataClumpsDict");
 
-        let softwareProjectDicts: SoftwareProjectDicts | null = props.softwareProjectDicts;
+        let softwareProjectDicts = ProjectHolder.project.getSoftwareProjectDicts();
         let activeFileKey: string | null = props.activeFileKey;
 
         let dataClumpsDict = props.dataClumpsDict;
@@ -189,6 +189,8 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
     }
 
     function getRawClassesOrInterfacesNode(classOrInterface: ClassOrInterfaceTypeContext, softwareProjectDicts: SoftwareProjectDicts, classes_dict: any){
+        //console.log("getRawClassesOrInterfacesNode: classOrInterface");
+        //console.log(classOrInterface)
         let class_or_interface_node = classes_dict[classOrInterface.key];
         if(!class_or_interface_node){
             class_or_interface_node = {
@@ -324,6 +326,7 @@ export const DataClumpsGraph : FunctionComponent<DataClumpsGraphProps> = (props:
             //console.log("classOrInterfaceKey")
             //console.log(classOrInterfaceKey)
             let class_or_interface = softwareProjectDicts.dictClassOrInterface[classOrInterfaceKey];
+
             let class_or_interface_node = getRawClassesOrInterfacesNode(class_or_interface, softwareProjectDicts, classes_dict);
             file_node.classes_or_interfaces_ids[class_or_interface_node.id] = class_or_interface_node.id;
 

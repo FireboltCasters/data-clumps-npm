@@ -140,7 +140,7 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public innerDefinedInterfaces: Dictionary<ClassOrInterfaceTypeContext>;
 
     public static fromObject(obj: ClassOrInterfaceTypeContext){
-        console.log("Copy ClassOrInterfaceTypeContext");
+        //console.log("Copy ClassOrInterfaceTypeContext");
 
         // @ts-ignore
         let instance = new ClassOrInterfaceTypeContext();
@@ -158,7 +158,7 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
             instance.innerDefinedInterfaces[innerDefinedInterfaceKey] = ClassOrInterfaceTypeContext.fromObject(instance.innerDefinedInterfaces[innerDefinedInterfaceKey]);
         }
 
-        console.log("Copy ClassOrInterfaceTypeContext finished");
+        //console.log("Copy ClassOrInterfaceTypeContext finished");
         return instance;
     }
 
@@ -228,9 +228,10 @@ export class MemberFieldParameterTypeContext extends ParameterTypeContext{
     }
 
     public static fromObject(obj: MemberFieldParameterTypeContext){
-        console.log("MemberFieldParameterTypeContext fromObject")
+        //console.log("MemberFieldParameterTypeContext fromObject")
         // @ts-ignore
         let instance = new MemberFieldParameterTypeContext();
+        Object.assign(instance, obj);
         return instance;
     }
 }

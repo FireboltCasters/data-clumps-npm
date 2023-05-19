@@ -106,6 +106,10 @@ export function useSynchedViewOptions(): [value: ViewOptions, setValue: (value) 
     ];
 }
 
+export function useDemoType(): string {
+    const [demoType] = useSynchedState(SynchedStates.demoType);
+    return demoType;
+}
 
 export function useSynchedActiveFileKey(): [value: any, setValue: (value) => {}] {
     const [activeFileKey, setActiveFileKey] = useSynchedJSONState(SynchedStates.activeFile)
@@ -225,7 +229,7 @@ export class SynchedStateHelper {
         return KeyExtractorHelper.getListOfStaticKeyValues(SynchedStates);
     }
 
-    private static registerSynchedState(key: string, defaultValue?: string, beforeHook?, afterHook?, override: boolean = false){
+    public static registerSynchedState(key: string, defaultValue?: string, beforeHook?, afterHook?, override: boolean = false){
         let additionalModel = SynchedStateHelper.globalSynchedStoreModels[key];
         if(!!additionalModel && !override){
             return new Error("Additional variable for storage already exists for that key: "+key);

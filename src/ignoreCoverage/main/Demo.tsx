@@ -2,11 +2,12 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
+    useDemoType,
     useSynchedActiveFileKey,
     useSynchedDataClumpsDict, useSynchedDetectorOptions,
     useSynchedFileExplorerTree, useSynchedJSONState,
     useSynchedModalState,
-    useSynchedOpenedFiles,
+    useSynchedOpenedFiles, useSynchedState,
     useSynchedViewOptions,
     ViewOptionValues,
     ViewPanelValues
@@ -20,7 +21,7 @@ import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFi
 import {SynchedStates} from "../storage/SynchedStates";
 import {WebIdeCodeActionBarDataClumps} from "../webIDE/WebIdeActionBarDataClumps";
 import {WebIdeModalProgress} from "../webIDE/WebIdeModalProgress";
-import {MyAbortController} from "../../api/src/";
+import {MyAbortController, SoftwareProjectDicts} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
 import {DataClumpsGraph} from "../graph/DataClumpsGraph";
@@ -36,7 +37,11 @@ export class ProjectHolder{
     public static project: SoftwareProject = new SoftwareProject(["java"]);
 }
 
-export const Demo : FunctionComponent = (props) => {
+
+export interface DemoProps {
+
+}
+export const Demo : FunctionComponent<DemoProps> = (props) => {
 
     const [activeFileKey, setActiveFileKey] = useSynchedActiveFileKey();
     const [decorations, setDecorations] = useState<any[]>([]);
@@ -51,7 +56,6 @@ export const Demo : FunctionComponent = (props) => {
     let onAbort = async () => {
         //console.log("Demo: onAbort")
         abortController.abort();
-
     }
 
     const [dataClumpsDict, setDataClumpsDict] = useSynchedDataClumpsDict();
@@ -143,7 +147,7 @@ export const Demo : FunctionComponent = (props) => {
     function renderActionBar(){
         return(
             <div style={{width: "100%"}}>
-                <WebIdeCodeActionBarDataClumps onStartDetection={onStartDetection} loadSoftwareProject={loadSoftwareProject} />
+                <WebIdeCodeActionBarDataClumps key={"1"} onStartDetection={onStartDetection} loadSoftwareProject={loadSoftwareProject} />
             </div>
         )
     }
@@ -224,10 +228,9 @@ export const Demo : FunctionComponent = (props) => {
     }
 
     function renderDataClumpsGraph(){
-        let softwareProjectDicts = ProjectHolder.project.getSoftwareProjectDicts();
 
         return(
-            <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} activeFileKey={activeFileKey} dataClumpsDict={dataClumpsDict} softwareProjectDicts={softwareProjectDicts} />
+            <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} activeFileKey={activeFileKey} dataClumpsDict={dataClumpsDict} />
         )
     }
 
@@ -442,11 +445,12 @@ export const Demo : FunctionComponent = (props) => {
             </>
         )
     }
+    const actionBar = renderActionBar();
 
     return (
         <div className={"p-splitter"} style={{width: "100%", height: "100vh", display: "flex", flexDirection: "row"}}>
             <WebIdeLayout
-                menuBarItems={renderActionBar()}
+                menuBarItems={actionBar}
                 panelInitialSizes={[20, 50, 30]}
             >
                 <div style={{backgroundColor: 'transparent', height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>

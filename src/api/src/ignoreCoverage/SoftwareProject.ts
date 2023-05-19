@@ -190,7 +190,7 @@ export class SoftwareProject {
 
   private getDefaultParserOptionsIfUndefined(parserOptions?: ParserOptions){
     if(parserOptions){
-      return parserOptions;
+      return new ParserOptions(parserOptions);
     }
     return new ParserOptions({});
   }
@@ -202,17 +202,24 @@ export class SoftwareProject {
 
     let fileKeys = this.getFilePaths();
     for (let fileKey of fileKeys) {
+      //console.log("fileKey: "+fileKey)
       let file = this.getFile(fileKey);
       let fileAst = file.ast;
+      //console.log(fileAst);
       let classOrInterfaceKeys = Object.keys(fileAst);
       for (let classOrInterfaceKey of classOrInterfaceKeys) {
         let classOrInterface = fileAst[classOrInterfaceKey];
+        classOrInterface = ClassOrInterfaceTypeContext.fromObject(classOrInterface);
+        //console.log("classOrInterface");
+        //console.log(JSON.stringify(classOrInterface, null, 2));
         this.dictClassOrInterface[classOrInterface.key] = classOrInterface;
       }
     }
   }
 
   public getFilesDict() {
+    //console.log("getFilesDict");
+    //console.log(this.filesToParseDict);
     return this.filesToParseDict;
   }
 
