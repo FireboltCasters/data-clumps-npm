@@ -214,8 +214,6 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         }
 
         let superClassesAndInterfacesKeys = Object.keys(foundKeys);
-        //console.log("Returning: ")
-        //console.log(superClassesAndInterfacesKeys)
         return superClassesAndInterfacesKeys;
     }
 }
@@ -233,9 +231,6 @@ export class MemberFieldParameterTypeContext extends ParameterTypeContext{
         console.log("MemberFieldParameterTypeContext fromObject")
         // @ts-ignore
         let instance = new MemberFieldParameterTypeContext();
-        console.log("Okay assign");
-        Object.assign(instance, obj);
-        console.log("MemberFieldParameterTypeContext fromObject finished");
         return instance;
     }
 }
