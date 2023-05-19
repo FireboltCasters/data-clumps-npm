@@ -15,8 +15,7 @@ jobs:
       - name: Website to file
         uses: PabloLec/website-to-gif@2.1.0
         with:
-          url: "https://docs.github.com"
-#          url: "https://fireboltcasters.github.io/data-clumps/?demoType=main"
+          url: "https://fireboltcasters.github.io/data-clumps/?demoType=main"
           save_path: "/docs/demo.gif"
       - name: Commit file to GH repo
         run: |

@@ -39,6 +39,11 @@ A library to parse files and folders to check for data clumps and refactor them.
 
 https://fireboltcasters.github.io/data-clumps/
 
+<a href="https://fireboltcasters.github.io/data-clumps/">
+  <img src="https://github.com/FireboltCasters/data-clumps/raw/master/docs/demo.gif" alt="backup" style="witdth:100px;"/>
+</a>
+    
+
 ## Installtion
 
 ```
