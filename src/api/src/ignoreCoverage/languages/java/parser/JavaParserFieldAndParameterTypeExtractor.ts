@@ -52,6 +52,10 @@ export class JavaParserFieldAndParameterTypeExtractor {
         finalType += secondPartOfType;
         finalType += thirdPartOfType;
 
+        //console.log("firstPartOfType:"+firstPartOfType)
+        //console.log("secondPartOfType:"+secondPartOfType)
+        //console.log("thirdPartOfType:"+thirdPartOfType)
+
         //console.log("custom_getFieldType returning finalType: " + finalType)
         return finalType;
     }

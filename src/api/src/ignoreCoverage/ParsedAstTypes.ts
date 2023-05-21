@@ -129,6 +129,7 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public fields: Dictionary<MemberFieldParameterTypeContext>;
     public methods: Dictionary<MethodTypeContext>;
     public fileKey: string;
+    public anonymous: boolean;
 
     public implements: string[]
     public extends: string[] // Languages that support multiple inheritance include: C++, Common Lisp
@@ -173,6 +174,7 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         this.innerDefinedInterfaces = {};
         this.implements = [];
         this.extends = [];
+        this.anonymous = false;
     }
 
     public getSuperClassesAndInterfacesKeys(softwareProjectDicts: SoftwareProjectDicts, recursive: boolean): any[] {

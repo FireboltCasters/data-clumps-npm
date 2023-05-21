@@ -145,7 +145,11 @@ export class BaseParser {
     private parseInnerDefinedClassedAndInterfacesInMemberDeclaration(memberDeclarationCtx: any) {
         //console.log("parseInnerDefinedClassedAndInterfacesInMemberDeclaration");
 
-        let innerPackageName = this.packageName + "." + this.classOrInterface.name;
+        let innerPackageName = this.classOrInterface.name;
+        if(!!this.packageName){
+            innerPackageName = this.packageName + "." + innerPackageName;
+        }
+
         let copyOfCurrentVisibleClassAndInterfaces = {...this.currentVisibleClassAndInterfaces};
         let copyOfCurrentVisibleVariables = {...this.currentVisibleVariables};
 
@@ -213,7 +217,11 @@ export class BaseParser {
     }
 
     protected setCurrentVisibleClassAndInterfacesForInnerClassesAndInterfaces(memberDeclarationsCtx: any[]){
-        let innerPackageName = this.packageName + "." + this.classOrInterface.name;
+        let innerPackageName = this.classOrInterface.name;
+        if(!!this.packageName){
+            innerPackageName = this.packageName + "." + innerPackageName;
+        }
+
         for(let memberDeclarationCtx of memberDeclarationsCtx){
             let interfaceDeclaration = JavaParserHelper.getChildByType(memberDeclarationCtx, "interfaceDeclaration");
             if(interfaceDeclaration!==null){

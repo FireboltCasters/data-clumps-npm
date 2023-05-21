@@ -137,6 +137,8 @@ export class JavaParserMethodExtractor {
         // search for anonymous class and interface declarations
         // See anonymous class test case
 
+        
+
 
 
         // @ts-ignore
