@@ -18,8 +18,12 @@ export type DataClumpsParameterToContext = {
 export type DataClumpsParameterTypeRelatedToContext = {
     key: string; // typically the file path + class name + method name + parameter names
     file_path: string;
-    class_name: string;
+    class_or_interface_name: string;
+    class_or_interface_key: string;
+
     method_name: string | null;
+    method_key: string | null;
+
     parameter: DataClumpsParameterToContext
 }
 
@@ -32,7 +36,10 @@ export type DataClumpTypeContext = {
     key: string; // typically the file path + class name + method name + parameter names
     file_path: string;
     class_or_interface_name: string;
+    class_or_interface_key: string;
+
     method_name: string | null;
+    method_key: string | null;
 
     data_clump_type: string; // "parameter_data_clump" or "field_data_clump"
     data_clump_data: Dictionary<DataClumpsParameterFromContext>

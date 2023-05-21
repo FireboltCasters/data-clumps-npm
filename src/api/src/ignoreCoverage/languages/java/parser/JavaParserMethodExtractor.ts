@@ -133,11 +133,21 @@ export class JavaParserMethodExtractor {
             method.position = JavaParserHelper.custom_getPosition(ctx);
         }
 
-        //TODO: get body
-        // search for anonymous class and interface declarations
-        // See anonymous class test case
+        let methodBody = JavaParserHelper.getChildByType(ctx, "methodBody");
+        if(!!methodBody){
+            // TODO Support anonymous classes: https://docs.oracle.com/javase/tutorial/java/javaOO/anonymousclasses.html#:~:text=Anonymous%20classes%20enable%20you%20to,a%20local%20class%20only%20once.
 
-        
+            let innerDefinedClasses = JavaParserHelper.getListOfOfInnerChildrenOnTopLayer(methodBody, "classDeclaration");
+            if(innerDefinedClasses.length > 0){
+                console.log("Found anonymous classes: "+innerDefinedClasses.length)
+                console.log(innerDefinedClasses)
+            }
+            let innerDefinedInterfaces = JavaParserHelper.getListOfOfInnerChildrenOnTopLayer(methodBody, "interfaceDeclaration");
+            if(innerDefinedInterfaces.length > 0){
+                console.log("Found innerDefinedInterfaces: "+innerDefinedInterfaces.length)
+                console.log(innerDefinedInterfaces);
+            }
+        }
 
 
 

@@ -28,6 +28,35 @@ export class JavaParserHelper {
         return children
     }
 
+    /**
+     * A ctx may have nested children so somewhere inside there may be our desired child
+     * @param ctx
+     * @param childType
+     */
+    static getListOfOfInnerChildrenOnTopLayer(ctx, childTypeToSearch){
+        let foundInnerChildrenType = []
+        let children = [];
+        if(!ctx){
+            return children;
+        }
+        if(!ctx?.children){
+            return children;
+        }
+        let amountOfChildren = ctx?.children?.length || 0;
+        for(let i = 0; i < amountOfChildren; i++){
+            let child = ctx.children[i];
+            let childType = JavaParserHelper.getCtxType(child);
+            if(childType===childTypeToSearch){
+                // @ts-ignore
+                foundInnerChildrenType.push(child);
+            } else {
+                let recursiveFoundInnerChildrenType = JavaParserHelper.getListOfOfInnerChildrenOnTopLayer(child, childTypeToSearch);
+                foundInnerChildrenType.concat(recursiveFoundInnerChildrenType);
+            }
+        }
+        return foundInnerChildrenType
+    }
+
     static getChildrenByTypeInnerList(ctx, ...childTypes){
             let memberDeclarations: any[] = [];
             let childType = childTypes[0];

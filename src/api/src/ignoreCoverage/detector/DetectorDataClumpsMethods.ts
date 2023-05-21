@@ -224,8 +224,12 @@ export class DetectorDataClumpsMethods {
                 type: "data_clump",
                 key: fileKey+"-"+currentClassOrInterface.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
                 file_path: fileKey,
+
                 class_or_interface_name: currentClassOrInterface.name,
+                class_or_interface_key: currentClassOrInterface.key,
+
                 method_name: method.name,
+                method_key: method.key,
 
                 data_clump_type: "parameter_data_clump", // "parameter_data_clump" or "field_data_clump"
                 data_clump_data: currentParameters

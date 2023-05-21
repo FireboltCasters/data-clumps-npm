@@ -71,8 +71,12 @@ export class DetectorUtils {
                             let related_to_context_found: DataClumpsParameterTypeRelatedToContext = {
                                 key: otherClassFileKey+"-"+otherClass.key+"-"+commonFieldParameterKeysAsKey, // typically the file path + class name + method name + parameter names
                                 file_path: otherClassFileKey,
-                                class_name: otherClass.name,
+                                class_or_interface_name: otherClass.name,
+                                class_or_interface_key: otherClass.key,
+
                                 method_name: otherMethod?.name,
+                                method_key: otherMethod?.key,
+
                                 parameter: related_to_parameter
                             }
                             related_to_context = related_to_context_found;

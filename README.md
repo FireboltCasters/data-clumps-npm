@@ -87,7 +87,8 @@ main();
     - [X] Converting of JavaCST to JavaAST
     - [X] Creating Data Clumps AST
     - [X] Find minimum of LCSD found files
-    - [ ] Investigate why more files than LCSD have been found
+    - [X] Investigate why more files than LCSD have been found
+    - [ ] Support anonymous classes    
     - [ ] Implement Java Refactor Interface
 - [ ] Support TypeScript
 - [ ] Support JavaScript
