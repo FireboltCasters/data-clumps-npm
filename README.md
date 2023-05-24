@@ -35,6 +35,10 @@ Alternative slogan: Get a Three-Headed View of Your Data: Cerberus Detects and R
 
 A library to parse files and folders to check for data clumps and refactor them.
 
+## Dataset
+
+We're excited to share our public [Data-Clumps Dataset](https://github.com/FireboltCasters/Data-Clumps-Dataset/) with you. We invite you to explore it and consider contributing to our growing repository. By uploading your analyzed data, you can help enrich our dataset and support the broader community in their software analysis endeavors. Together, we can enhance our understanding of data-clumps and their impact on software development.
+
 ## Demo
 
 https://fireboltcasters.github.io/data-clumps/
@@ -44,17 +48,23 @@ https://fireboltcasters.github.io/data-clumps/
 </a>
     
 
-## Installtion
+## Visualizer
+
+Our tool offers a unique visualizer tool to make the analysis and refactoring of data clumps more intuitive and accessible. Our data clumps visualizer provides a comprehensive overview of your code's data clumps, allowing you to easily pinpoint areas for improvement.
+
+You can access our visualizer here: [Data Clumps Visualizer](https://github.com/FireboltCasters/data-clumps-visualizer)
+
+
+
+## Installation & Usage
 
 ```
 npm install data-clumps
 ```
 
-## Usage
-
 Have a look at the development example in [development.ts](https://github.com/FireboltCasters/data-clumps/blob/master/src/api/src/ignoreCoverage/development.ts)
 
-```
+```tsx
 import {SoftwareProject} from "data-clumps";
 
 async function main(){
@@ -81,30 +91,30 @@ main();
 
 ## Roadmap
 
-- [ ] Integrate website-to-gif: https://github.com/PabloLec/website-to-gif
-- [ ] Support Java
+- [x] Integrate website-to-gif: https://github.com/PabloLec/website-to-gif
+- [x] Visualization extracted to: A library to visualize data clumps which is used in [data-clumps-visualizer](https://github.com/FireboltCasters/data-clumps-visualizer).
+- [ ] Parser
+  - [ ] Support Java
     - [X] Integrated Antlr4
     - [X] Converting of JavaCST to JavaAST
     - [X] Creating Data Clumps AST
     - [X] Find minimum of LCSD found files
     - [X] Investigate why more files than LCSD have been found
-    - [ ] Support anonymous classes    
+    - [ ] Support anonymous classes
     - [ ] Implement Java Refactor Interface
-- [ ] Support TypeScript
-- [ ] Support JavaScript
-- [ ] Support Python
-- [ ] Support C#
-- [ ] Support C++
+  - [ ] Support TypeScript
+  - [ ] Support JavaScript
+  - [ ] Support Python
+  - [ ] Support C#
+  - [ ] Support C++
+- [ ] Refactoring
+  - [ ] Support Java
 
-## Usage example
+## Roadmap - Future improvements
+- [ ] Extract file parsing to PMD for speed increase: https://github.com/FireboltCasters/pmd-data-clumps
+  - Using PMD will then not support web-based parsing
 
-```javascript
-import {Parser} from 'data-clumps';
-
-async function exampleParse() {
-
-}
-```
+  
 
 ## License
 

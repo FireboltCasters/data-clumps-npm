@@ -44,6 +44,11 @@ export class DetectorDataClumpsFields {
                 await this.progressCallback("Field Detector: "+classKey, index, amountOfClasses);
             }
             let currentClass = classesDict[classKey];// DataclumpsInspection.java line 404
+
+            if(currentClass.auxclass){ // ignore auxclasses as are not important for our project
+                return null;
+            }
+
             this.generateMemberFieldParametersRelatedToForClass(currentClass, classesDict, dataClumpsFieldParameters, softwareProjectDicts);
             if(this.abortController && this.abortController.isAbort()){
                 return null;
@@ -65,11 +70,17 @@ export class DetectorDataClumpsFields {
         let otherClassKeys = Object.keys(classesDict);
         for (let otherClassKey of otherClassKeys) {
             let otherClass = classesDict[otherClassKey];
+
             this.generateMemberFieldParametersRelatedToForClassToOtherClass(currentClass, otherClass, dataClumpsFieldParameters, softwareProjectDicts);
         }
     }
 
     private generateMemberFieldParametersRelatedToForClassToOtherClass(currentClass: ClassOrInterfaceTypeContext, otherClass: ClassOrInterfaceTypeContext, dataClumpsFieldParameters: Dictionary<DataClumpTypeContext>, softwareProjectDicts: SoftwareProjectDicts){
+
+        if(otherClass.auxclass){ // ignore auxclasses as are not important for our project
+            return;
+        }
+
         // DataclumpsInspection.java line 410
         let currentClassKey = currentClass.key
         let otherClassKey = otherClass.key;
@@ -96,17 +107,22 @@ export class DetectorDataClumpsFields {
 
         let [currentParameters, commonFieldParamterKeysAsKey] = DetectorUtils.getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys, currentClassParameters, otherClassParameters, softwareProjectDicts, otherClass, null);
 
-        let fileKey = currentClass.fileKey;
+        let fileKey = currentClass.file_path;
         let dataClumpContext: DataClumpTypeContext = {
             type: "data_clump",
             key: fileKey+"-"+currentClass.key+"-"+otherClass.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-            file_path: fileKey,
 
-            class_or_interface_name: currentClass.name,
-            class_or_interface_key: currentClass.key,
+            from_file_path: fileKey,
+            from_class_or_interface_name: currentClass.name,
+            from_class_or_interface_key: currentClass.key,
+            from_method_name: null,
+            from_method_key: null,
 
-            method_name: null,
-            method_key: null,
+            to_file_path: otherClass.file_path,
+            to_class_or_interface_key: otherClass.key,
+            to_class_or_interface_name: currentClass.name,
+            to_method_key: null,
+            to_method_name: null,
 
             data_clump_type: "field_data_clump", // "parameter_data_clump" or "field_data_clump"
             data_clump_data: currentParameters

@@ -1,11 +1,18 @@
 import {Dictionary} from "./UtilTypes";
 import {SoftwareProjectDicts} from "./SoftwareProject";
 
+export class AstPosition{
+    public startLine: any;
+    public startColumn: any;
+    public endLine: any;
+    public endColumn: any
+}
+
 export class AstElementTypeContext {
     public name: string;
     public key: string;
     public type: string;
-    public position: any;
+    public position: AstPosition | undefined;
 
     public constructor(key, name, type){
         this.key = key;
@@ -95,12 +102,10 @@ export class ParameterTypeContextUtils{
 export class MyFile{
     public content: string;
     public path: string;
-    public key: string;
     public ast: Dictionary<ClassOrInterfaceTypeContext>;
     public constructor(path: string, content: string){
         this.content = content;
         this.path = path;
-        this.key = path;
         this.ast = {};
     }
 
@@ -128,8 +133,9 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
     public modifiers: string[] | undefined;
     public fields: Dictionary<MemberFieldParameterTypeContext>;
     public methods: Dictionary<MethodTypeContext>;
-    public fileKey: string;
+    public file_path: string;
     public anonymous: boolean;
+    public auxclass: boolean; // true: wont be analysed. the class is only an aux class in order to support the hierarchy.
 
     public implements: string[]
     public extends: string[] // Languages that support multiple inheritance include: C++, Common Lisp
@@ -163,9 +169,9 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         return instance;
     }
 
-    public constructor(key, name, type, fileKey){
+    public constructor(key, name, type, file_path){
         super(key, name, type);
-        this.fileKey = fileKey;
+        this.file_path = file_path;
         this.name = name;
         this.modifiers = [];
         this.fields = {};
@@ -175,6 +181,7 @@ export class ClassOrInterfaceTypeContext extends AstElementTypeContext{
         this.implements = [];
         this.extends = [];
         this.anonymous = false;
+        this.auxclass = false;
     }
 
     public getSuperClassesAndInterfacesKeys(softwareProjectDicts: SoftwareProjectDicts, recursive: boolean): any[] {
@@ -342,14 +349,19 @@ export class MethodTypeContext extends AstElementTypeContext{
         return true;
     }
 
+    public static getClassOrInterface(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
+        let currentClassOrInterfaceKey = method.classOrInterfaceKey;
+        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
+        return currentClassOrInterface;
+    }
+
     public static isWholeHierarchyKnown(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts){
         // TODO: check if we can find all parents
         //console.log("isWholeHierarchyKnown?")
         //console.log("softwareProjectDicts.dictClassOrInterface")
         //console.log(softwareProjectDicts.dictClassOrInterface);
 
-        let currentClassOrInterfaceKey = method.classOrInterfaceKey;
-        let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[currentClassOrInterfaceKey];
+        let currentClassOrInterface = MethodTypeContext.getClassOrInterface(method, softwareProjectDicts);
         let superClassesOrInterfacesKeys = currentClassOrInterface.getSuperClassesAndInterfacesKeys(softwareProjectDicts, true);
         //console.log(superClassesOrInterfacesKeys);
         for(let superClassesOrInterfaceKey of superClassesOrInterfacesKeys){

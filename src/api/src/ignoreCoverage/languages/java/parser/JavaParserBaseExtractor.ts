@@ -103,7 +103,7 @@ export class BaseParser {
         // Therefore we set our own to the current visible classes and interfaces
         this.currentVisibleClassAndInterfaces[classOrInterfaceName] = ownQualifiedName;
 
-        this.classOrInterface = new ClassOrInterfaceTypeContext(ownQualifiedName, classOrInterfaceName, this.type, this.file.key);
+        this.classOrInterface = new ClassOrInterfaceTypeContext(ownQualifiedName, classOrInterfaceName, this.type, this.file.path);
         this.parentClassOrInterface = parentClassOrInterface;
         this.classOrInterface.definedInClassOrInterfaceTypeKey = this.parentClassOrInterface?.key; // save the key of the class or interface that defined this class or interface
     }

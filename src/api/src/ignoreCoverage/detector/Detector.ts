@@ -125,6 +125,7 @@ export class Detector {
         this.timer.start();
         let dataClumpsTypeContext: DataClumpsTypeContext = {
             version: "0.0.1",
+            options: {},
             data_clumps: {}
         };
 

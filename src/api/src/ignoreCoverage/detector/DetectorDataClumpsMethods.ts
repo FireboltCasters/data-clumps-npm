@@ -44,6 +44,7 @@ export class DetectorDataClumpsMethods {
                 await this.progressCallback("Parameter Detector: "+methodKey, index, amountMethods);
             }
             let method = methodsDict[methodKey];
+
             this.analyzeMethod(method, softwareProjectDicts, dataClumpsMethodParameterDataClumps);
             if(this.abortController && this.abortController.isAbort()){
                 return null;
@@ -60,6 +61,12 @@ export class DetectorDataClumpsMethods {
      * @private
      */
     private analyzeMethod(method: MethodTypeContext, softwareProjectDicts: SoftwareProjectDicts, dataClumpsMethodParameterDataClumps: Dictionary<DataClumpTypeContext>){
+
+        let currentClassOrInterface = MethodTypeContext.getClassOrInterface(method, softwareProjectDicts);
+        if(currentClassOrInterface.auxclass){ // ignore auxclasses as are not important for our project
+            return;
+        }
+
 
         //console.log("Analyze method: "+method.key);
         let methodParameters = method.parameters;
@@ -112,6 +119,10 @@ export class DetectorDataClumpsMethods {
         let otherClassesOrInterfacesKeys = Object.keys(classesOrInterfacesDict);
         for (let classOrInterfaceKey of otherClassesOrInterfacesKeys) {
             let otherClassOrInterface = classesOrInterfacesDict[classOrInterfaceKey];
+
+            if(otherClassOrInterface.auxclass){ // ignore auxclasses as are not important for our project
+                return;
+            }
 
             let otherMethods = otherClassOrInterface.methods;
             let otherMethodsKeys = Object.keys(otherMethods);
@@ -218,18 +229,23 @@ export class DetectorDataClumpsMethods {
 
             let currentClassOrInterface = softwareProjectDicts.dictClassOrInterface[method.classOrInterfaceKey];
 
-            let fileKey = currentClassOrInterface.fileKey;
+            let fileKey = currentClassOrInterface.file_path;
 
             let dataClumpContext: DataClumpTypeContext = {
                 type: "data_clump",
                 key: fileKey+"-"+currentClassOrInterface.key+"-"+otherClassOrInterface.key+"-"+commonFieldParamterKeysAsKey, // typically the file path + class name + method name + parameter names
-                file_path: fileKey,
 
-                class_or_interface_name: currentClassOrInterface.name,
-                class_or_interface_key: currentClassOrInterface.key,
+                from_file_path: fileKey,
+                from_class_or_interface_name: currentClassOrInterface.name,
+                from_class_or_interface_key: currentClassOrInterface.key,
+                from_method_name: method.name,
+                from_method_key: method.key,
 
-                method_name: method.name,
-                method_key: method.key,
+                to_file_path: otherClassOrInterface.file_path,
+                to_class_or_interface_name: otherClassOrInterface.name,
+                to_class_or_interface_key: otherClassOrInterface.key,
+                to_method_name: otherMethod.name,
+                to_method_key: otherMethod.key,
 
                 data_clump_type: "parameter_data_clump", // "parameter_data_clump" or "field_data_clump"
                 data_clump_data: currentParameters

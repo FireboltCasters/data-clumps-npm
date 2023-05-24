@@ -2,12 +2,12 @@ import React, {FunctionComponent, useEffect, useState} from 'react';
 import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
 // default style
 import {
-    useDemoType,
     useSynchedActiveFileKey,
-    useSynchedDataClumpsDict, useSynchedDetectorOptions,
-    useSynchedFileExplorerTree, useSynchedJSONState,
+    useSynchedDataClumpsDict,
+    useSynchedDetectorOptions,
+    useSynchedFileExplorerTree,
     useSynchedModalState,
-    useSynchedOpenedFiles, useSynchedState,
+    useSynchedOpenedFiles,
     useSynchedViewOptions,
     ViewOptionValues,
     ViewPanelValues
@@ -21,10 +21,12 @@ import {WebIdeCodeEditorActiveFilePath} from "../webIDE/WebIdeCodeEditorActiveFi
 import {SynchedStates} from "../storage/SynchedStates";
 import {WebIdeCodeActionBarDataClumps} from "../webIDE/WebIdeActionBarDataClumps";
 import {WebIdeModalProgress} from "../webIDE/WebIdeModalProgress";
-import {MyAbortController, SoftwareProjectDicts} from "../../api/src/";
+import {MyAbortController} from "../../api/src/";
 import {WebIdeFileExplorerDropZoneModal} from "../webIDE/WebIdeFileExplorerDropZoneModal";
 import {WebIdeProjectImportGithubModal} from "../webIDE/WebIdeProjectImportGithubModal";
-import {DataClumpsGraph} from "../graph/DataClumpsGraph";
+
+import {DataClumpsGraph} from "data-clumps-visualizer";
+
 import {ParserOptions, SoftwareProject} from "../../api/src";
 import DecorationHelper from "../helper/DecorationHelper";
 import {WebIdeCodeActionBarViews} from "../webIDE/WebIdeActionBarViews";
@@ -228,9 +230,10 @@ export const Demo : FunctionComponent<DemoProps> = (props) => {
     }
 
     function renderDataClumpsGraph(){
+        console.log(JSON.stringify(dataClumpsDict, null, 2));
 
         return(
-            <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} activeFileKey={activeFileKey} dataClumpsDict={dataClumpsDict} />
+            <DataClumpsGraph key={JSON.stringify(dataClumpsDict)+activeFileKey} from_file_path={activeFileKey} dataClumpsDict={dataClumpsDict} />
         )
     }
 
@@ -241,7 +244,7 @@ export const Demo : FunctionComponent<DemoProps> = (props) => {
             let data_clumps_keys = Object.keys(data_clumps);
             for(let key of data_clumps_keys){
                 let dataClump = data_clumps[key];
-                let file_path = dataClump.file_path
+                let file_path = dataClump.from_file_path
                 let amountFound = resultDict[file_path] || 0;
                 amountFound++;
                 resultDict[file_path] = amountFound;
@@ -344,7 +347,7 @@ export const Demo : FunctionComponent<DemoProps> = (props) => {
                 let data_clumps_keys = Object.keys(data_clumps);
                 for(let key of data_clumps_keys){
                     let dataClump = data_clumps[key];
-                    let file_path = dataClump.file_path
+                    let file_path = dataClump.from_file_path
                     if(file_path === activeFileKey){
                         data_clumps_to_show[key] = dataClump;
                     }

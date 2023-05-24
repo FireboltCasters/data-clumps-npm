@@ -22,6 +22,7 @@
     "buffer-from": "^1.1.2",
     "chart.js": "^3.7.1",
     "dagre": "^0.8.5",
+    "data-clumps-visualizer": "^0.1.86",
     "dotenv": "^16.0.3",
     "easy-peasy": "^6.0.0",
     "jszip": "^3.10.1",
@@ -50,6 +51,7 @@
     "build": "react-scripts build --no-minify --env.APP_ENV=production --env.NODE_ENV=development ",
     "dev": "react-scripts start",
     "serve": "npx serve -s ./build",
+    "production": "npm run build && npm run serve",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

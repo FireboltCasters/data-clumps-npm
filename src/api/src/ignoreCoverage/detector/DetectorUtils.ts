@@ -3,7 +3,6 @@ import {Dictionary} from "../UtilTypes";
 import {
     DataClumpsParameterFromContext,
     DataClumpsParameterToContext,
-    DataClumpsParameterTypeRelatedToContext
 } from "../DataClumpTypes";
 import {ClassOrInterfaceTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
 
@@ -53,7 +52,7 @@ export class DetectorUtils {
                 if(currentClassParameter.key === currentFieldParameterKey){
                     commonFieldParameterKeysAsKey += currentClassParameter.name;
 
-                    let related_to_context: any | DataClumpsParameterTypeRelatedToContext = null;
+                    let related_to_context: any | DataClumpsParameterToContext = null;
 
                     let otherFieldParameterKey = commonFieldParameterPairKey.otherParameterKey;
                     for(let otherClassParameter of otherClassParameters){
@@ -66,20 +65,7 @@ export class DetectorUtils {
                                 modifiers: otherClassParameter.modifiers
                             }
 
-                            let otherClassFileKey = otherClass.fileKey;
-
-                            let related_to_context_found: DataClumpsParameterTypeRelatedToContext = {
-                                key: otherClassFileKey+"-"+otherClass.key+"-"+commonFieldParameterKeysAsKey, // typically the file path + class name + method name + parameter names
-                                file_path: otherClassFileKey,
-                                class_or_interface_name: otherClass.name,
-                                class_or_interface_key: otherClass.key,
-
-                                method_name: otherMethod?.name,
-                                method_key: otherMethod?.key,
-
-                                parameter: related_to_parameter
-                            }
-                            related_to_context = related_to_context_found;
+                            related_to_context = related_to_parameter;
                         }
                     }
 
@@ -88,7 +74,7 @@ export class DetectorUtils {
                         name: currentClassParameter.name,
                         type: currentClassParameter.type,
                         modifiers: currentClassParameter.modifiers,
-                        related_to_context: related_to_context
+                        to_variable: related_to_context
                     }
                 }
             }
