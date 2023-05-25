@@ -3,7 +3,7 @@ import {Dictionary} from "../UtilTypes";
 import {
     DataClumpsParameterFromContext,
     DataClumpsParameterToContext,
-} from "../DataClumpTypes";
+} from "data-clumps-type-context";
 import {ClassOrInterfaceTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
 
 type ParameterPair = {

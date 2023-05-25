@@ -7,7 +7,7 @@ import {
   MyFile
 } from "./ParsedAstTypes";
 import {Detector} from "./detector/Detector";
-import {DataClumpsTypeContext} from "./DataClumpTypes";
+import {DataClumpsTypeContext} from "data-clumps-type-context";
 import {Dictionary} from "./UtilTypes";
 
 export class MyAbortController {

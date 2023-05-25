@@ -2,7 +2,7 @@ import {action, createStore, useStoreActions, useStoreState} from "easy-peasy";
 import {KeyExtractorHelper} from "./KeyExtractorHelper";
 import {SynchedStates} from "./SynchedStates";
 import {SynchedVariableInterface} from "./SynchedVariableInterface";
-import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
+import {DataClumpsTypeContext} from "data-clumps-type-context";
 import {useEffect, useState} from "react";
 import {Detector, DetectorOptions} from "../../api/src";
 

@@ -1,7 +1,7 @@
 import {MyAbortController, SoftwareProject, SoftwareProjectDicts} from "../SoftwareProject";
 import {DetectorDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields} from "./DetectorDataClumpsFields";
-import {DataClumpsTypeContext} from "../DataClumpTypes";
+import {DataClumpsTypeContext} from "data-clumps-type-context";
 import {Timer} from "../Timer";
 import {Dictionary} from "../UtilTypes";
 import {ClassOrInterfaceTypeContext} from "../ParsedAstTypes";
@@ -124,7 +124,7 @@ export class Detector {
     public async detect(): Promise<DataClumpsTypeContext>{
         this.timer.start();
         let dataClumpsTypeContext: DataClumpsTypeContext = {
-            version: "0.0.1",
+            version: "0.0.2",
             options: {},
             data_clumps: {}
         };

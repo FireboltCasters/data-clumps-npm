@@ -1,5 +1,5 @@
 import React, {FunctionComponent, useEffect, useState} from 'react';
-import {DataClumpsTypeContext} from "../../api/src/ignoreCoverage/DataClumpTypes";
+import {DataClumpsTypeContext} from "data-clumps-type-context";
 // default style
 import {
     useSynchedActiveFileKey,

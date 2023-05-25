@@ -46,7 +46,11 @@ https://fireboltcasters.github.io/data-clumps/
 <a href="https://fireboltcasters.github.io/data-clumps/">
   <img src="https://github.com/FireboltCasters/data-clumps/raw/master/docs/demo.gif" alt="backup" style="witdth:100px;"/>
 </a>
-    
+
+
+## Reporting Format
+
+In our endeavor to ensure precision and standardization in reporting data clumps, we utilize the following specification: [Data-Clumps-Type-Context](https://github.com/FireboltCasters/data-clumps-type-context/).
 
 ## Visualizer
 

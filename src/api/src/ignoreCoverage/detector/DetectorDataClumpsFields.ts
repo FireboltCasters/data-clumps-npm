@@ -1,7 +1,7 @@
 import {DetectorUtils} from "./DetectorUtils";
 import {Dictionary} from "./../UtilTypes";
 
-import {DataClumpTypeContext} from "./../DataClumpTypes";
+import {DataClumpTypeContext} from "data-clumps-type-context";
 import {ClassOrInterfaceTypeContext, MemberFieldParameterTypeContext} from "./../ParsedAstTypes";
 import {MyAbortController, SoftwareProjectDicts} from "./../SoftwareProject";
 import {DetectorOptions} from "./Detector";
