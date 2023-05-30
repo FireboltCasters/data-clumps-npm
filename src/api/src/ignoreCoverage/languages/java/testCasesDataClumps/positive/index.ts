@@ -9,6 +9,7 @@ import {TestCaseBaseClassGroup} from "../../../../TestCaseBaseClass";
 import {SiblingsWithFields} from "./hierarchy/SiblingsWithFields";
 import {SiblingsWithMethods} from "./hierarchy/SiblingsWithMethods";
 import {InnerSmellyClasses} from "./innerInterfacePositive/InnerSmellyClasses";
+import {SimpleGeneric} from "./generic/SimpleGeneric";
 
 export class Positive extends TestCaseBaseClassForDataClumps {
 
@@ -39,4 +40,11 @@ export class Positive extends TestCaseBaseClassForDataClumps {
         [
             ParametersWithModifiers,
     ], []);
+
+    static generics: TestCaseBaseClassGroup = new TestCaseBaseClassGroup(
+        "Generics",
+        [
+            SimpleGeneric,
+        ], []);
+
 }

@@ -105,6 +105,7 @@ main();
     - [X] Find minimum of LCSD found files
     - [X] Investigate why more files than LCSD have been found
     - [ ] Support anonymous classes
+    - [ ] Support Generics
     - [ ] Implement Java Refactor Interface
   - [ ] Support TypeScript
   - [ ] Support JavaScript
