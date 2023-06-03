@@ -9,15 +9,35 @@ import {Detector} from "./detector/Detector";
 import {Dictionary} from "./UtilTypes";
 import {ClassOrInterfaceTypeContext} from "./ParsedAstTypes";
 
-const arg1 = process.argv[1];
-console.log("arg1: "+arg1); // Current script location
+import { Command } from 'commander'; // import commander
 
-console.log("Hello World 2");
-let path_to_folder = process.argv[2];
-console.log("path_to_folder: "+path_to_folder);
+const program = new Command();
 
-if(!path_to_folder){
-    path_to_folder = "./";
+program
+    .option('-l, --language <type>', 'Language', "java")
+    .option('-v, --verbose', 'Verbose output', false)
+    .option('-p, --progress', 'Show progress', true)  // Default value is true
+    .option('-o, --output <path>', 'Output path', './data-clumps.json') // Default value is './data-clumps.json'
+    .option('-s, --source <path_to_folder>', 'Folder path to analyse', './'); // Default value is './'
+
+program.parse(process.argv);
+
+//const arg1 = process.argv[1];
+//console.log("arg1: "+arg1); // Current script location
+
+// Get the options
+const options = program.opts();
+
+let language = options.language;
+let verbose = options.verbose;
+let showProgress = options.progress;
+let path_to_output = options.output;
+let path_to_folder = options.args[0] || './'; // Use the first positional argument or default to './'
+
+function verboseLog(...content: any){
+    if(verbose){
+        console.log(content);
+    }
 }
 
 function readFiles(project_root_directory, directory, project) {
@@ -40,26 +60,14 @@ function readFiles(project_root_directory, directory, project) {
     }
 }
 
-function saveJSONFile(softwareProjectDicts, file_name){
-    const jsonData = JSON.stringify(softwareProjectDicts, null, 2); // Convert the JSON object to a string with indentation
+function saveJSONFile(jsonObject, file_name){
+    const jsonData = JSON.stringify(jsonObject, null, 2); // Convert the JSON object to a string with indentation
 
     try {
         fs.writeFileSync(file_name, jsonData, 'utf8');
-        console.log('JSON data has been successfully saved to file.');
+        verboseLog('JSON data has been successfully saved to file.');
     } catch (err) {
-        console.error('An error occurred while writing to file:', err);
-    }
-}
-
-function loadJSONFile(file_name): Dictionary<ClassOrInterfaceTypeContext> | null{
-    try {
-        const loadedData = fs.readFileSync(file_name, 'utf8');
-        const loadedJsonData: Dictionary<ClassOrInterfaceTypeContext> = JSON.parse(loadedData); // Parse the JSON data
-        console.log('JSON data loaded from file');
-        return loadedJsonData;
-    } catch (err) {
-        console.error('An error occurred while reading the file:', err);
-        return null;
+        verboseLog('An error occurred while writing to file:', err);
     }
 }
 
@@ -74,20 +82,23 @@ async function generateAstCallback(message, index, total): Promise<void> {
     let firstAndSecond = index === 0 || index === 1;
     let lastAndPreLast = index === total - 1 || index === total - 2;
     if(firstAndSecond || isEveryHundreds || lastAndPreLast) {
-        console.log(content);
+        if(showProgress){
+            console.log(content);
+        }
     }
 }
 
 async function getDictClassOrInterfaceFromProjectPath(path_project_root_directory, fileExtensions, abortController){
     let project: SoftwareProject = new SoftwareProject(fileExtensions);
-    console.log("Reading files and adding to project");
+    verboseLog("Reading files and adding to project");
+
     readFiles(path_project_root_directory, path_project_root_directory, project);
 
-    console.log("Found files: "+project.getFilePaths().length);
-    console.log("Parsing files to AST")
+    verboseLog("Found files: "+project.getFilePaths().length);
+    verboseLog("Parsing files to AST")
     let parserOptions = getParserOptions();
     await project.parseSoftwareProject(parserOptions, generateAstCallback, abortController);
-    console.log("Finished parsing files to AST")
+    verboseLog("Finished parsing files to AST")
 
 
     let dictClassOrInterface = project.dictClassOrInterface;
@@ -95,39 +106,23 @@ async function getDictClassOrInterfaceFromProjectPath(path_project_root_director
 }
 
 async function main() {
-    console.log("Development started");
+    console.log("Data-Clumps Detection");
 
     let dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
-
-
     let abortController = new MyAbortController();
 
-    const path_to_dictClassOrInterface = "/Users/nbaumgartner/Desktop/dictClassOrInterface.json";
-    let save_and_load_dictClassOrInterface = true;
-    let read_from_project = true;
-
-
-    if(read_from_project){
-        let project_root_directory = path_to_folder;
-        dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(project_root_directory, ["java"], abortController);
-        if(save_and_load_dictClassOrInterface){
-            saveJSONFile(dictClassOrInterface,path_to_dictClassOrInterface)
-        }
-    }
-
-    if(save_and_load_dictClassOrInterface){
-        let loadedContent = loadJSONFile(path_to_dictClassOrInterface);
-        if(!!loadedContent){
-            dictClassOrInterface = loadedContent;
-        }
-    }
+    let project_root_directory = path_to_folder;
+    let fileExtensions = [language];
+    dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(project_root_directory, fileExtensions, abortController);
 
     let detectorOptions = {};
     let progressCallback = null;
     let detector = new Detector(dictClassOrInterface, detectorOptions, progressCallback, abortController);
     let dataClumpsContext = await detector.detect();
 
-    console.log("Amount dataclumps: "+Object.keys(dataClumpsContext.data_clumps).length);
+    await saveJSONFile(dataClumpsContext, path_to_output);
+    console.log("Output saved to: "+path_to_output);
+    console.log("Amount Data-Clumps: "+Object.keys(dataClumpsContext.data_clumps).length);
 }
 
 main();
