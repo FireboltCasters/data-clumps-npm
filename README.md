@@ -62,6 +62,18 @@ You can access our visualizer here: [Data Clumps Visualizer](https://github.com/
 
 ## Installation & Usage
 
+You can either choose to run it via command-line (cli) or inside your project via imports.
+
+### Via CLI
+
+You can simply call the detection via command line.
+
+```
+npx data-clumps <PATH_TO_PROJECT>
+```
+
+### Inside your Project
+
 ```
 npm install data-clumps
 ```
@@ -97,6 +109,8 @@ main();
 
 - [x] Integrate website-to-gif: https://github.com/PabloLec/website-to-gif
 - [x] Visualization extracted to: A library to visualize data clumps which is used in [data-clumps-visualizer](https://github.com/FireboltCasters/data-clumps-visualizer).
+- [x] Support cli
+  - [ ] Improve options and add documentation
 - [ ] Parser
   - [ ] Support Java
     - [X] Integrated Antlr4

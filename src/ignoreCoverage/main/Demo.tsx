@@ -85,8 +85,6 @@ export const Demo : FunctionComponent<DemoProps> = (props) => {
         }
     }, [activeFileKey])
 
-    //TODO viszualize Graph?: react-graph-vis
-
     function getParserOptions(){
         let parserOptions = new ParserOptions({
             includePositions: true,

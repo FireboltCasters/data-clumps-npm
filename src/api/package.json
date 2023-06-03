@@ -20,6 +20,9 @@
     "fix": "gts fix",
     "setup": "npm install && node setup.js && rimraf setup.js setup.json"
   },
+  "bin": {
+    "data-clumps": "./build/ignoreCoverage/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/FireboltCasters/data-clumps"
