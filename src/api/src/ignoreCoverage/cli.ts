@@ -18,24 +18,22 @@ program
         'This script performs data clumps detection in a given directory.\n\n' +
         'npx data-clumps [options] <path_to_folder>')
     .version('0.1.0')
-    .argument('<path_to_folder>', 'Specify folder path', './')
+    .argument('<path_to_folder>', 'Specify folder path')
     .option('-l, --language <type>', 'Language', "java")
     .option('-v, --verbose', 'Verbose output', false)
     .option('-p, --progress', 'Show progress', true)  // Default value is true
     .option('-o, --output <path>', 'Output path', './data-clumps.json') // Default value is './data-clumps.json'
-    .option('-s, --source <path_to_folder>', 'Folder path to analyse', './')
-
 
 program.parse(process.argv);
 
-// Get the options
+// Get the options and arguments
 const options = program.opts();
+const path_to_folder = program.args[0] || './';
 
 let language = options.language;
 let verbose = options.verbose;
 let showProgress = options.progress;
 let path_to_output = options.output;
-let path_to_folder = options.path_to_folder;
 
 function verboseLog(...content: any){
     if(verbose){
