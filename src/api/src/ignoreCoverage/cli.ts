@@ -14,16 +14,19 @@ import { Command } from 'commander'; // import commander
 const program = new Command();
 
 program
+    .description('Data-Clumps Detection\n\n' +
+        'This script performs data clumps detection in a given directory.\n\n' +
+        'npx data-clumps [options] <path_to_folder>')
+    .version('0.1.0')
+    .argument('<path_to_folder>', 'Specify folder path', './')
     .option('-l, --language <type>', 'Language', "java")
     .option('-v, --verbose', 'Verbose output', false)
     .option('-p, --progress', 'Show progress', true)  // Default value is true
     .option('-o, --output <path>', 'Output path', './data-clumps.json') // Default value is './data-clumps.json'
-    .option('-s, --source <path_to_folder>', 'Folder path to analyse', './'); // Default value is './'
+    .option('-s, --source <path_to_folder>', 'Folder path to analyse', './')
+
 
 program.parse(process.argv);
-
-//const arg1 = process.argv[1];
-//console.log("arg1: "+arg1); // Current script location
 
 // Get the options
 const options = program.opts();
@@ -32,7 +35,7 @@ let language = options.language;
 let verbose = options.verbose;
 let showProgress = options.progress;
 let path_to_output = options.output;
-let path_to_folder = options.args[0] || './'; // Use the first positional argument or default to './'
+let path_to_folder = options.path_to_folder;
 
 function verboseLog(...content: any){
     if(verbose){
@@ -103,6 +106,37 @@ async function getDictClassOrInterfaceFromProjectPath(path_project_root_director
 
     let dictClassOrInterface = project.dictClassOrInterface;
     return dictClassOrInterface;
+}
+
+function printLogo(){
+    console.log("                                                                                                    \n" +
+        "                                                                                                    \n" +
+        "                                                                                                    \n" +
+        "                        :~!777?77!~:..        ..::::..        ..:~!77?777!~:                        \n" +
+        "                       .?JJJJJ???JJJ7:  ..^!?Y55PPPP55Y?!^..  :7JJJ???JJJJJ?.                       \n" +
+        "                       ~JJJJ7.....:. .^?5PGGPPPPPPPPPPPPGGP5?^. .:.....7JJJJ~                       \n" +
+        "                       ~JJJ?.      :?Y?!~~75PPPPPPPPPPPP57~~!?Y?:      .?JJJ~                       \n" +
+        "                  .^?. :JJJ7     :?7:.^~77.^PPPPPPPPPPPP^.77~^.:7?:     7JJJ: .?^.                  \n" +
+        "                 ~Y5P?  !JJ?.   ~J::?5PPY?..5PPPPPPPPPP5..?YPP5?::J~   .?JJ!  ?P5Y~                 \n" +
+        "               .JGJ..^^ .7JJ^  !Y:7PPPY777JYPPPPPPPPPPPPY?777YPPP7:Y!  ^JJ7. ^^..JGJ.               \n" +
+        "              .YPPP5J:~^ .~: .7G~?GPP55PGPPPPPPPPPPPPPPPPPPGP55PPG?~G7. :~. ^~:J5PPPY.              \n" +
+        "              ?GP!:^J5!P!   ~5PP5P5^...:7PPPPPPPPPPPPPPPPPP7:...^5P5PP5~   !P!5J^:!PG?              \n" +
+        "             :PP~   .5P5: .JPPPPPP^      7GPY7!~^^^^~!7YPG7      ^PPPPPPJ. :5P5.   ~PP:             \n" +
+        "          !^ ~PP~   ~P5: :5PPPPPPP?.    :J!:.          .:!J:    .?PPPPPPP5: :5P~   ~PP~ ^!          \n" +
+        "      ::.~J! .5PP?!JPP~ .YPPPPPPPPP5J77YJ..7?~::. ..::~?7..JY77J5PPPPPPPPPY. ~PPJ!?PP5. !J~.::      \n" +
+        "      .J?JJ?: ^5GGGPPP. ^PPPPPPPPPPPGGP?. 7J?JJJJ.:JJJJ?J7 .?PGGPPPPPPPPPPP^ .PPPGGG5^ :?JJ?J.      \n" +
+        "     .!JJJJJ?: .~J5PPP. ^PPPPPPPPPPPJ~. .!JJ7~~!^..~!~~7JJ!. .~JPPPPPPPPPPP^ .PPP5J~. :?JJJJJ!.     \n" +
+        "     .?JJJJJJJ7^. .::^. .5PPPPPPPPY^ .^7JJJJJ?7!!??!!7?JJJJJ7^. ^YPPPPPPPP5. .^::. .^7JJJJJJJ?.     \n" +
+        "      .7JJJJJJJJJ7!~^^^. ^PPPPPPPY. ^JJJJJJJJJJJJJJJJJJJJJJJJJJ^ .YPPPPPPP^ .^^^~!7JJJJJJJJJ7.      \n" +
+        "       :~!7???JJJJJJJJJ7. ^5PPPPP! .?JJJJJJJJJJJJJJJJJJJJJJJJJJ?. !PPPPP5^ .7JJJJJJJJJ???7!~:       \n" +
+        "       .7??7??JJJJJJJJJJ7: .75PPP?  !JJJJJJJJJJJJJJJJJJJJJJJJJJ!  ?PPP57. :7JJJJJJJJJJ??7??7.       \n" +
+        "        .~?JJJJJJJJJJJJJJJ~. .!YPP~ .!JJJJJJJJJJJJJJJJJJJJJJJJ!. ~PPY!. .~JJJJJJJJJJJJJJJ?~.        \n" +
+        "          .^!?JJJJJJJJJJJJJJ!:. :!J!. :7JJJJJJJJJJJJJJJJJJJJ7: .!J!: .:!JJJJJJJJJJJJJJ?!^.          \n" +
+        "             .:^~77??JJJJJJJJ?7^.  ..   :!?JJJJJJJJJJJJJJ?!:   ..  .^7?JJJJJJJJ??77~^:.             \n" +
+        "                   ............ ..:~^.     .^^~~!!!!~~^^.     .^~:. .............                   \n" +
+        "                                .:!?: :~ !?~^::......::^~??.:: :?~.                                 \n" +
+        "                                   . :J^.B#####BBBBBB######:.J:                                     \n" +
+        "                                    .?J! Y################P.^J?.                                    \n")
 }
 
 async function main() {
