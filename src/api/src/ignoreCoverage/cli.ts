@@ -27,7 +27,7 @@ program
     .option('--language <type>', 'Language', "java")
     .option('--verbose', 'Verbose output', false)
     .option('--progress', 'Show progress', true)  // Default value is true
-    .option('--output <path>', 'Output path', './data-clumps-'+project_name_variable_placeholder+'-'+project_commit_variable_placeholder+'.json') // Default value is './data-clumps.json'
+    .option('--output <path>', 'Output path', './data-clumps/'+project_name_variable_placeholder+'/'+project_commit_variable_placeholder+'.json') // Default value is './data-clumps.json'
     .option('--project_name <project_name>', 'Project Name (default: Git-Name)')
     .option('--project_version <project_version>', 'Project Version')
     .option('--project_commit <project_commit>', 'Project Commit (default: Git-Commit)')
@@ -65,7 +65,7 @@ function verboseLog(...content: any){
     }
 }
 
-function replaceOutputVariables(path_to_output_with_variables, project_name, project_commit){
+function replaceOutputVariables(path_to_output_with_variables, project_name="project_name", project_commit="project_commit"){
     // path_to_output_with_variables: ./data-clumps-<project_name>-<project_version>.json
     //TODO replace <project_name> with content of: project_name
     //TODO replace <project_version> with content of: project_version
@@ -76,20 +76,20 @@ function replaceOutputVariables(path_to_output_with_variables, project_name, pro
 }
 
 async function getProjectName(path_to_folder: string): Promise<string | null> {
-    return new Promise((resolve, reject) => {
-        const git: SimpleGit = simpleGit(path_to_folder);
-        git.listRemote(['--get-url'], (err: Error | null, data?: string) => {
-            if (err) {
-                reject(err);
-                //resolve(null);
-            } else {
-                let url = data?.trim();
-                let splitData = url?.split('/');
-                let projectName = splitData?.[splitData.length - 1]?.replace('.git', '') || '';
-                resolve(projectName);
-            }
+        return new Promise((resolve, reject) => {
+            const git: SimpleGit = simpleGit(path_to_folder);
+            git.listRemote(['--get-url'], (err: Error | null, data?: string) => {
+                if (err) {
+                    //reject(err);
+                    resolve(null);
+                } else {
+                    let url = data?.trim();
+                    let splitData = url?.split('/');
+                    let projectName = splitData?.[splitData.length - 1]?.replace('.git', '') || '';
+                    resolve(projectName);
+                }
+            });
         });
-    });
 }
 
 async function getProjectCommit(path_to_folder: string): Promise<string | null> {
@@ -97,8 +97,8 @@ async function getProjectCommit(path_to_folder: string): Promise<string | null> 
         const git: SimpleGit = simpleGit(path_to_folder);
         git.revparse(['HEAD'], (err: Error | null, data?: string) => {
             if (err) {
-                reject(err);
-                //resolve(null);
+                //reject(err);
+                resolve(null);
             } else {
                 let commit = data?.trim();
                 if(!!commit){
@@ -214,6 +214,7 @@ function printLogo(){
 async function main() {
     console.log("Data-Clumps Detection");
 
+    console.log("path_to_project: "+path_to_project);
     project_name = await getProjectName(path_to_project);
     console.log("project_name: "+project_name);
     project_commit = await getProjectCommit(path_to_project);
