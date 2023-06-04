@@ -149,19 +149,19 @@ export class Detector {
             report_version: "0.1.93",
             report_timestamp: new Date().toISOString(),
             target_language: this.target_language || "unkown",
-            detector: {
-                name: "FireboltCasters/data-clumps",
-                version: "0.1.87",
-                options: JSON.parse(JSON.stringify(this.options))
-            },
-            data_clumps: {},
             report_summary: {},
             project_info: {
                 project_name: this.project_name,
                 project_version: this.project_version,
                 project_commit: this.project_commit,
                 additional: this.additional,
-            }
+            },
+            detector: {
+                name: "FireboltCasters/data-clumps",
+                version: "0.1.87",
+                options: JSON.parse(JSON.stringify(this.options))
+            },
+            data_clumps: {}
         };
 
         console.log("Detecting software project for data clumps");
