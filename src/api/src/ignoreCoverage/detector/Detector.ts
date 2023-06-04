@@ -1,10 +1,11 @@
 import {MyAbortController, SoftwareProject, SoftwareProjectDicts} from "../SoftwareProject";
 import {DetectorDataClumpsMethods} from "./DetectorDataClumpsMethods";
 import {DetectorDataClumpsFields} from "./DetectorDataClumpsFields";
-import {DataClumpsTypeContext} from "data-clumps-type-context";
+import {DataClumpsTypeContext, DataClumpTypeContext} from "data-clumps-type-context";
 import {Timer} from "../Timer";
 import {Dictionary} from "../UtilTypes";
 import {ClassOrInterfaceTypeContext} from "../ParsedAstTypes";
+import {DataClumpsDetectorContext} from "data-clumps-type-context/ignoreCoverage/DataClumpsDetectorContext";
 
 const defaultValueField = "defaultValue";
 
@@ -107,26 +108,60 @@ export class Detector {
     public timer: Timer;
     public progressCallback: any;
     public abortController: MyAbortController | undefined;
+    public target_language: string;
+    public project_name: string;
+    public project_version: string | null;
+    public project_commit: string | null;
+    public additional: any;
 
     static getDefaultOptions(options?: Partial<DetectorOptions>){
         return getDefaultValuesFromPartialOptions(options || {});
     }
 
-    public constructor(dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>, options?: Partial<DetectorOptions>, progressCallback?: any, abortController?: MyAbortController){
+    public constructor(dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext>,
+                       options?: Partial<DetectorOptions>,
+                       progressCallback?: any,
+                       abortController?: MyAbortController,
+                       target_language?: string,
+                       project_name?: string,
+                       project_version?: string | null,
+                       project_commit?: string | null,
+                       additional?: any
+    ){
         let softwareProjectDicts = new SoftwareProjectDicts(dictClassOrInterface);
         this.options = Detector.getDefaultOptions(options || {});
         this.softwareProjectDicts = softwareProjectDicts;
         this.timer = new Timer();
         this.progressCallback = progressCallback;
         this.abortController = abortController;
+
+        this.target_language = target_language || "unknown";
+        this.project_name = project_name || "unknown";
+        this.project_version = project_version || "unknown";
+        this.project_commit = project_commit || "unknown";
+        this.additional = additional || {};
     }
 
     public async detect(): Promise<DataClumpsTypeContext>{
         this.timer.start();
+
         let dataClumpsTypeContext: DataClumpsTypeContext = {
-            version: "0.0.2",
-            options: {},
-            data_clumps: {}
+            report_version: "0.1.93",
+            report_timestamp: new Date().toISOString(),
+            target_language: this.target_language || "unkown",
+            detector: {
+                name: "FireboltCasters/data-clumps",
+                version: "0.1.87",
+                options: JSON.parse(JSON.stringify(this.options))
+            },
+            data_clumps: {},
+            report_summary: {},
+            project_info: {
+                project_name: this.project_name,
+                project_version: this.project_version,
+                project_commit: this.project_commit,
+                additional: this.additional,
+            }
         };
 
         console.log("Detecting software project for data clumps");
@@ -150,6 +185,11 @@ export class Detector {
                 dataClumpsTypeContext.data_clumps[commonField.key] = commonField;
             }
         }
+
+
+        dataClumpsTypeContext.report_summary = {
+            amount_data_clumps: Object.keys(dataClumpsTypeContext.data_clumps).length
+        };
 
         // timeout for testing
 

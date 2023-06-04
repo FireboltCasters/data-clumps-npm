@@ -1,8 +1,8 @@
 import {SoftwareProject, SoftwareProjectDicts} from "../SoftwareProject";
 import {Dictionary} from "../UtilTypes";
 import {
-    DataClumpsParameterFromContext,
-    DataClumpsParameterToContext,
+    DataClumpsVariableFromContext,
+    DataClumpsVariableToContext,
 } from "data-clumps-type-context";
 import {ClassOrInterfaceTypeContext, MyFile, ParameterTypeContext} from "../ParsedAstTypes";
 
@@ -39,9 +39,9 @@ export class DetectorUtils {
     }
 
     public static getCurrentAndOtherParametersFromCommonParameterPairKeys(commonFieldParameterPairKeys: ParameterPair[], currentClassParameters: ParameterTypeContext[], otherClassParameters: ParameterTypeContext[], softwareProjectDicts, otherClass, otherMethod)
-        :[Dictionary<DataClumpsParameterFromContext>, string]
+        :[Dictionary<DataClumpsVariableFromContext>, string]
     {
-        let currentParameters: Dictionary<DataClumpsParameterFromContext> = {};
+        let currentParameters: Dictionary<DataClumpsVariableFromContext> = {};
 
         let commonFieldParameterKeysAsKey = "";
 
@@ -52,13 +52,13 @@ export class DetectorUtils {
                 if(currentClassParameter.key === currentFieldParameterKey){
                     commonFieldParameterKeysAsKey += currentClassParameter.name;
 
-                    let related_to_context: any | DataClumpsParameterToContext = null;
+                    let related_to_context: any | DataClumpsVariableToContext = null;
 
                     let otherFieldParameterKey = commonFieldParameterPairKey.otherParameterKey;
                     for(let otherClassParameter of otherClassParameters){
                         if(otherClassParameter.key === otherFieldParameterKey){
 
-                            let related_to_parameter: DataClumpsParameterToContext = {
+                            let related_to_parameter: DataClumpsVariableToContext = {
                                 key: otherClassParameter.key,
                                 name: otherClassParameter.name,
                                 type: otherClassParameter.type,

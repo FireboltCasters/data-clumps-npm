@@ -70,6 +70,7 @@
     "buffer-from": "^1.1.2",
     "commander": "^10.0.1",
     "data-clumps-type-context": "^0.1.80",
-    "eslint": "^7.32.0"
+    "eslint": "^7.32.0",
+    "simple-git": "^3.19.0"
   }
 }

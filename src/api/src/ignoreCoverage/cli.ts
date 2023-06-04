@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import {MyAbortController, SoftwareProject} from "./SoftwareProject";
+import simpleGit, { SimpleGit } from 'simple-git';
 
 import fs from 'fs';
 import path from 'path';
@@ -13,32 +14,102 @@ import { Command } from 'commander'; // import commander
 
 const program = new Command();
 
+const project_name_variable_placeholder = "{project_name}";
+const project_commit_variable_placeholder = "{project_commit}";
+
 program
     .description('Data-Clumps Detection\n\n' +
         'This script performs data clumps detection in a given directory.\n\n' +
         'npx data-clumps [options] <path_to_folder>')
-    .version('0.1.0')
-    .argument('<path_to_folder>', 'Specify folder path')
-    .option('-l, --language <type>', 'Language', "java")
-    .option('-v, --verbose', 'Verbose output', false)
-    .option('-p, --progress', 'Show progress', true)  // Default value is true
-    .option('-o, --output <path>', 'Output path', './data-clumps.json') // Default value is './data-clumps.json'
+    .version('0.1.86')
+    .argument('<path_to_project>', 'Path to project')
+    .option('--source <path_to_source_files>', 'Path to source files (default is the path to project)')
+    .option('--language <type>', 'Language', "java")
+    .option('--verbose', 'Verbose output', false)
+    .option('--progress', 'Show progress', true)  // Default value is true
+    .option('--output <path>', 'Output path', './data-clumps-'+project_name_variable_placeholder+'-'+project_commit_variable_placeholder+'.json') // Default value is './data-clumps.json'
+    .option('--project_name <project_name>', 'Project Name (default: Git-Name)')
+    .option('--project_version <project_version>', 'Project Version')
+    .option('--project_commit <project_commit>', 'Project Commit (default: Git-Commit)')
+
 
 program.parse(process.argv);
 
 // Get the options and arguments
 const options = program.opts();
-const path_to_folder = program.args[0] || './';
+const path_to_project = program.args[0] || './';
+console.log("path_to_project: "+path_to_project);
+console.log(JSON.stringify(program.args));
+const path_to_source_files = options.source || path_to_project;
 
 let language = options.language;
 let verbose = options.verbose;
 let showProgress = options.progress;
-let path_to_output = options.output;
+
+
+let target_language = language;
+let project_name = options.project_name;
+if(!project_name){
+    //TODO: Get Name if <path_to_folder> is a github project
+}
+
+let project_version = options.project_version;
+let project_commit = options.project_commit;
+if(!project_commit){
+    //TODO: Get Name if <path_to_folder> is a github project
+}
 
 function verboseLog(...content: any){
     if(verbose){
         console.log(content);
     }
+}
+
+function replaceOutputVariables(path_to_output_with_variables, project_name, project_commit){
+    // path_to_output_with_variables: ./data-clumps-<project_name>-<project_version>.json
+    //TODO replace <project_name> with content of: project_name
+    //TODO replace <project_version> with content of: project_version
+    let copy = path_to_output_with_variables+"";
+    copy = copy.replace(project_name_variable_placeholder, project_name);
+    copy = copy.replace(project_commit_variable_placeholder, project_commit);
+    return copy;
+}
+
+async function getProjectName(path_to_folder: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+        const git: SimpleGit = simpleGit(path_to_folder);
+        git.listRemote(['--get-url'], (err: Error | null, data?: string) => {
+            if (err) {
+                reject(err);
+                //resolve(null);
+            } else {
+                let url = data?.trim();
+                let splitData = url?.split('/');
+                let projectName = splitData?.[splitData.length - 1]?.replace('.git', '') || '';
+                resolve(projectName);
+            }
+        });
+    });
+}
+
+async function getProjectCommit(path_to_folder: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+        const git: SimpleGit = simpleGit(path_to_folder);
+        git.revparse(['HEAD'], (err: Error | null, data?: string) => {
+            if (err) {
+                reject(err);
+                //resolve(null);
+            } else {
+                let commit = data?.trim();
+                if(!!commit){
+                    resolve(commit);
+                } else {
+                    resolve(null);
+                }
+
+            }
+        });
+    });
 }
 
 function readFiles(project_root_directory, directory, project) {
@@ -61,11 +132,14 @@ function readFiles(project_root_directory, directory, project) {
     }
 }
 
-function saveJSONFile(jsonObject, file_name){
+function saveJSONFile(jsonObject, path_to_output){
     const jsonData = JSON.stringify(jsonObject, null, 2); // Convert the JSON object to a string with indentation
 
     try {
-        fs.writeFileSync(file_name, jsonData, 'utf8');
+        const directory = path.dirname(path_to_output);
+        fs.mkdirSync(directory, { recursive: true });
+
+        fs.writeFileSync(path_to_output, jsonData, 'utf8');
         verboseLog('JSON data has been successfully saved to file.');
     } catch (err) {
         verboseLog('An error occurred while writing to file:', err);
@@ -140,17 +214,32 @@ function printLogo(){
 async function main() {
     console.log("Data-Clumps Detection");
 
+    project_name = await getProjectName(path_to_project);
+    console.log("project_name: "+project_name);
+    project_commit = await getProjectCommit(path_to_project);
+    console.log("project_commit: "+project_commit);
+
     let dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
     let abortController = new MyAbortController();
 
-    let project_root_directory = path_to_folder;
     let fileExtensions = [language];
-    dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(project_root_directory, fileExtensions, abortController);
+    dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(path_to_source_files, fileExtensions, abortController);
 
     let detectorOptions = {};
     let progressCallback = null;
-    let detector = new Detector(dictClassOrInterface, detectorOptions, progressCallback, abortController);
+
+    let detector = new Detector(dictClassOrInterface, detectorOptions, progressCallback, abortController, target_language,
+        project_name,
+        project_version,
+        project_commit,
+        {});
     let dataClumpsContext = await detector.detect();
+
+    console.log("replaceOutputVariables: ")
+    let path_to_output_with_variables = options.output;
+    console.log("path_to_output_with_variables:"+path_to_output_with_variables);
+    let path_to_output = replaceOutputVariables(path_to_output_with_variables, project_name, project_commit);
+    console.log("path_to_output: "+path_to_output);
 
     await saveJSONFile(dataClumpsContext, path_to_output);
     console.log("Output saved to: "+path_to_output);
