@@ -201,8 +201,8 @@ async function getProjectCommit(path_to_folder: string): Promise<string | null> 
 }
 
 function readFiles(project_root_directory, directory, project) {
-    let pathToFolderOfRootDir = project_root_directory.split("/").slice(0, -1).join("/");
-    if(pathToFolderOfRootDir !== ""){
+    let pathToFolderOfRootDir = project_root_directory;
+    if(!pathToFolderOfRootDir.endsWith("/")){
         pathToFolderOfRootDir += "/";
     }
 
@@ -213,7 +213,7 @@ function readFiles(project_root_directory, directory, project) {
             readFiles(project_root_directory, fullPath, project);
         } else {
             let fileContent = fs.readFileSync(fullPath, 'utf-8');
-            let relativePath = fullPath.substring(pathToFolderOfRootDir.length-1, fullPath.length);
+            let relativePath = fullPath.substring(pathToFolderOfRootDir.length, fullPath.length);
             project.addFileContent(relativePath, fileContent);
         }
     }
@@ -253,11 +253,11 @@ async function generateAstCallback(prepend, message, index, total): Promise<void
     }
 }
 
-async function getDictClassOrInterfaceFromProjectPath(path_project_root_directory, fileExtensions, abortController, preprend){
+async function getDictClassOrInterfaceFromProjectPath(path_to_project, path_to_source_files, fileExtensions, abortController, preprend){
     let project: SoftwareProject = new SoftwareProject(fileExtensions);
     verboseLog("Reading files and adding to project");
 
-    readFiles(path_project_root_directory, path_project_root_directory, project);
+    readFiles(path_to_project, path_to_source_files, project);
 
     verboseLog("Found files: "+project.getFilePaths().length);
     verboseLog("Parsing files to AST")
@@ -315,7 +315,7 @@ async function analyse(project_name, commit, index, amount){
 
         let fileExtensions = [language];
         let prepend = commitInformation+": ";
-        dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(path_to_source_files, fileExtensions, abortController, prepend);
+        dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(path_to_project, path_to_source_files, fileExtensions, abortController, prepend);
 
         let detectorOptions = {};
         let progressCallback = null;

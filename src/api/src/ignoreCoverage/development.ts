@@ -20,7 +20,7 @@ function readFiles(project_root_directory, directory, project) {
             readFiles(project_root_directory, fullPath, project);
         } else {
             let fileContent = fs.readFileSync(fullPath, 'utf-8');
-            let relativePath = fullPath.substring(pathToFolderOfRootDir.length-1, fullPath.length);
+            let relativePath = fullPath.substring(pathToFolderOfRootDir.length, fullPath.length);
             console.log(relativePath);
             project.addFileContent(relativePath, fileContent);
         }
