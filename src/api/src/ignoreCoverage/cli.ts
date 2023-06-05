@@ -12,6 +12,10 @@ import {ClassOrInterfaceTypeContext} from "./ParsedAstTypes";
 
 import { Command } from 'commander'; // import commander
 
+const packageJsonPath = path.join(__dirname, '..','..', 'package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+const version = packageJson.version;
+
 const program = new Command();
 
 const project_name_variable_placeholder = "{project_name}";
@@ -21,19 +25,18 @@ program
     .description('Data-Clumps Detection\n\n' +
         'This script performs data clumps detection in a given directory.\n\n' +
         'npx data-clumps [options] <path_to_folder>')
-    .version('0.1.86')
-    .argument('<path_to_project>', 'Path to project')
-    .option('--source <path_to_source_files>', 'Path to source files (default is the path to project)')
-    .option('--language <type>', 'Language', "java")
+    .version(version)
+    .argument('<path_to_project>', 'Absolute path to project (a git project in best case)')
+    .option('--source <path_to_source_files>', 'Absolute path to source files (default is the path to project)')
+    .option('--language <type>', 'Language (default: java)', "java")
     .option('--verbose', 'Verbose output', false)
     .option('--progress', 'Show progress', true)  // Default value is true
     .option('--output <path>', 'Output path', './data-clumps/'+project_name_variable_placeholder+'/'+project_commit_variable_placeholder+'.json') // Default value is './data-clumps.json'
     .option('--project_name <project_name>', 'Project Name (default: Git-Name)')
     .option('--project_version <project_version>', 'Project Version')
     .option('--project_commit <project_commit>', 'Project Commit (default: Git-Commit)')
-    .option('--full', 'Full analysis', false)
-    .option('--tags', 'Analyse all git tags', false)
-    .option('--path_to_commits_to_analyse <path>', 'Path to CSV file containing commit hash_ids')
+    .option('--commit_selection', 'Commit selections (default: current, options: history, tags, <path_tp_commits_csv>)')
+// TODO: --detector_options <path_to_detector_options_json>
 
 program.parse(process.argv);
 
@@ -53,11 +56,9 @@ let target_language = language;
 
 let project_version = options.project_version;
 
-const useFullGitHistory = options.full;
-const useOnlyGitTags = options.tags;
-const path_to_commits_to_analyse = options.path_to_commits_to_analyse;
+const commitSelectionMode = options.commit_selection;
 
-    function verboseLog(...content: any){
+function verboseLog(...content: any){
     if(verbose){
         console.log(content);
     }
@@ -116,6 +117,19 @@ async function getAllTagsFromGitProject(path_to_folder: string): Promise<string[
     });
 }
 
+async function getCommitSelectionModeCurrent(){
+    let commits_to_analyse: any[] = [];
+    let commit = await getProjectCommit(path_to_project);
+    if(!!options.project_commit){
+        commit = options.project_commit;
+    }
+    if(!commit){
+        commit = null;
+    }
+    commits_to_analyse.push(commit);
+    return commits_to_analyse;
+}
+
 async function getNotAnalysedGitTagCommits(project_name){
     console.log("Perform a full check of the whole project");
     const allCommits = await getAllTagsFromGitProject(path_to_project);
@@ -140,7 +154,7 @@ async function getNotAnalysedGitTagCommits(project_name){
     return missing_commit_results;
 }
 
-async function getAllCommitsFromPassedCommitOption(){
+async function getAllCommitsFromPassedCommitOption(path_to_commits_to_analyse){
     let commit_hashes: string[] = [];
     if (path_to_commits_to_analyse) {
         const data = fs.readFileSync(path_to_commits_to_analyse, 'utf-8');
@@ -309,7 +323,6 @@ async function analyse(project_name, commit, index, amount){
         console.log(`The path to source files ${path_to_source_files} does not exist.`);
         return;
     } else {
-        console.log(`The path to source files ${path_to_source_files} does exist.`);
         let dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
         let abortController = new MyAbortController();
 
@@ -342,7 +355,7 @@ async function getNotAnalysedGitCommits(project_name){
     let missing_commit_results: string[] = [];
 
     if(!!allCommits){
-        console.log("ammount commits: "+allCommits.length)
+        console.log("amount commits: "+allCommits.length)
 
         for (const commit of allCommits) {
             console.log("check commit: " + commit);
@@ -403,27 +416,19 @@ async function main() {
 
     let commits_to_analyse: any[] = [];
 
-    const analyseMultiple = !!useFullGitHistory || !!path_to_commits_to_analyse || !!useOnlyGitTags;
-
-    if (analyseMultiple) {
-        if (useFullGitHistory) {
-            commits_to_analyse = await getNotAnalysedGitCommits(project_name);
+    if(commitSelectionMode==="full"){
+        commits_to_analyse = await getNotAnalysedGitCommits(project_name);
+    } else if(commitSelectionMode==="tags"){
+        commits_to_analyse = await getNotAnalysedGitTagCommits(project_name);
+    } else if(commitSelectionMode==="current" || !commitSelectionMode){
+        commits_to_analyse = await getCommitSelectionModeCurrent();
+    } else {
+        let path_to_commits_to_analyse = commitSelectionMode;
+        if (fs.existsSync(path_to_commits_to_analyse)) {
+            commits_to_analyse = await getAllCommitsFromPassedCommitOption(path_to_commits_to_analyse);
+        } else {
+            console.error("option: commit_selection - no valid path to csv file");
         }
-        if(useOnlyGitTags){
-            commits_to_analyse = await getNotAnalysedGitTagCommits(path_to_project);
-        }
-        if (path_to_commits_to_analyse) {
-            commits_to_analyse = await getAllCommitsFromPassedCommitOption();
-        }
-    }  else {
-        let commit = await getProjectCommit(path_to_project);
-        if(!!options.project_commit){
-            commit = options.project_commit;
-        }
-        if(!commit){
-            commit = null;
-        }
-        commits_to_analyse.push(commit);
     }
 
     await analyseCommits(project_name, commits_to_analyse)
