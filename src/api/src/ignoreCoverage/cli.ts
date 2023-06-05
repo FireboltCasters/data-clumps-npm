@@ -35,7 +35,7 @@ program
     .option('--project_name <project_name>', 'Project Name (default: Git-Name)')
     .option('--project_version <project_version>', 'Project Version')
     .option('--project_commit <project_commit>', 'Project Commit (default: Git-Commit)')
-    .option('--commit_selection', 'Commit selections (default: current, options: history, tags, <path_tp_commits_csv>)')
+    .option('--commit_selection <mode>', 'Commit selections (default: current, options: history, tags, <path_tp_commits_csv>)')
 // TODO: --detector_options <path_to_detector_options_json>
 
 program.parse(process.argv);
