@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import {MyAbortController, SoftwareProject} from "./SoftwareProject";
-import simpleGit, { SimpleGit } from 'simple-git';
+import simpleGit, {SimpleGit, LogResult, DefaultLogFields, TagResult} from 'simple-git';
 
 import fs from 'fs';
 import path from 'path';
@@ -31,7 +31,9 @@ program
     .option('--project_name <project_name>', 'Project Name (default: Git-Name)')
     .option('--project_version <project_version>', 'Project Version')
     .option('--project_commit <project_commit>', 'Project Commit (default: Git-Commit)')
-
+    .option('--full', 'Full analysis', false)
+    .option('--tags', 'Analyse all git tags', false)
+    .option('--path_to_commits_to_analyse <path>', 'Path to CSV file containing commit hash_ids')
 
 program.parse(process.argv);
 
@@ -48,21 +50,103 @@ let showProgress = options.progress;
 
 
 let target_language = language;
-let project_name = options.project_name;
-if(!project_name){
-    //TODO: Get Name if <path_to_folder> is a github project
-}
 
 let project_version = options.project_version;
-let project_commit = options.project_commit;
-if(!project_commit){
-    //TODO: Get Name if <path_to_folder> is a github project
-}
 
-function verboseLog(...content: any){
+const useFullGitHistory = options.full;
+const useOnlyGitTags = options.tags;
+const path_to_commits_to_analyse = options.path_to_commits_to_analyse;
+
+    function verboseLog(...content: any){
     if(verbose){
         console.log(content);
     }
+}
+
+// New function to get all commits
+async function getAllCommitsFromGitProject(path_to_folder: string): Promise<string[] | null> {
+    return new Promise((resolve, reject) => {
+        const git: SimpleGit = simpleGit(path_to_folder);
+        git.log(undefined, (err: Error | null, log: LogResult<string>) => {
+            if (err) {
+                resolve(null);
+            } else {
+
+                git.log(undefined, (err: Error | null, log: LogResult<DefaultLogFields>) => {
+                    if (err) {
+                        resolve(null);
+                    } else {
+                        const commits: string[] = [];
+                        log.all.forEach(entry => {
+                            if(entry.hash) {
+                                commits.push(entry.hash);
+                            }
+                        });
+                        resolve(commits);
+                    }
+                });
+            }
+        });
+    });
+}
+
+async function getAllTagsFromGitProject(path_to_folder: string): Promise<string[] | null> {
+        console.log("getAllTagsFromGitProject");
+    return new Promise((resolve, reject) => {
+        const git: SimpleGit = simpleGit(path_to_folder);
+        git.tags(async (err: Error | null, tags: TagResult) => {
+            if (err) {
+                resolve(null);
+            } else {
+                const commitHashes: string[] = [];
+                for (const tag of tags.all) {
+                    try {
+                        const details = await git.show([tag]);
+                        const hash = details.split('\n')[0].split(' ')[1];
+                        commitHashes.push(hash);
+                    } catch (error) {
+                        console.error(`Error retrieving commit hash for tag ${tag}:`, error);
+                    }
+                }
+                console.log("commitHashes")
+                console.log(commitHashes);
+                resolve(commitHashes);
+            }
+        });
+    });
+}
+
+async function getNotAnalysedGitTagCommits(project_name){
+    console.log("Perform a full check of the whole project");
+    const allCommits = await getAllTagsFromGitProject(path_to_project);
+    let missing_commit_results: string[] = [];
+
+    if(!!allCommits){
+        console.log("ammount tag commits: "+allCommits.length)
+
+        for (const commit of allCommits) {
+            console.log("check commit: " + commit);
+            let path_to_output_with_variables = options.output;
+            let path_to_output = replaceOutputVariables(path_to_output_with_variables, project_name, commit);
+
+            // Check if output file already exists for the commit
+            if (!fs.existsSync(path_to_output)) {
+                missing_commit_results.push(commit);
+            }
+        }
+    } else {
+        console.log("No tag commits found");
+    }
+    return missing_commit_results;
+}
+
+async function getAllCommitsFromPassedCommitOption(){
+    let commit_hashes: string[] = [];
+    if (path_to_commits_to_analyse) {
+        const data = fs.readFileSync(path_to_commits_to_analyse, 'utf-8');
+        commit_hashes = data.split(',').map(hash => hash.trim());
+    }
+    return commit_hashes;
 }
 
 function replaceOutputVariables(path_to_output_with_variables, project_name="project_name", project_commit="project_commit"){
@@ -76,6 +160,10 @@ function replaceOutputVariables(path_to_output_with_variables, project_name="pro
 }
 
 async function getProjectName(path_to_folder: string): Promise<string | null> {
+    if(!!options.project_name){
+        return options.project_name;
+    }
+
         return new Promise((resolve, reject) => {
             const git: SimpleGit = simpleGit(path_to_folder);
             git.listRemote(['--get-url'], (err: Error | null, data?: string) => {
@@ -126,7 +214,6 @@ function readFiles(project_root_directory, directory, project) {
         } else {
             let fileContent = fs.readFileSync(fullPath, 'utf-8');
             let relativePath = fullPath.substring(pathToFolderOfRootDir.length-1, fullPath.length);
-            console.log(relativePath);
             project.addFileContent(relativePath, fileContent);
         }
     }
@@ -151,19 +238,22 @@ function getParserOptions(){
     return parserOptions;
 }
 
-async function generateAstCallback(message, index, total): Promise<void> {
-    let content = `${index}/${total}: ${message}`;
+async function generateAstCallback(prepend, message, index, total): Promise<void> {
+    let content = `File: ${index}/${total}: ${message}`;
     let isEveryHundreds = index % 10 === 0;
     let firstAndSecond = index === 0 || index === 1;
     let lastAndPreLast = index === total - 1 || index === total - 2;
+    if(!prepend){
+        prepend = "";
+    }
     if(firstAndSecond || isEveryHundreds || lastAndPreLast) {
         if(showProgress){
-            console.log(content);
+            verboseLog(prepend+content)
         }
     }
 }
 
-async function getDictClassOrInterfaceFromProjectPath(path_project_root_directory, fileExtensions, abortController){
+async function getDictClassOrInterfaceFromProjectPath(path_project_root_directory, fileExtensions, abortController, preprend){
     let project: SoftwareProject = new SoftwareProject(fileExtensions);
     verboseLog("Reading files and adding to project");
 
@@ -172,7 +262,8 @@ async function getDictClassOrInterfaceFromProjectPath(path_project_root_director
     verboseLog("Found files: "+project.getFilePaths().length);
     verboseLog("Parsing files to AST")
     let parserOptions = getParserOptions();
-    await project.parseSoftwareProject(parserOptions, generateAstCallback, abortController);
+    let printCallback = generateAstCallback.bind(null, preprend);
+    await project.parseSoftwareProject(parserOptions, printCallback, abortController);
     verboseLog("Finished parsing files to AST")
 
 
@@ -211,40 +302,132 @@ function printLogo(){
         "                                    .?J! Y################P.^J?.                                    \n")
 }
 
+async function analyse(project_name, commit, index, amount){
+        const commitInformation = "Commit ["+index+"/"+amount+"]";
+        console.log("Analyse "+commitInformation);
+    if (!fs.existsSync(path_to_source_files)) {
+        console.log(`The path to source files ${path_to_source_files} does not exist.`);
+        return;
+    } else {
+        console.log(`The path to source files ${path_to_source_files} does exist.`);
+        let dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
+        let abortController = new MyAbortController();
+
+        let fileExtensions = [language];
+        let prepend = commitInformation+": ";
+        dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(path_to_source_files, fileExtensions, abortController, prepend);
+
+        let detectorOptions = {};
+        let progressCallback = null;
+
+        let detector = new Detector(dictClassOrInterface, detectorOptions, progressCallback, abortController, target_language,
+            project_name,
+            project_version,
+            commit,
+            {});
+        let dataClumpsContext = await detector.detect();
+
+        let path_to_output_with_variables = options.output;
+        let path_to_output = replaceOutputVariables(path_to_output_with_variables, project_name, commit);
+
+        await saveJSONFile(dataClumpsContext, path_to_output);
+        console.log("Output saved to: "+path_to_output);
+        console.log("Amount Data-Clumps: "+Object.keys(dataClumpsContext.data_clumps).length);
+    }
+}
+
+async function getNotAnalysedGitCommits(project_name){
+    console.log("Perform a full check of the whole project");
+    const allCommits = await getAllCommitsFromGitProject(path_to_project);
+    let missing_commit_results: string[] = [];
+
+    if(!!allCommits){
+        console.log("ammount commits: "+allCommits.length)
+
+        for (const commit of allCommits) {
+            console.log("check commit: " + commit);
+            let path_to_output_with_variables = options.output;
+            let path_to_output = replaceOutputVariables(path_to_output_with_variables, project_name, commit);
+
+            // Check if output file already exists for the commit
+            if (!fs.existsSync(path_to_output)) {
+                missing_commit_results.push(commit);
+            }
+        }
+    } else {
+        console.log("No commits found");
+    }
+    return missing_commit_results;
+}
+
+async function checkoutGitCommit(commit){
+        console.log("Start checkoutGitCommit "+commit);
+    const git: SimpleGit = simpleGit(path_to_project);
+    try {
+        await git.checkout(commit);
+    } catch (error) {
+        console.error(`Error checking out commit ${commit}:`, error);
+        throw new Error(`Failed to checkout commit ${commit}`);
+    }
+}
+
+async function analyseCommits(project_name, missing_commit_results){
+    console.log("Analysing amount commits: "+missing_commit_results.length);
+    let i=1;
+    for (const commit of missing_commit_results) {
+        let checkoutWorked = true;
+        if(!!commit){
+            try{
+                await checkoutGitCommit(commit);
+            } catch(error){
+                checkoutWorked = false;
+            }
+        }
+        if(checkoutWorked){
+            // Do analysis for each missing commit and proceed to the next
+            await analyse(project_name, commit, i, missing_commit_results.length);
+            console.log("Proceed to next");
+        } else {
+            console.log("Skip since checkout did not worked");
+        }
+        i++;
+    }
+}
+
 async function main() {
     console.log("Data-Clumps Detection");
 
     console.log("path_to_project: "+path_to_project);
-    project_name = await getProjectName(path_to_project);
+    let project_name = await getProjectName(path_to_project);
     console.log("project_name: "+project_name);
-    project_commit = await getProjectCommit(path_to_project);
-    console.log("project_commit: "+project_commit);
 
-    let dictClassOrInterface: Dictionary<ClassOrInterfaceTypeContext> = {};
-    let abortController = new MyAbortController();
+    let commits_to_analyse: any[] = [];
 
-    let fileExtensions = [language];
-    dictClassOrInterface = await getDictClassOrInterfaceFromProjectPath(path_to_source_files, fileExtensions, abortController);
+    const analyseMultiple = !!useFullGitHistory || !!path_to_commits_to_analyse || !!useOnlyGitTags;
 
-    let detectorOptions = {};
-    let progressCallback = null;
+    if (analyseMultiple) {
+        if (useFullGitHistory) {
+            commits_to_analyse = await getNotAnalysedGitCommits(project_name);
+        }
+        if(useOnlyGitTags){
+            commits_to_analyse = await getNotAnalysedGitTagCommits(path_to_project);
+        }
+        if (path_to_commits_to_analyse) {
+            commits_to_analyse = await getAllCommitsFromPassedCommitOption();
+        }
+    }  else {
+        let commit = await getProjectCommit(path_to_project);
+        if(!!options.project_commit){
+            commit = options.project_commit;
+        }
+        if(!commit){
+            commit = null;
+        }
+        commits_to_analyse.push(commit);
+    }
 
-    let detector = new Detector(dictClassOrInterface, detectorOptions, progressCallback, abortController, target_language,
-        project_name,
-        project_version,
-        project_commit,
-        {});
-    let dataClumpsContext = await detector.detect();
+    await analyseCommits(project_name, commits_to_analyse)
 
-    console.log("replaceOutputVariables: ")
-    let path_to_output_with_variables = options.output;
-    console.log("path_to_output_with_variables:"+path_to_output_with_variables);
-    let path_to_output = replaceOutputVariables(path_to_output_with_variables, project_name, project_commit);
-    console.log("path_to_output: "+path_to_output);
-
-    await saveJSONFile(dataClumpsContext, path_to_output);
-    console.log("Output saved to: "+path_to_output);
-    console.log("Amount Data-Clumps: "+Object.keys(dataClumpsContext.data_clumps).length);
 }
 
 main();
