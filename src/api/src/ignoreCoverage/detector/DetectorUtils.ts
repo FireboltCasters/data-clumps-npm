@@ -62,7 +62,13 @@ export class DetectorUtils {
                                 key: otherClassParameter.key,
                                 name: otherClassParameter.name,
                                 type: otherClassParameter.type,
-                                modifiers: otherClassParameter.modifiers
+                                modifiers: otherClassParameter.modifiers,
+                                position: {
+                                    startLine: otherClassParameter.position?.startLine,
+                                    startColumn: otherClassParameter.position?.startColumn,
+                                    endLine: otherClassParameter.position?.endLine,
+                                    endColumn: otherClassParameter.position?.endColumn
+                                }
                             }
 
                             related_to_context = related_to_parameter;
@@ -74,7 +80,13 @@ export class DetectorUtils {
                         name: currentClassParameter.name,
                         type: currentClassParameter.type,
                         modifiers: currentClassParameter.modifiers,
-                        to_variable: related_to_context
+                        to_variable: related_to_context,
+                        position:{
+                            startLine: currentClassParameter.position?.startLine,
+                            startColumn: currentClassParameter.position?.startColumn,
+                            endLine: currentClassParameter.position?.endLine,
+                            endColumn: currentClassParameter.position?.endColumn
+                        }
                     }
                 }
             }
