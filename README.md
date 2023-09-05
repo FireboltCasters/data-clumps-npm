@@ -31,6 +31,23 @@ Alternative slogan: Get a Three-Headed View of Your Data: Cerberus Detects and R
   <a href="https://github.com/FireboltCasters/data-clumps/actions/workflows/npmPublish.yml"><img src="https://github.com/FireboltCasters/data-clumps/actions/workflows/npmPublish.yml/badge.svg" alt="Npm publish" /></a>
 </p>
 
+
+## Important Notice: Project Partially Discontinued
+
+**Attention Users**: This project, Cerberus Data Clumps Detection and Refactoring (CDCD-R), will be partially discontinued due to significant performance improvements in our new project: [PMD Data Clumps](https://github.com/FireboltCasters/pmd-data-clumps).
+
+### Why the Change?
+
+While CDCD-R served as a valuable proof of concept for analyzing Java files with Antlr4 within the web, our new project with PMD offers a more robust and efficient solution. The new project has shown speed increases of up to 98% in parsing files, making it a superior choice for your data clump detection and refactoring needs.
+
+### What Does This Mean for Current Users?
+
+- Existing features and functionalities in CDCD-R will remain available, but future updates and enhancements will be limited.
+- We strongly recommend transitioning to [PMD Data Clumps](https://github.com/FireboltCasters/pmd-data-clumps) for improved performance and continued support.
+
+For more details, please visit the [PMD Data Clumps GitHub Repository](https://github.com/FireboltCasters/pmd-data-clumps).
+
+
 ## About
 
 A library to parse files and folders to check for data clumps and refactor them.
