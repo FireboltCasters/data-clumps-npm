@@ -1,5 +1,5 @@
 {
-  "name": "data-clumps",
+  "name": "data-clumps-npm",
   "version": "0.1.94",
   "description": "This is a package to identify data-clumps",
   "main": "index.js",
