@@ -32,13 +32,16 @@ Alternative slogan: Get a Three-Headed View of Your Data: Cerberus Detects and R
 </p>
 
 
-## Important Notice: Project Partially Discontinued
+# Important Notice: Project Partially Discontinued
 
-**Attention Users**: This project, Cerberus Data Clumps Detection and Refactoring (CDCD-R), will be partially discontinued due to significant performance improvements in our new project: [PMD Data Clumps](https://github.com/FireboltCasters/pmd-data-clumps).
+**Attention Users**: This project, Cerberus Data Clumps Detection and Refactoring (CDCD-R), will be partially discontinued due to significant performance improvements in our new project: [Data Clumps Doctor](https://github.com/NilsBaumgartner1994/data-clumps-doctor).
+
+-------------------
+
 
 ### Why the Change?
 
-While CDCD-R served as a valuable proof of concept for analyzing Java files with Antlr4 within the web, our new project with PMD offers a more robust and efficient solution. The new project has shown speed increases of up to 98% in parsing files, making it a superior choice for your data clump detection and refactoring needs.
+While CDCD-R served as a valuable proof of concept for analyzing Java files with Antlr4 within the web, our new project offers a more robust and efficient solution. The new project has shown speed increases of up to 98% in parsing files, making it a superior choice for your data clump detection and refactoring needs.
 
 ### What Does This Mean for Current Users?
 
